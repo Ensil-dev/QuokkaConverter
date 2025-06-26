@@ -798,6 +798,12 @@ button[type="submit"]:disabled {
   }
 }
 
+@media (max-width: 550px) {
+  .header-content {
+    justify-content: center;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .container {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
