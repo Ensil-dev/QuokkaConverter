@@ -111,7 +111,7 @@ function convertVideo(inputPath, outputPath, options = {}) {
         selectedAudioCodec = 'aac';
         break;
       case '.webm':
-        selectedVideoCodec = 'libvpx-vp9';
+        selectedVideoCodec = 'libvpx';
         selectedAudioCodec = 'libopus';
         break;
       case '.flv':
@@ -139,9 +139,13 @@ function convertVideo(inputPath, outputPath, options = {}) {
   // 비디오 코덱 설정
   args.push('-c:v', selectedVideoCodec);
 
+  // 빠른 변환을 위한 추가 옵션
+  args.push('-threads', '0'); // 모든 CPU 코어 사용
+  args.push('-avoid_negative_ts', 'make_zero'); // 타임스탬프 최적화
+
   // 해상도 설정
   if (resolution && resolution !== 'original') {
-    args.push('-vf', `scale=${resolution}`);
+    args.push('-vf', `scale=${resolution}:flags=fast_bilinear`); // 빠른 스케일링
   }
 
   // 프레임레이트 설정
@@ -192,12 +196,18 @@ function convertVideo(inputPath, outputPath, options = {}) {
   // 최적화 옵션 (코덱별로 다르게 적용)
   switch (selectedVideoCodec) {
     case 'libx264':
-      args.push('-preset', 'fast');
+      args.push('-preset', 'ultrafast');
+      args.push('-tune', 'fastdecode');
       args.push('-movflags', '+faststart');
       break;
     case 'libvpx-vp9':
-      args.push('-deadline', 'good');
-      args.push('-cpu-used', '2');
+      args.push('-deadline', 'realtime');
+      args.push('-cpu-used', '4');
+      args.push('-row-mt', '1');
+      break;
+    case 'libvpx':
+      args.push('-deadline', 'realtime');
+      args.push('-cpu-used', '4');
       break;
   }
 
@@ -207,8 +217,8 @@ function convertVideo(inputPath, outputPath, options = {}) {
 
   const result = spawnSync(ffmpegPath, args, { 
     encoding: 'buffer', 
-    maxBuffer: 1024 * 1024 * 50, // 50MB로 줄임
-    timeout: 300000 // 5분 타임아웃
+    maxBuffer: 1024 * 1024 * 10, // 50MB에서 10MB로 줄임
+    timeout: 120000 // 5분에서 2분으로 줄임
   });
 
   console.log('FFmpeg 실행 결과:', {
@@ -365,6 +375,9 @@ function convertAudio(inputPath, outputPath, options = {}) {
     }
   }
 
+  // 빠른 변환을 위한 추가 옵션
+  args.push('-threads', '0'); // 모든 CPU 코어 사용
+
   args.push('-y', outputPath);
 
   console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
@@ -505,7 +518,8 @@ function convertToGif(inputPath, outputPath, options = {}) {
   const {
     resolution,
     fps = 10,
-    playbackSpeed = 1.0
+    playbackSpeed = 1.0,
+    quality = '보통'
   } = options;
 
   console.log('GIF 변환 시작:', { inputPath, outputPath, options });
@@ -523,14 +537,27 @@ function convertToGif(inputPath, outputPath, options = {}) {
     filters.push(`scale=${resolution}`);
   }
   
+  // 품질에 따른 색상 팔레트 조정
+  let paletteFilter = '';
+  if (quality === '높음') {
+    // 높은 품질: 더 많은 색상 사용 (최적화)
+    paletteFilter = 'split[s0][s1];[s0]palettegen=max_colors=128:reserve_transparent=0:stats_mode=single[p];[s1][p]paletteuse';
+  } else if (quality === '낮음') {
+    // 낮은 품질: 적은 색상 사용으로 파일 크기 감소 (최적화)
+    paletteFilter = 'split[s0][s1];[s0]palettegen=max_colors=32:reserve_transparent=0:stats_mode=single[p];[s1][p]paletteuse=dither=none';
+  } else {
+    // 보통 품질: 기본 설정 (최적화)
+    paletteFilter = 'split[s0][s1];[s0]palettegen=max_colors=64:reserve_transparent=0:stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3';
+  }
+  
   // 필터 체인 구성
-  const filterChain = filters.length > 0 ? filters.join(',') : '';
+  const filterChain = filters.length > 0 ? `${filters.join(',')},${paletteFilter}` : paletteFilter;
 
   // FFmpeg로 GIF 생성 (최적화된 설정)
   const ffmpegArgs = [
     '-i', inputPath,
     '-r', String(fps),
-    ...(filterChain ? ['-vf', filterChain] : []),
+    '-vf', filterChain,
     '-f', 'gif',
     '-an', // 오디오 제거
     '-loop', '0',
@@ -541,8 +568,8 @@ function convertToGif(inputPath, outputPath, options = {}) {
 
   const ffmpegResult = spawnSync(ffmpegPath, ffmpegArgs, { 
     encoding: 'buffer', 
-    maxBuffer: 1024 * 1024 * 50, // 50MB로 줄임
-    timeout: 300000 // 5분 타임아웃
+    maxBuffer: 1024 * 1024 * 10, // 50MB에서 10MB로 줄임
+    timeout: 120000 // 5분에서 2분으로 줄임
   });
 
   console.log('FFmpeg 실행 결과:', {
@@ -582,7 +609,7 @@ function convertToGif(inputPath, outputPath, options = {}) {
   }
 
   const stats = fs.statSync(outputPath);
-  console.log('GIF 변환 완료:', { size: stats.size, path: outputPath });
+  console.log('GIF 변환 완료:', { size: stats.size, path: outputPath, quality });
 
   return {
     output: outputPath,

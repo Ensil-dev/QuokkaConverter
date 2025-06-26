@@ -5,7 +5,7 @@ import { convertFile, SUPPORTED_FORMATS } from '@/lib/universalConverter';
 
 // 비용 제어를 위한 제한 설정
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-const MAX_CONVERSION_TIME = 25000; // 25초 (Vercel 제한 고려)
+const MAX_CONVERSION_TIME = 120000; // 25초에서 2분으로 변경 (FFmpeg 타임아웃과 일치)
 
 // 사용량 모니터링
 let dailyUsage = {
