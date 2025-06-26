@@ -1,0 +1,22 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="32" cy="32" r="28" fill="#F5D6B4"/>
+  <!-- 귀 -->
+  <ellipse cx="16" cy="16" rx="7" ry="9" fill="#E2B07A"/>
+  <ellipse cx="48" cy="16" rx="7" ry="9" fill="#E2B07A"/>
+  <!-- 얼굴 -->
+  <ellipse cx="32" cy="36" rx="20" ry="18" fill="#F5D6B4" stroke="#E2B07A" stroke-width="2"/>
+  <!-- 눈 -->
+  <ellipse cx="24" cy="36" rx="2.5" ry="3" fill="#3B2B1B"/>
+  <ellipse cx="40" cy="36" rx="2.5" ry="3" fill="#3B2B1B"/>
+  <!-- 코 -->
+  <ellipse cx="32" cy="44" rx="2" ry="1.5" fill="#3B2B1B"/>
+  <!-- 미소 -->
+  <path d="M28 48 Q32 52 36 48" stroke="#3B2B1B" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 변환 화살표(상징) -->
+  <path d="M50 50 Q54 46 50 42" stroke="#6FCF97" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#6FCF97"/>
+    </marker>
+  </defs>
+</svg> 
