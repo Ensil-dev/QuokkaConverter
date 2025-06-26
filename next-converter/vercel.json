@@ -1,8 +1,13 @@
 {
-  "_comment": "로컬 실행 전용 설정 - Vercel 배포 시 사용",
   "functions": {
     "src/app/api/convert/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 10
+    },
+    "src/app/api/formats/route.ts": {
+      "maxDuration": 5
+    },
+    "src/app/api/check-conversion/route.ts": {
+      "maxDuration": 5
     }
   },
   "headers": [
