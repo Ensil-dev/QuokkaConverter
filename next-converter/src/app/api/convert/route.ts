@@ -3,6 +3,36 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { convertFile, SUPPORTED_FORMATS } from '@/lib/universalConverter';
 
+// 비용 제어를 위한 제한 설정
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+const MAX_CONVERSION_TIME = 25000; // 25초 (Vercel 제한 고려)
+
+// 사용량 모니터링
+let dailyUsage = {
+  conversions: 0,
+  totalSize: 0,
+  lastReset: new Date().toDateString()
+};
+
+function resetDailyUsage() {
+  const today = new Date().toDateString();
+  if (dailyUsage.lastReset !== today) {
+    dailyUsage = {
+      conversions: 0,
+      totalSize: 0,
+      lastReset: today
+    };
+  }
+}
+
+function logUsage(fileSize: number) {
+  resetDailyUsage();
+  dailyUsage.conversions++;
+  dailyUsage.totalSize += fileSize;
+  
+  console.log(`📊 사용량 통계: ${dailyUsage.conversions}회 변환, ${(dailyUsage.totalSize / (1024 * 1024)).toFixed(2)}MB 처리`);
+}
+
 // 파일 변환 API
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +43,14 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: '파일이 업로드되지 않았습니다.' },
+        { status: 400 }
+      );
+    }
+
+    // 파일 크기 검증
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: `파일 크기가 너무 큽니다. 최대 ${MAX_FILE_SIZE / (1024 * 1024)}MB까지 지원됩니다.` },
         { status: 400 }
       );
     }
@@ -98,15 +136,25 @@ export async function POST(request: NextRequest) {
 
     console.log('변환 옵션:', convertOptions);
 
-    // 파일 변환 실행
-    const result = await convertFile({
+    // 타임아웃 설정으로 비용 제어
+    const conversionPromise = convertFile({
       input: inputPath,
       output: outputPath,
       format: targetFormat,
       ...convertOptions
     });
 
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('변환 시간이 초과되었습니다.')), MAX_CONVERSION_TIME);
+    });
+
+    // 파일 변환 실행 (타임아웃 적용)
+    const result = await Promise.race([conversionPromise, timeoutPromise]) as { size: number };
+
     console.log(`변환 완료: ${result.size} bytes`);
+
+    // 사용량 로깅
+    logUsage(file.size);
 
     // 변환된 파일 읽기
     const outputBuffer = await fs.readFile(outputPath);
@@ -132,10 +180,44 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('변환 오류:', error);
     
+    // 타임아웃 오류 처리
+    if (error instanceof Error && error.message.includes('변환 시간이 초과')) {
+      return NextResponse.json(
+        { 
+          error: '변환 시간 초과', 
+          message: '파일이 너무 크거나 복잡합니다. 더 작은 파일을 시도해주세요.'
+        },
+        { status: 408 }
+      );
+    }
+    
+    // 코덱 오류 처리
+    if (error instanceof Error && error.message.includes('지원하지 않는 코덱 조합')) {
+      return NextResponse.json(
+        { 
+          error: '지원하지 않는 변환', 
+          message: '선택한 입력/출력 형식 조합을 지원하지 않습니다. 다른 형식을 시도해주세요.'
+        },
+        { status: 400 }
+      );
+    }
+    
+    // 파일 손상 오류 처리
+    if (error instanceof Error && error.message.includes('손상된 파일')) {
+      return NextResponse.json(
+        { 
+          error: '파일 손상', 
+          message: '입력 파일이 손상되었습니다. 다른 파일을 시도해주세요.'
+        },
+        { status: 400 }
+      );
+    }
+    
+    // 일반적인 변환 오류
     return NextResponse.json(
       { 
         error: '변환 실패', 
-        message: error instanceof Error ? error.message : '알 수 없는 오류'
+        message: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
       },
       { status: 500 }
     );

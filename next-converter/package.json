@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup": "npm install && npm run build",
+    "run": "npm run dev",
+    "run-prod": "npm run build && npm start"
   },
   "dependencies": {
     "ffmpeg-static": "^5.2.0",

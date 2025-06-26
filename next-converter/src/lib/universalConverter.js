@@ -90,12 +90,54 @@ function convertVideo(inputPath, outputPath, options = {}) {
   const ffmpegPath = checkFFmpeg();
   const args = ['-i', inputPath];
 
-  // 비디오 코덱 설정 (기본값: libx264)
-  if (codec) {
-    args.push('-c:v', codec);
-  } else {
-    args.push('-c:v', 'libx264');
+  // 출력 파일 확장자에 따라 적절한 비디오 코덱 선택
+  const outputExt = path.extname(outputPath).toLowerCase();
+  let selectedVideoCodec = codec;
+  let selectedAudioCodec = 'aac';
+
+  if (!selectedVideoCodec) {
+    switch (outputExt) {
+      case '.mp4':
+      case '.m4v':
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'aac';
+        break;
+      case '.avi':
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'mp3';
+        break;
+      case '.mkv':
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'aac';
+        break;
+      case '.webm':
+        selectedVideoCodec = 'libvpx-vp9';
+        selectedAudioCodec = 'libopus';
+        break;
+      case '.flv':
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'mp3';
+        break;
+      case '.wmv':
+        selectedVideoCodec = 'wmv2';
+        selectedAudioCodec = 'wmav2';
+        break;
+      case '.mov':
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'aac';
+        break;
+      case '.3gp':
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'aac';
+        break;
+      default:
+        selectedVideoCodec = 'libx264';
+        selectedAudioCodec = 'aac';
+    }
   }
+
+  // 비디오 코덱 설정
+  args.push('-c:v', selectedVideoCodec);
 
   // 해상도 설정
   if (resolution && resolution !== 'original') {
@@ -112,20 +154,52 @@ function convertVideo(inputPath, outputPath, options = {}) {
     args.push('-b:v', bitrate);
   }
 
-  // 품질 설정 (CRF) - 기본값: 23 (보통 품질)
+  // 품질 설정 (코덱별로 다르게 적용)
   if (quality && ['낮음', '보통', '높음'].includes(quality)) {
-    const crfMap = { '낮음': 28, '보통': 23, '높음': 18 };
-    args.push('-crf', String(crfMap[quality]));
+    switch (selectedVideoCodec) {
+      case 'libx264':
+        const h264QualityMap = { '낮음': 28, '보통': 23, '높음': 18 };
+        args.push('-crf', String(h264QualityMap[quality]));
+        break;
+      case 'libvpx-vp9':
+        const vp9QualityMap = { '낮음': 40, '보통': 30, '높음': 20 };
+        args.push('-crf', String(vp9QualityMap[quality]));
+        break;
+      case 'wmv2':
+        const wmvQualityMap = { '낮음': 5, '보통': 3, '높음': 1 };
+        args.push('-q:v', String(wmvQualityMap[quality]));
+        break;
+      default:
+        args.push('-crf', '23'); // 기본 품질
+    }
   } else {
-    args.push('-crf', '23'); // 기본 품질
+    // 기본 품질 설정
+    switch (selectedVideoCodec) {
+      case 'libx264':
+        args.push('-crf', '23');
+        break;
+      case 'libvpx-vp9':
+        args.push('-crf', '30');
+        break;
+      default:
+        args.push('-crf', '23');
+    }
   }
 
-  // 오디오 코덱 설정 (비디오 파일의 경우)
-  args.push('-c:a', 'aac');
+  // 오디오 코덱 설정
+  args.push('-c:a', selectedAudioCodec);
 
-  // 최적화 옵션
-  args.push('-preset', 'fast'); // 빠른 인코딩
-  args.push('-movflags', '+faststart'); // 웹 최적화
+  // 최적화 옵션 (코덱별로 다르게 적용)
+  switch (selectedVideoCodec) {
+    case 'libx264':
+      args.push('-preset', 'fast');
+      args.push('-movflags', '+faststart');
+      break;
+    case 'libvpx-vp9':
+      args.push('-deadline', 'good');
+      args.push('-cpu-used', '2');
+      break;
+  }
 
   args.push('-y', outputPath);
 
@@ -147,7 +221,25 @@ function convertVideo(inputPath, outputPath, options = {}) {
   if (result.status !== 0) {
     const errorMessage = result.stderr ? result.stderr.toString() : '알 수 없는 FFmpeg 오류';
     console.error('FFmpeg 오류:', errorMessage);
-    throw new Error(`FFmpeg 오류: ${errorMessage}`);
+    
+    // 일반적인 오류 패턴 분석
+    let userFriendlyError = '변환 중 오류가 발생했습니다.';
+    
+    if (errorMessage.includes('Could not find tag for codec')) {
+      userFriendlyError = '지원하지 않는 코덱 조합입니다. 다른 출력 형식을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid argument')) {
+      userFriendlyError = '잘못된 변환 설정입니다. 옵션을 확인해주세요.';
+    } else if (errorMessage.includes('No such file or directory')) {
+      userFriendlyError = '입력 파일을 찾을 수 없습니다.';
+    } else if (errorMessage.includes('Permission denied')) {
+      userFriendlyError = '파일 접근 권한이 없습니다.';
+    } else if (errorMessage.includes('timeout')) {
+      userFriendlyError = '변환 시간이 초과되었습니다. 더 작은 파일을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid data found')) {
+      userFriendlyError = '손상된 파일입니다. 다른 파일을 시도해주세요.';
+    }
+    
+    throw new Error(userFriendlyError);
   }
 
   // 출력 파일이 실제로 생성되었는지 확인
@@ -179,18 +271,60 @@ function convertAudio(inputPath, outputPath, options = {}) {
   const ffmpegPath = checkFFmpeg();
   const args = ['-i', inputPath];
 
-  // 오디오 코덱 설정 (기본값: libmp3lame)
-  if (codec) {
-    args.push('-c:a', codec);
-  } else {
-    args.push('-c:a', 'libmp3lame');
+  // 출력 파일 확장자에 따라 적절한 코덱 선택
+  const outputExt = path.extname(outputPath).toLowerCase();
+  let selectedCodec = codec;
+
+  if (!selectedCodec) {
+    switch (outputExt) {
+      case '.mp3':
+        selectedCodec = 'libmp3lame';
+        break;
+      case '.m4a':
+      case '.aac':
+        selectedCodec = 'aac';
+        break;
+      case '.ogg':
+        selectedCodec = 'libvorbis';
+        break;
+      case '.wav':
+        selectedCodec = 'pcm_s16le';
+        break;
+      case '.flac':
+        selectedCodec = 'flac';
+        break;
+      case '.opus':
+        selectedCodec = 'libopus';
+        break;
+      default:
+        selectedCodec = 'libmp3lame'; // 기본값
+    }
   }
 
-  // 비트레이트 설정
+  // 오디오 코덱 설정
+  args.push('-c:a', selectedCodec);
+
+  // 비트레이트 설정 (일부 코덱에서는 무시될 수 있음)
   if (bitrate) {
     args.push('-b:a', bitrate);
   } else {
-    args.push('-b:a', '128k'); // 기본 비트레이트
+    // 코덱별 기본 비트레이트 설정
+    switch (selectedCodec) {
+      case 'aac':
+        args.push('-b:a', '128k');
+        break;
+      case 'libmp3lame':
+        args.push('-b:a', '128k');
+        break;
+      case 'libvorbis':
+        args.push('-b:a', '128k');
+        break;
+      case 'libopus':
+        args.push('-b:a', '64k');
+        break;
+      default:
+        args.push('-b:a', '128k');
+    }
   }
 
   // 샘플레이트 설정
@@ -203,10 +337,26 @@ function convertAudio(inputPath, outputPath, options = {}) {
     args.push('-ac', String(channels));
   }
 
-  // 품질 설정
+  // 품질 설정 (코덱별로 다르게 적용)
   if (quality && ['낮음', '보통', '높음'].includes(quality)) {
-    const qualityMap = { '낮음': 5, '보통': 3, '높음': 0 };
-    args.push('-q:a', String(qualityMap[quality]));
+    switch (selectedCodec) {
+      case 'libmp3lame':
+        const mp3QualityMap = { '낮음': 5, '보통': 3, '높음': 0 };
+        args.push('-q:a', String(mp3QualityMap[quality]));
+        break;
+      case 'libvorbis':
+        const vorbisQualityMap = { '낮음': 3, '보통': 5, '높음': 7 };
+        args.push('-q:a', String(vorbisQualityMap[quality]));
+        break;
+      case 'libopus':
+        const opusQualityMap = { '낮음': 10, '보통': 20, '높음': 30 };
+        args.push('-b:a', `${opusQualityMap[quality]}k`);
+        break;
+      case 'aac':
+        const aacQualityMap = { '낮음': '64k', '보통': '128k', '높음': '256k' };
+        args.push('-b:a', aacQualityMap[quality]);
+        break;
+    }
   }
 
   args.push('-y', outputPath);
@@ -229,7 +379,25 @@ function convertAudio(inputPath, outputPath, options = {}) {
   if (result.status !== 0) {
     const errorMessage = result.stderr ? result.stderr.toString() : '알 수 없는 FFmpeg 오류';
     console.error('FFmpeg 오류:', errorMessage);
-    throw new Error(`FFmpeg 오류: ${errorMessage}`);
+    
+    // 일반적인 오류 패턴 분석
+    let userFriendlyError = '변환 중 오류가 발생했습니다.';
+    
+    if (errorMessage.includes('Could not find tag for codec')) {
+      userFriendlyError = '지원하지 않는 코덱 조합입니다. 다른 출력 형식을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid argument')) {
+      userFriendlyError = '잘못된 변환 설정입니다. 옵션을 확인해주세요.';
+    } else if (errorMessage.includes('No such file or directory')) {
+      userFriendlyError = '입력 파일을 찾을 수 없습니다.';
+    } else if (errorMessage.includes('Permission denied')) {
+      userFriendlyError = '파일 접근 권한이 없습니다.';
+    } else if (errorMessage.includes('timeout')) {
+      userFriendlyError = '변환 시간이 초과되었습니다. 더 작은 파일을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid data found')) {
+      userFriendlyError = '손상된 파일입니다. 다른 파일을 시도해주세요.';
+    }
+    
+    throw new Error(userFriendlyError);
   }
 
   // 출력 파일이 실제로 생성되었는지 확인
@@ -291,7 +459,25 @@ function convertImage(inputPath, outputPath, options = {}) {
   if (result.status !== 0) {
     const errorMessage = result.stderr ? result.stderr.toString() : '알 수 없는 FFmpeg 오류';
     console.error('FFmpeg 오류:', errorMessage);
-    throw new Error(`FFmpeg 오류: ${errorMessage}`);
+    
+    // 일반적인 오류 패턴 분석
+    let userFriendlyError = '변환 중 오류가 발생했습니다.';
+    
+    if (errorMessage.includes('Could not find tag for codec')) {
+      userFriendlyError = '지원하지 않는 코덱 조합입니다. 다른 출력 형식을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid argument')) {
+      userFriendlyError = '잘못된 변환 설정입니다. 옵션을 확인해주세요.';
+    } else if (errorMessage.includes('No such file or directory')) {
+      userFriendlyError = '입력 파일을 찾을 수 없습니다.';
+    } else if (errorMessage.includes('Permission denied')) {
+      userFriendlyError = '파일 접근 권한이 없습니다.';
+    } else if (errorMessage.includes('timeout')) {
+      userFriendlyError = '변환 시간이 초과되었습니다. 더 작은 파일을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid data found')) {
+      userFriendlyError = '손상된 파일입니다. 다른 파일을 시도해주세요.';
+    }
+    
+    throw new Error(userFriendlyError);
   }
 
   // 출력 파일이 실제로 생성되었는지 확인
@@ -352,7 +538,25 @@ function convertToGif(inputPath, outputPath, options = {}) {
   if (ffmpegResult.status !== 0) {
     const errorMessage = ffmpegResult.stderr ? ffmpegResult.stderr.toString() : '알 수 없는 FFmpeg 오류';
     console.error('FFmpeg 오류:', errorMessage);
-    throw new Error(`FFmpeg 오류: ${errorMessage}`);
+    
+    // 일반적인 오류 패턴 분석
+    let userFriendlyError = 'GIF 변환 중 오류가 발생했습니다.';
+    
+    if (errorMessage.includes('Could not find tag for codec')) {
+      userFriendlyError = '지원하지 않는 코덱 조합입니다. 다른 출력 형식을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid argument')) {
+      userFriendlyError = '잘못된 변환 설정입니다. 옵션을 확인해주세요.';
+    } else if (errorMessage.includes('No such file or directory')) {
+      userFriendlyError = '입력 파일을 찾을 수 없습니다.';
+    } else if (errorMessage.includes('Permission denied')) {
+      userFriendlyError = '파일 접근 권한이 없습니다.';
+    } else if (errorMessage.includes('timeout')) {
+      userFriendlyError = '변환 시간이 초과되었습니다. 더 작은 파일을 시도해주세요.';
+    } else if (errorMessage.includes('Invalid data found')) {
+      userFriendlyError = '손상된 파일입니다. 다른 파일을 시도해주세요.';
+    }
+    
+    throw new Error(userFriendlyError);
   }
 
   // 출력 파일이 실제로 생성되었는지 확인
