@@ -26,6 +26,36 @@ const detectFileType = (filename: string) => {
   return 'unknown';
 };
 
+function isInAppBrowser() {
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
+  return (
+    ua.includes('kakaotalk') ||
+    ua.includes('naver') ||
+    ua.includes('fbav') ||
+    ua.includes('instagram')
+  );
+}
+
+function redirectToExternalBrowser() {
+  alert(
+    '카카오톡 등 인앱 브라우저에서는 Google 로그인이 지원되지 않습니다. 크롬 또는 사파리 브라우저로 열어주세요.'
+  );
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
+  if (ua.includes('iphone') || ua.includes('ipad')) {
+    window.location.href = 'x-web-search://www.quokkaconvert.com';
+  } else {
+    window.location.href = 'intent://www.quokkaconvert.com#Intent;scheme=https;package=com.android.chrome;end';
+  }
+}
+
+const handleGoogleLogin = () => {
+  if (typeof window !== 'undefined' && isInAppBrowser()) {
+    redirectToExternalBrowser();
+  } else {
+    signIn('google');
+  }
+};
+
 export default function Home() {
   const { data: session, status } = useSession();
   const [file, setFile] = useState<File | null>(null);
@@ -473,7 +503,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">Google 계정으로 로그인</h1>
           <button
             type="button"
-            onClick={() => signIn('google')}
+            onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-800 font-semibold rounded-lg py-3 text-lg shadow hover:shadow-md transition"
           >
             <FcGoogle size={24} />
