@@ -48,6 +48,14 @@ export default function Home() {
     loadSupportedFormats();
   }, [loadSupportedFormats]);
 
+  // 슬라이더 초기 색상 설정
+  useEffect(() => {
+    const slider = document.getElementById('playbackSpeed') as HTMLInputElement;
+    if (slider) {
+      slider.style.setProperty('--slider-color', 'var(--primary-color)');
+    }
+  }, [outputFormat]);
+
   const populateOutputFormats = (formats: SupportedFormats) => {
     const allFormats = [
       ...formats.video.output,
@@ -208,6 +216,29 @@ export default function Home() {
     }
   };
 
+  // 재생속도 슬라이더 값 변경 핸들러
+  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const speedDisplayElement = document.querySelector('.speed-display');
+    const slider = e.target;
+    
+    if (speedDisplayElement) {
+      speedDisplayElement.textContent = `${value}x`;
+    }
+    
+    // 슬라이더 색상 변경 (시각적 피드백)
+    const numValue = parseFloat(value);
+    if (numValue < 0.5) {
+      slider.style.setProperty('--slider-color', '#17a2b8'); // 매우 느림 - 청록
+    } else if (numValue < 1.0) {
+      slider.style.setProperty('--slider-color', '#28a745'); // 느림 - 초록
+    } else if (numValue > 1.0) {
+      slider.style.setProperty('--slider-color', '#dc3545'); // 빠름 - 빨강
+    } else {
+      slider.style.setProperty('--slider-color', 'var(--primary-color)'); // 원본 - 기본색
+    }
+  };
+
   return (
     <div className="container" suppressHydrationWarning={true}>
       <h1>범용 파일 변환기</h1>
@@ -249,6 +280,50 @@ export default function Home() {
           </select>
         </div>
 
+        {/* GIF 변환 시에만 재생속도 옵션을 컨테이너 상단에 표시 */}
+        {fileType === 'video' && outputFormat === 'gif' && (
+          <div className="speed-control-section">
+            <div className="speed-header">
+              <label htmlFor="playbackSpeed" className="speed-title">재생속도 조절</label>
+              <div className="speed-display">1.0x</div>
+            </div>
+            <div className="speed-slider-container">
+              <div className="speed-labels">
+                <span className="speed-indicator slow">
+                  <span className="speed-icon">🐌</span>
+                  <span className="speed-text">느림</span>
+                </span>
+                <span className="speed-indicator fast">
+                  <span className="speed-icon">⚡</span>
+                  <span className="speed-text">빠름</span>
+                </span>
+              </div>
+              <div className="slider-track">
+                <input
+                  type="range"
+                  id="playbackSpeed"
+                  min="0.25"
+                  max="2.0"
+                  step="0.25"
+                  defaultValue="1.0"
+                  className="speed-slider"
+                  onChange={handleSpeedChange}
+                />
+                <div className="slider-markers">
+                  <span className="marker">0.25x</span>
+                  <span className="marker">0.5x</span>
+                  <span className="marker">0.75x</span>
+                  <span className="marker">1.0x</span>
+                  <span className="marker">1.25x</span>
+                  <span className="marker">1.5x</span>
+                  <span className="marker">1.75x</span>
+                  <span className="marker">2.0x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 비디오 옵션 */}
         {fileType === 'video' && (
           <div className="options-section">
@@ -283,21 +358,6 @@ export default function Home() {
                 <option value="높음">높음 (파일 크기 큼)</option>
               </select>
             </div>
-            {/* GIF 변환 시에만 재생속도 옵션 표시 */}
-            {outputFormat === 'gif' && (
-              <div className="option-row">
-                <label htmlFor="playbackSpeed">재생속도:</label>
-                <select id="playbackSpeed">
-                  <option value="1.0">1.0x (원본)</option>
-                  <option value="1.25">1.25x (빠름)</option>
-                  <option value="1.5">1.5x (더 빠름)</option>
-                  <option value="1.75">1.75x (매우 빠름)</option>
-                  <option value="2.0">2.0x (최고 속도)</option>
-                  <option value="0.75">0.75x (느림)</option>
-                  <option value="0.5">0.5x (더 느림)</option>
-                </select>
-              </div>
-            )}
           </div>
         )}
 
