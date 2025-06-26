@@ -681,7 +681,7 @@ export default function Home() {
   }
 
   return (
-    <div className="container max-w-[400px] min-w-[340px]" suppressHydrationWarning={true}>
+    <div className="container" suppressHydrationWarning={true}>
       {/* 헤더 */}
       <div className="header">
         <div className="header-content">
