@@ -469,6 +469,170 @@ button[type="submit"]:disabled {
   line-height: 1.5;
 }
 
+/* 경고 메시지 스타일 */
+.warning-message {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid var(--warning-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.warning-message p {
+  margin: 0;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+/* 정보 메시지 스타일 */
+.info-message {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.info-message p {
+  margin: 0;
+  color: var(--foreground);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* 옵션 노트 스타일 */
+.option-note {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* 파일 크기 제한 안내 */
+.file-limit-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* 결과 플레이스홀더 스타일 */
+.result-placeholder {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border: 2px dashed rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  padding: 40px 20px;
+  margin-top: 20px;
+  text-align: center;
+  animation: placeholder-pulse 2s ease-in-out infinite;
+}
+
+/* 준비 완료 상태 플레이스홀더 */
+.result-placeholder.ready {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(40, 167, 69, 0.1) 100%);
+  border: 2px dashed rgba(40, 167, 69, 0.4);
+  animation: ready-pulse 3s ease-in-out infinite;
+}
+
+@keyframes ready-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+}
+
+@keyframes placeholder-pulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.placeholder-icon {
+  font-size: 3em;
+  animation: spin 2s linear infinite;
+  opacity: 0.8;
+}
+
+.placeholder-content h2 {
+  color: var(--foreground);
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.placeholder-content p {
+  color: var(--text-muted);
+  font-size: 1em;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.placeholder-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  min-width: 250px;
+}
+
+.placeholder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.placeholder-label {
+  font-weight: 600;
+  color: var(--foreground);
+  font-size: 0.9em;
+}
+
+.placeholder-value {
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+/* 다크 모드 대응 */
+@media (prefers-color-scheme: dark) {
+  .result-placeholder {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: rgba(102, 126, 234, 0.4);
+  }
+  
+  .result-placeholder.ready {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.15) 100%);
+    border-color: rgba(40, 167, 69, 0.5);
+  }
+  
+  .placeholder-info {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
+  }
+}
+
 /* 호버 효과 */
 @media (hover: hover) and (pointer: fine) {
   button[type="submit"]:hover {
@@ -556,6 +720,34 @@ button[type="submit"]:disabled {
   
   .marker {
     font-size: 0.7em;
+  }
+  
+  .result-placeholder {
+    padding: 30px 16px;
+    margin-top: 16px;
+  }
+  
+  .placeholder-icon {
+    font-size: 2.5em;
+  }
+  
+  .placeholder-content h2 {
+    font-size: 1.3em;
+  }
+  
+  .placeholder-info {
+    min-width: 200px;
+    padding: 12px;
+  }
+  
+  .placeholder-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .placeholder-label, .placeholder-value {
+    font-size: 0.85em;
   }
 }
 
