@@ -1,0 +1,21 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "flac",
+    "libx",
+    "libvpx",
+    "libopus",
+    "libmp",
+    "libvorbis",
+    "wmav",
+    "movflags",
+    "faststart",
+    "vorbis",
+    "gifsicle",
+    "loopcount",
+    "cvtfiles"
+  ],
+  "ignoreWords": [],
+  "patterns": []
+} 
