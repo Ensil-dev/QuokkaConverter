@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
     const sampleRate = formData.get('sampleRate') as string;
     const channels = formData.get('channels') as string;
     const codec = formData.get('codec') as string;
+    const playbackSpeed = formData.get('playbackSpeed') as string;
 
     // 입력 파일 정보
     const inputExt = path.extname(file.name).slice(1).toLowerCase();
@@ -104,6 +105,7 @@ export async function POST(request: NextRequest) {
       sampleRate?: number;
       channels?: number;
       codec?: string;
+      playbackSpeed?: number;
     } = {};
     
     if (resolution && resolution !== 'original') {
@@ -132,6 +134,10 @@ export async function POST(request: NextRequest) {
     
     if (codec) {
       convertOptions.codec = codec;
+    }
+    
+    if (playbackSpeed) {
+      convertOptions.playbackSpeed = Number(playbackSpeed);
     }
 
     console.log('변환 옵션:', convertOptions);

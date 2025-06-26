@@ -150,6 +150,7 @@ export default function Home() {
       const audioQuality = (document.getElementById('audioQuality') as HTMLSelectElement)?.value;
       const imageResolution = (document.getElementById('imageResolution') as HTMLSelectElement)?.value;
       const imageQuality = (document.getElementById('imageQuality') as HTMLSelectElement)?.value;
+      const playbackSpeed = (document.getElementById('playbackSpeed') as HTMLSelectElement)?.value;
 
       if (resolution) formData.append('resolution', resolution);
       if (fps) formData.append('fps', fps);
@@ -160,6 +161,7 @@ export default function Home() {
       if (audioQuality) formData.append('quality', audioQuality);
       if (imageResolution) formData.append('resolution', imageResolution);
       if (imageQuality) formData.append('quality', imageQuality);
+      if (playbackSpeed) formData.append('playbackSpeed', playbackSpeed);
 
       setConversionProgress('변환 처리 중...');
 
@@ -281,6 +283,21 @@ export default function Home() {
                 <option value="높음">높음 (파일 크기 큼)</option>
               </select>
             </div>
+            {/* GIF 변환 시에만 재생속도 옵션 표시 */}
+            {outputFormat === 'gif' && (
+              <div className="option-row">
+                <label htmlFor="playbackSpeed">재생속도:</label>
+                <select id="playbackSpeed">
+                  <option value="1.0">1.0x (원본)</option>
+                  <option value="1.25">1.25x (빠름)</option>
+                  <option value="1.5">1.5x (더 빠름)</option>
+                  <option value="1.75">1.75x (매우 빠름)</option>
+                  <option value="2.0">2.0x (최고 속도)</option>
+                  <option value="0.75">0.75x (느림)</option>
+                  <option value="0.5">0.5x (더 느림)</option>
+                </select>
+              </div>
+            )}
           </div>
         )}
 
