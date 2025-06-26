@@ -1,314 +1,55 @@
-# 🎬 범용 파일 변환기 (Universal File Converter)
+# QuokkaConvert
 
-**무료로 사용할 수 있는 로컬 파일 변환 서비스입니다. 비디오, 오디오, 이미지 파일을 원하는 형식으로 쉽고 빠르게 변환할 수 있습니다.**
+로컬에서 무제한으로 사용가능한 범용 파일 변환 서비스입니다.
 
-![Next.js](https://img.shields.io/badge/Next.js-15.3.4-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![FFmpeg](https://img.shields.io/badge/FFmpeg-6.0-green?style=for-the-badge&logo=ffmpeg)
+## 소개
 
-## 📋 목차
+**QuokkaConvert**는 비디오, 오디오, 이미지 등 다양한 파일을 쉽고 빠르게 원하는 형식으로 변환할 수 있는 SaaS 서비스입니다. Google OAuth 기반 인증, 클라이언트 사이드 FFmpeg(wasm) 변환, 직관적인 UI/UX, 다양한 변환 옵션, 예상 크기/시간 미리보기, 강력한 보안과 비용 최적화까지 모두 갖추었습니다.
 
-- [💡 왜 만들었나요?](#-왜-만들었나요)
-- [✨ 주요 기능](#-주요-기능)
-- [🎯 언제 사용하나요?](#-언제-사용하나요)
-- [📖 사용법](#-사용법)
-- [🎯 지원 형식](#-지원-형식)
-- [🛠️ 설치 및 실행](#️-설치-및-실행)
-- [🔧 API 문서](#-api-문서)
-- [🤝 기여하기](#-기여하기)
-- [📄 라이선스](#-라이선스)
+## 주요 기능
+- 다양한 포맷(MP4, MOV, GIF, PNG, WebP, MP3, WAV 등) 상호 변환
+- Google 계정 로그인(OAuth, 허용 이메일 제한)
+- 클라이언트 사이드 FFmpeg(wasm) 기반 변환 (Vercel 등 서버리스 환경 최적화)
+- 변환 옵션: 해상도, 프레임레이트, 품질, 비트레이트, 재생속도, 오디오/이미지 세부 옵션 등
+- 변환 예상 크기/시간/출력 미리보기
+- 직관적이고 현대적인 UI/UX (Tailwind, 다크모드, 반응형, 쿼카 테마)
+- 사용량 기록, 인증 미들웨어, 보안 강화
+- 비용 최적화: 서버리스, wasm, 대용량 파일 제한, 효율적 변환
 
-## 💡 왜 만들었나요?
-
-### "무료 횟수를 다 써서 유료 결제하라고 하더라구요..."
-
-사이드프로젝트 시연영상을 GIF로 변환하려고 여러 온라인 변환 사이트를 돌아다녔는데, 무료 변환 횟수를 모두 사용하자마자 "유료 결제하세요!"라는 메시지가 나왔습니다.
-
-그래서 직접 **FFmpeg 라이브러리**를 활용해서 **완전 무료**로 사용할 수 있는 로컬 파일 변환기를 만들었습니다.
-
-### 🎯 **이 변환기의 장점**
-
-- ✅ **완전 무료** - 사용 횟수 제한 없음
-- ✅ **개인정보 보호** - 파일이 로컬에서만 처리됨
-- ✅ **빠른 변환** - 최적화된 FFmpeg 설정
-- ✅ **다양한 형식** - 비디오, 오디오, 이미지 모두 지원
-- ✅ **간편한 사용** - 드래그 앤 드롭으로 쉽게 사용
-- ✅ **제한 없음** - 100MB 파일, 5분 변환 시간 지원
-
-## ✨ 주요 기능
-
-### 🎬 **범용 파일 변환**
-
-- **비디오**: MP4, AVI, MOV, MKV, WebM, GIF, FLV, WMV, M4V, 3GP
-- **오디오**: MP3, WAV, FLAC, AAC, OGG, M4A, WMA, Opus
-- **이미지**: JPG, PNG, BMP, GIF, TIFF, WebP
-
-### 🎛️ **고급 변환 옵션**
-
-- **비디오**: 해상도, 프레임레이트, 비트레이트, 품질 설정
-- **오디오**: 샘플레이트, 채널, 비트레이트, 품질 설정
-- **이미지**: 해상도, 품질 설정
-
-### 🚀 **실시간 진행 상태**
-
-- 변환 진행 상황 실시간 표시
-- 단계별 진행 상태 피드백
-- 로딩 스피너 및 애니메이션
-
-### 📱 **반응형 디자인**
-
-- 모바일, 태블릿, 데스크톱 최적화
-- 직관적인 사용자 인터페이스
-- 드래그 앤 드롭 지원
-
-## 🎯 언제 사용하나요?
-
-### 📹 **비디오 변환**
-
-- **시연영상 GIF 변환** - 사이드프로젝트나 포트폴리오용
-- **소셜미디어용 영상** - 인스타그램, 틱톡 등에 맞는 형식
-- **압축 변환** - 용량이 큰 영상을 작게 만들기
-- **호환성 변환** - 특정 기기나 플랫폼에 맞는 형식
-
-### 🎵 **오디오 변환**
-
-- **음악 파일 변환** - MP3, WAV, FLAC 등
-- **팟캐스트 편집** - 다양한 오디오 형식 통합
-- **압축 변환** - 용량 줄이기
-- **품질 향상** - 저품질 오디오 개선
-
-### 🖼️ **이미지 변환**
-
-- **웹 최적화** - PNG를 WebP로 변환하여 로딩 속도 향상
-- **압축 변환** - 용량이 큰 이미지 압축
-- **형식 변환** - JPG, PNG, GIF 등
-- **해상도 조정** - 다양한 크기로 변환
-
-## 📖 사용법
-
-### **1. 파일 업로드**
-
-- "파일 업로드" 버튼을 클릭하거나 파일을 드래그 앤 드롭
-- 지원되는 형식의 파일을 선택
-
-### **2. 출력 형식 선택**
-
-- 파일 타입에 따라 자동으로 필터링된 출력 형식 목록에서 선택
-- 비디오, 오디오, 이미지 간 변환 지원
-
-### **3. 변환 옵션 설정**
-
-- **비디오**: 해상도, FPS, 비트레이트, 품질
-- **오디오**: 샘플레이트, 채널, 품질
-- **이미지**: 해상도, 품질
-
-### **4. 변환 실행**
-
-- "변환하기" 버튼 클릭
-- 실시간 진행 상태 확인
-- 변환 완료 후 자동 다운로드
-
-## 🎯 지원 형식
-
-### **입력 형식**
-
-| 카테고리   | 형식                                         |
-| ---------- | -------------------------------------------- |
-| **비디오** | MP4, AVI, MOV, MKV, WebM, FLV, WMV, M4V, 3GP |
-| **오디오** | MP3, WAV, FLAC, AAC, OGG, M4A, WMA, Opus     |
-| **이미지** | JPG, JPEG, PNG, BMP, GIF, TIFF, WebP, SVG    |
-
-### **출력 형식**
-
-| 카테고리   | 형식                                              |
-| ---------- | ------------------------------------------------- |
-| **비디오** | MP4, AVI, MOV, MKV, WebM, GIF, FLV, WMV, M4V, 3GP |
-| **오디오** | MP3, WAV, FLAC, AAC, OGG, M4A, WMA, Opus          |
-| **이미지** | JPG, JPEG, PNG, BMP, GIF, TIFF, WebP              |
-
-## 🛠️ 설치 및 실행
-
-### **🚀 로컬 실행 (완전 무료, 제한 없음)**
+## 로컬 실행 방법
+1. 저장소 클론 및 의존성 설치
+2. Google OAuth 클라이언트 등록 및 환경변수 설정
+3. `next-converter` 디렉토리에서 개발 서버 실행
 
 ```bash
-# 1. 저장소 클론
-git clone https://github.com/yourusername/converter_saas.git
-cd converter_saas/next-converter
-
-# 2. 한 번에 설치 및 실행
-npm run setup && npm run run-local
-
-# 3. 브라우저에서 접속
-# http://localhost:3001
-```
-
-**장점**: 
-- ✅ 완전 무료 (비용 $0)
-- ✅ 제한 없음 (100MB 파일, 5분 변환 시간)
-- ✅ 프라이버시 보호 (파일이 로컬에서만 처리)
-- ✅ 빠른 속도 (로컬 네트워크)
-- ✅ 안정성 (서버 다운타임 없음)
-
-**단점**: 
-- 설치 과정 필요
-- 외부 접근 설정 필요
-
-### **사전 요구사항**
-
-- Node.js 18.0.0 이상
-- npm 또는 yarn
-- 최소 4GB RAM (로컬 실행 시)
-- FFmpeg (자동 설치됨)
-
-### **상세 설치 과정**
-
-#### **1. 저장소 클론**
-
-```bash
-git clone https://github.com/yourusername/converter_saas.git
-cd converter_saas/next-converter
-```
-
-#### **2. 의존성 설치**
-
-```bash
+cd next-converter
 npm install
+cp env.example .env.local # 환경변수 설정
+npm run dev
 ```
 
-#### **3. 개발 서버 실행**
+## 환경변수 예시
+- `.env.local`에 Google OAuth, 허용 이메일 등 설정
 
-```bash
-# 개발 모드 (포트 3001)
-npm run run-local
-
-# 또는 프로덕션 모드
-npm run run-local-prod
+```
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+NEXTAUTH_URL=http://localhost:3000
+ALLOWED_EMAILS=your@email.com,another@email.com
 ```
 
-#### **4. 브라우저에서 접속**
+## 비용 이슈 및 최적화 방안
+- 서버리스 환경(Vercel)에서 FFmpeg 설치 불가 → ffmpeg.wasm으로 대체
+- 대용량 파일 제한(100MB), 변환 옵션별 예상 크기/시간 안내
+- 사용량 기록, 인증 제한으로 남용 방지
+- WebP 등 고효율 포맷 권장
 
-```text
-http://localhost:3001
-```
-
-#### **5. 포트 변경 (선택사항)**
-
-```bash
-# 다른 포트로 실행
-PORT=8080 npm run dev
-```
-
-### **🔧 문제 해결**
-
-#### **포트가 이미 사용 중인 경우**
-```bash
-# 다른 포트로 실행
-npm run dev -- -p 3002
-```
-
-#### **FFmpeg 오류가 발생하는 경우**
-```bash
-# 의존성 재설치
-rm -rf node_modules package-lock.json
-npm install
-```
-
-#### **메모리 부족 오류**
-- 더 작은 파일로 시도
-- 다른 프로그램 종료
-- 가상 메모리 증가
-
-## 🔧 API 문서
-
-### **POST /api/convert**
-
-파일 변환을 실행합니다.
-
-#### 요청
-
-```javascript
-const formData = new FormData();
-formData.append('file', file);
-formData.append('outputFormat', 'mp4');
-formData.append('resolution', '1920x1080');
-formData.append('quality', '높음');
-
-const response = await fetch('/api/convert', {
-  method: 'POST',
-  body: formData,
-});
-```
-
-#### 응답
-
-```javascript
-// 성공: 변환된 파일 (blob)
-const blob = await response.blob();
-
-// 실패: JSON 오류 메시지
-const error = await response.json();
-```
-
-### **GET /api/formats**
-
-지원하는 파일 형식을 반환합니다.
-
-#### 응답 예시
-
-```json
-{
-  "video": {
-    "input": ["mp4", "avi", "mov", ...],
-    "output": ["mp4", "avi", "mov", ...]
-  },
-  "audio": {
-    "input": ["mp3", "wav", "flac", ...],
-    "output": ["mp3", "wav", "flac", ...]
-  },
-  "image": {
-    "input": ["jpg", "png", "gif", ...],
-    "output": ["jpg", "png", "gif", ...]
-  }
-}
-```
-
-## 🤝 기여하기
-
-### **버그 리포트**
-
-1. GitHub Issues에서 버그 리포트 생성
-2. 상세한 재현 단계 포함
-3. 브라우저 및 OS 정보 제공
-
-### **기능 제안**
-
-1. GitHub Discussions에서 제안
-2. 사용 사례 및 요구사항 명시
-3. 커뮤니티 피드백 수집
-
-### **코드 기여**
-
-1. Fork 후 브랜치 생성
-2. 기능 개발 및 테스트
-3. Pull Request 생성
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 🙏 감사의 말
-
-- **FFmpeg** - 강력한 미디어 변환 엔진
-- **Next.js** - 현대적인 React 프레임워크
-- **Vercel** - 서버리스 배포 플랫폼
-- **커뮤니티** - 피드백과 기여
+## 사용자 가치
+- 누구나 쉽고 빠르게 다양한 파일 변환 가능
+- 쿼카처럼 친근한 UI/UX와 강력한 기능
+- Google 계정 기반 안전한 접근
+- 무료/저비용으로 서버리스 환경에서 운영 가능
 
 ---
 
-### ⭐ 이 프로젝트가 도움이 되었다면 스타를 눌러주세요
-
-### 🔗 관련 링크
-
-- [라이브 데모](https://your-demo-url.vercel.app)
-- [기술 문서](https://your-docs-url.com)
-- [변경 로그](CHANGELOG.md)
+QuokkaConvert와 함께 쉽게 파일을 변환하세요! 🦘🐨
