@@ -79,7 +79,7 @@ export default function SignIn() {
         style={{ marginBottom: '10px'}}
       >
         <img
-          src="/quokka-favicon.svg"
+          src="/apple-touch-icon.png"
           alt="QuokkaConvert"
           style={{ width: 64, height: 64 }}
         />

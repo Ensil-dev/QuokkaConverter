@@ -641,17 +641,17 @@ export default function Home() {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 font-sans">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 font-sans max-w-[400px] min-w-[340px]">
         {/* QuokkaConvert 로고 */}
         <div
           onClick={handleGoogleLogin}
           className="flex items-center gap-3 cursor-pointer"
-          style={{ marginBottom: '10px'}}
+          style={{ marginBottom: '10px' }}
         >
           <img
-            src="/quokka-favicon.svg"
+            src="/apple-touch-icon.png"
             alt="QuokkaConvert"
-            style={{ width: 64, height: 64 }}
+            style={{ width: 64, height: 64, marginRight: 8 }}
           />
           <span className="text-2xl font-bold text-gray-900">
             QuokkaConvert
@@ -659,8 +659,13 @@ export default function Home() {
         </div>
         {/* 카드 */}
         <div
-          className="w-full max-w-sm bg-white rounded-2xl shadow-lg flex flex-col items-center gap-8"
-          style={{ padding: '30px', marginTop: 0 }} // mt-24 제거, 위에서 20px만 띄움
+          className="w-full max-w-[400px] min-w-[340px] bg-white rounded-2xl shadow-lg flex flex-col items-center gap-4"
+          style={{
+            padding: '10px',
+            marginTop: 0,
+            maxWidth: '400px',
+            minWidth: '320px',
+          }}
         >
           <button
             type="button"
@@ -676,11 +681,11 @@ export default function Home() {
   }
 
   return (
-    <div className="container" suppressHydrationWarning={true}>
+    <div className="container max-w-[400px] min-w-[340px]" suppressHydrationWarning={true}>
       {/* 헤더 */}
       <div className="header">
         <div className="header-content">
-          <h1>범용 파일 변환기</h1>
+          <h1>QuokkaConvert</h1>
           <div className="user-info">
             <span className="user-email">{session.user?.email}</span>
             <button onClick={() => signOut()} className="logout-btn">
@@ -709,6 +714,7 @@ export default function Home() {
             id="fileInput"
             onChange={handleFileUpload}
             required
+            style={{ minWidth: '340px' }}
           />
           <p className="file-limit-note">
             최대 파일 크기: 100MB (로컬 실행 제한)
@@ -738,6 +744,7 @@ export default function Home() {
             value={outputFormat}
             onChange={(e) => setOutputFormat(e.target.value)}
             required
+            style={{ minWidth: '340px' }}
           >
             <option value="">변환할 형식을 선택하세요</option>
             {availableFormats.map((format, index) => (
@@ -804,6 +811,7 @@ export default function Home() {
                 id="resolution"
                 value={resolution}
                 onChange={(e) => setResolution(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="original">원본</option>
                 <option value="640x360">640x360</option>
@@ -820,6 +828,7 @@ export default function Home() {
                 onChange={(e) => setFps(Number(e.target.value))}
                 min="1"
                 max="60"
+                style={{ minWidth: '340px' }}
               />
             </div>
             {/* GIF 변환 시에는 비트레이트 옵션 숨김 */}
@@ -830,6 +839,7 @@ export default function Home() {
                   id="bitrate"
                   value={bitrate}
                   onChange={(e) => setBitrate(e.target.value)}
+                  style={{ minWidth: '340px' }}
                 >
                   <option value="">자동</option>
                   <option value="1000k">1000k</option>
@@ -844,6 +854,7 @@ export default function Home() {
                 id="videoQuality"
                 value={videoQuality}
                 onChange={(e) => setVideoQuality(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="보통">보통</option>
                 <option value="낮음">낮음 (파일 크기 작음)</option>
@@ -868,6 +879,7 @@ export default function Home() {
                 id="sampleRate"
                 value={sampleRate}
                 onChange={(e) => setSampleRate(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="">원본</option>
                 <option value="22050">22050 Hz</option>
@@ -881,6 +893,7 @@ export default function Home() {
                 id="channels"
                 value={channels}
                 onChange={(e) => setChannels(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="">원본</option>
                 <option value="1">모노</option>
@@ -893,6 +906,7 @@ export default function Home() {
                 id="audioQuality"
                 value={audioQuality}
                 onChange={(e) => setAudioQuality(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="보통">보통</option>
                 <option value="낮음">낮음 (파일 크기 작음)</option>
@@ -912,6 +926,7 @@ export default function Home() {
                 id="imageResolution"
                 value={imageResolution}
                 onChange={(e) => setImageResolution(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="original">원본</option>
                 <option value="800x600">800x600</option>
@@ -925,6 +940,7 @@ export default function Home() {
                 id="imageQuality"
                 value={imageQuality}
                 onChange={(e) => setImageQuality(e.target.value)}
+                style={{ minWidth: '340px' }}
               >
                 <option value="보통">보통</option>
                 <option value="낮음">낮음 (파일 크기 작음)</option>
@@ -939,6 +955,7 @@ export default function Home() {
           disabled={
             isConverting || !isConversionSupported(fileType, outputFormat)
           }
+          style={{ minWidth: '340px' }}
         >
           {isConverting ? '변환 중...' : '변환하기'}
         </button>
@@ -1123,7 +1140,7 @@ export default function Home() {
             <p>파일 크기: {result.size} MB</p>
             <p>출력 형식: {outputFormat.toUpperCase()}</p>
           </div>
-          <button onClick={handleDownload} className="download-btn">
+          <button onClick={handleDownload} className="download-btn" style={{ minWidth: '340px' }}>
             파일 다운로드
           </button>
         </div>

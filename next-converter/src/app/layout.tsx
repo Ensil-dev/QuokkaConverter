@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     site: "@your_twitter",
   },
   icons: {
-    icon: "/quokka-favicon.svg",
+    icon: "/apple-touch-icon.png",
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
