@@ -1,0 +1,13 @@
+{
+  "name": "cvtfiles-next",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "next start"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "1.4.4"
+  }
+}
