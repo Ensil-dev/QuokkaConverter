@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>범용 파일 변환 SaaS</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,7 +15,7 @@
       <div class="file-section">
         <label for="fileInput">파일 업로드:</label>
         <input type="file" id="fileInput" required />
-        <div id="fileInfo" class="file-info" style="display:none;"></div>
+        <div id="fileInfo" class="file-info" style="display: none;"></div>
       </div>
 
       <div class="format-section">
@@ -25,7 +26,7 @@
       </div>
 
       <!-- 비디오 옵션 -->
-      <div id="videoOptions" class="options-section" style="display:none;">
+      <div id="videoOptions" class="options-section" style="display: none;">
         <h3>비디오 설정</h3>
         <div class="option-row">
           <label for="resolution">해상도:</label>
@@ -60,7 +61,7 @@
       </div>
 
       <!-- 오디오 옵션 -->
-      <div id="audioOptions" class="options-section" style="display:none;">
+      <div id="audioOptions" class="options-section" style="display: none;">
         <h3>오디오 설정</h3>
         <div class="option-row">
           <label for="sampleRate">샘플레이트:</label>
@@ -90,7 +91,7 @@
       </div>
 
       <!-- 이미지 옵션 -->
-      <div id="imageOptions" class="options-section" style="display:none;">
+      <div id="imageOptions" class="options-section" style="display: none;">
         <h3>이미지 설정</h3>
         <div class="option-row">
           <label for="imageResolution">해상도:</label>
@@ -114,13 +115,13 @@
       <button type="submit" id="convertBtn">변환하기</button>
     </form>
 
-    <div id="result" style="display:none;">
+    <div id="result" style="display: none;">
       <h2>변환 결과</h2>
       <div id="resultInfo"></div>
       <a id="downloadLink" href="#" download class="download-btn">파일 다운로드</a>
     </div>
 
-    <div id="error" style="display:none;" class="error-message">
+    <div id="error" style="display: none;" class="error-message">
       <h3>오류 발생</h3>
       <p id="errorMessage"></p>
     </div>
