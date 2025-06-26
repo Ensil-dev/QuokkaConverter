@@ -5,6 +5,7 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
 import { FaSpinner } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
 
 interface ConversionResult {
   url: string;
@@ -461,14 +462,22 @@ export default function Home() {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">로그인이 필요합니다</h1>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 font-sans">
+        {/* Google 로고 */}
+        <div className="mb-8">
+          <FcGoogle className="mx-auto" size={64} />
+          <span className='text-5xl font-bold text-gray-900 text-center mb-2'>QuokkaConvert</span>
+        </div>
+        {/* 카드 */}
+        <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-10 flex flex-col items-center gap-8">
+          <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">Google 계정으로 로그인</h1>
           <button
+            type="button"
             onClick={() => signIn('google')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-800 font-semibold rounded-lg py-3 text-lg shadow hover:shadow-md transition"
           >
-            Google로 로그인
+            <FcGoogle size={24} />
+            <span>Google로 로그인</span>
           </button>
         </div>
       </div>
