@@ -17,16 +17,25 @@ const convertBtn = document.getElementById('convertBtn');
 async function loadSupportedFormats() {
   try {
     const response = await fetch('/api/formats');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     supportedFormats = await response.json();
     populateOutputFormats();
   } catch (error) {
     console.error('포맷 정보 로드 실패:', error);
+    showError('지원하는 포맷 정보를 불러올 수 없습니다. 페이지를 새로고침해주세요.');
   }
 }
 
 // 출력 형식 옵션 채우기
 function populateOutputFormats() {
   outputFormatSelect.innerHTML = '<option value="">변환할 형식을 선택하세요</option>';
+  
+  if (!supportedFormats.video || !supportedFormats.audio || !supportedFormats.image) {
+    console.error('지원하는 포맷 정보가 올바르지 않습니다.');
+    return;
+  }
   
   // 모든 지원하는 출력 형식을 추가
   const allFormats = [
@@ -47,11 +56,11 @@ function populateOutputFormats() {
 function detectFileType(filename) {
   const ext = filename.split('.').pop().toLowerCase();
   
-  if (supportedFormats.video.input.includes(ext)) {
+  if (supportedFormats.video?.input?.includes(ext)) {
     return 'video';
-  } else if (supportedFormats.audio.input.includes(ext)) {
+  } else if (supportedFormats.audio?.input?.includes(ext)) {
     return 'audio';
-  } else if (supportedFormats.image.input.includes(ext)) {
+  } else if (supportedFormats.image?.input?.includes(ext)) {
     return 'image';
   }
   
@@ -72,6 +81,9 @@ function showFileInfo(file) {
   
   // 파일 타입에 따라 적절한 출력 형식 필터링
   filterOutputFormats(fileType);
+  
+  // 파일 타입에 따라 옵션 섹션 표시
+  showOptionsForType(fileType);
 }
 
 // 출력 형식 필터링
@@ -181,7 +193,7 @@ async function convertFile(file, options) {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => ({ message: '알 수 없는 오류가 발생했습니다.' }));
       throw new Error(errorData.message || '변환 실패');
     }
     
@@ -205,14 +217,14 @@ async function convertFile(file, options) {
     
   } catch (error) {
     console.error('변환 오류:', error);
-    showError(error.message);
+    showError(error.message || '파일 변환 중 오류가 발생했습니다.');
   } finally {
     convertBtn.disabled = false;
     convertBtn.textContent = '변환하기';
   }
 }
 
-// 오류 표시
+// 오류 메시지 표시
 function showError(message) {
   const errorMessage = document.getElementById('errorMessage');
   errorMessage.textContent = message;
@@ -220,43 +232,46 @@ function showError(message) {
   resultDiv.style.display = 'none';
 }
 
-// 이벤트 리스너들
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    showFileInfo(file);
-  } else {
-    fileInfo.style.display = 'none';
-  }
-});
-
-outputFormatSelect.addEventListener('change', (e) => {
-  const selectedFormat = e.target.value;
-  if (selectedFormat) {
-    const outputType = detectFileType(`file.${selectedFormat}`);
-    showOptionsForType(outputType);
-  }
-});
-
-convertForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const file = fileInput.files[0];
-  if (!file) {
-    showError('파일을 선택해주세요.');
-    return;
-  }
-  
-  if (!outputFormatSelect.value) {
-    showError('출력 형식을 선택해주세요.');
-    return;
-  }
-  
-  const options = collectConversionOptions();
-  await convertFile(file, options);
-});
-
-// 페이지 로드 시 초기화
+// 이벤트 리스너 등록
 document.addEventListener('DOMContentLoaded', () => {
+  // 지원하는 포맷 정보 로드
   loadSupportedFormats();
+  
+  // 파일 선택 이벤트
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      showFileInfo(file);
+    } else {
+      fileInfo.style.display = 'none';
+    }
+  });
+  
+  // 폼 제출 이벤트
+  convertForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const file = fileInput.files[0];
+    if (!file) {
+      showError('파일을 선택해주세요.');
+      return;
+    }
+    
+    if (!outputFormatSelect.value) {
+      showError('출력 형식을 선택해주세요.');
+      return;
+    }
+    
+    const options = collectConversionOptions();
+    await convertFile(file, options);
+  });
+  
+  // 출력 형식 변경 이벤트
+  outputFormatSelect.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const fileType = detectFileType(file.name);
+      showOptionsForType(fileType);
+    }
+  });
 });
