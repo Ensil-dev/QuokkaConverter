@@ -79,4 +79,4 @@ sudo npm run dev
 ```bash
 # Node.js 메모리 제한 증가
 NODE_OPTIONS="--max-old-space-size=4096" npm run dev
-``` 
+```

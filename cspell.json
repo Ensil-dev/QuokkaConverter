@@ -2,21 +2,21 @@
   "version": "0.2",
   "language": "en",
   "words": [
-    "cvtfiles",
-    "faststart",
     "flac",
-    "gifsicle",
-    "libmp",
-    "libopus",
-    "libvorbis",
-    "libvpx",
     "libx",
-    "loopcount",
+    "libvpx",
+    "libopus",
+    "libmp",
+    "libvorbis",
+    "wmav",
     "movflags",
-    "vercel",
+    "faststart",
     "vorbis",
-    "wmav"
+    "gifsicle",
+    "loopcount",
+    "cvtfiles",
+    "vercel"
   ],
   "ignoreWords": [],
   "patterns": []
-}
+} 
