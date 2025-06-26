@@ -504,22 +504,33 @@ function convertImage(inputPath, outputPath, options = {}) {
 function convertToGif(inputPath, outputPath, options = {}) {
   const {
     resolution,
-    fps = 10
+    fps = 10,
+    playbackSpeed = 1.0
   } = options;
 
   console.log('GIF 변환 시작:', { inputPath, outputPath, options });
 
   const ffmpegPath = checkFFmpeg();
-  let filters = '';
-  if (resolution && resolution !== 'original') {
-    filters = `scale=${resolution}`;
+  let filters = [];
+  
+  // 재생속도 조절 (setpts 필터 사용)
+  if (playbackSpeed !== 1.0) {
+    filters.push(`setpts=${1/playbackSpeed}*PTS`);
   }
+  
+  // 해상도 조절
+  if (resolution && resolution !== 'original') {
+    filters.push(`scale=${resolution}`);
+  }
+  
+  // 필터 체인 구성
+  const filterChain = filters.length > 0 ? filters.join(',') : '';
 
   // FFmpeg로 GIF 생성 (최적화된 설정)
   const ffmpegArgs = [
     '-i', inputPath,
     '-r', String(fps),
-    ...(filters ? ['-vf', filters] : []),
+    ...(filterChain ? ['-vf', filterChain] : []),
     '-f', 'gif',
     '-an', // 오디오 제거
     '-loop', '0',
