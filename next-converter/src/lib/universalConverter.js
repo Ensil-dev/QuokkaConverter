@@ -304,6 +304,12 @@ function convertAudio(inputPath, outputPath, options = {}) {
   // 오디오 코덱 설정
   args.push('-c:a', selectedCodec);
 
+  // M4A/AAC 컨테이너에 대한 추가 설정
+  if (outputExt === '.m4a' || outputExt === '.aac') {
+    // M4A 컨테이너에 맞는 설정
+    args.push('-f', 'mp4');
+  }
+
   // 비트레이트 설정 (일부 코덱에서는 무시될 수 있음)
   if (bitrate) {
     args.push('-b:a', bitrate);
