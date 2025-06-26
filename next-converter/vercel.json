@@ -1,7 +1,8 @@
 {
+  "_comment": "로컬 실행 전용 설정 - Vercel 배포 시 사용",
   "functions": {
     "src/app/api/convert/route.ts": {
-      "maxDuration": 30
+      "maxDuration": 300
     }
   },
   "headers": [
@@ -15,4 +16,4 @@
       ]
     }
   ]
-} 
+}

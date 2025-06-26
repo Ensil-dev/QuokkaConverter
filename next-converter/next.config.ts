@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
-    optimizePackageImports: ['@ffmpeg-installer/ffmpeg']
+    optimizePackageImports: ['@ffmpeg-installer/ffmpeg'],
+    serverComponentsExternalPackages: ['ffmpeg-static']
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -15,6 +16,9 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  env: {
+    PORT: process.env.PORT || '3001'
+  }
 };
 
 export default nextConfig;

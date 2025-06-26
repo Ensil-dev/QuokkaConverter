@@ -666,7 +666,7 @@ export default function Home() {
             onChange={handleFileChange}
             required 
           />
-          <p className="file-limit-note">최대 파일 크기: 100MB</p>
+          <p className="file-limit-note">최대 파일 크기: 100MB (로컬 실행 제한)</p>
           {selectedFile && (
             <div className="file-info">
               <p><strong>파일명:</strong> {selectedFile.name}</p>
