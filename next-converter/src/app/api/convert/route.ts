@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { auth } from '@/auth';
 import { convertFile, SUPPORTED_FORMATS } from '@/lib/universalConverter';
 
 // 비용 제어를 위한 제한 설정
@@ -36,6 +37,27 @@ function logUsage(fileSize: number) {
 // 파일 변환 API
 export async function POST(request: NextRequest) {
   try {
+    // 인증 확인
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json(
+        { error: '인증이 필요합니다. 로그인해주세요.' },
+        { status: 401 }
+      );
+    }
+
+    // 허용된 사용자 확인
+    const allowedEmails = process.env.ALLOWED_EMAILS?.split(",").map(email => email.trim()) || [];
+    if (allowedEmails.length > 0 && session.user?.email && !allowedEmails.includes(session.user.email)) {
+      console.log(`접근 거부: ${session.user.email}`);
+      return NextResponse.json(
+        { error: '접근 권한이 없습니다.' },
+        { status: 403 }
+      );
+    }
+
+    console.log(`변환 요청: ${session.user?.email}`);
+
     // FormData 파싱
     const formData = await request.formData();
     const file = formData.get('file') as File;

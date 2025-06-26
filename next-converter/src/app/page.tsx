@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { useAuth } from '@/lib/auth';
+import { signOut } from 'next-auth/react';
 
 interface SupportedFormats {
   video: { input: string[]; output: string[] };
@@ -15,6 +17,7 @@ interface ConversionResult {
 }
 
 export default function Home() {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [supportedFormats, setSupportedFormats] = useState<SupportedFormats | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
@@ -44,6 +47,53 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
+  // 인증 상태 확인
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      window.location.href = '/auth/signin';
+    }
+  }, [isAuthenticated, isLoading]);
+
+  // 출력 형식 필터링
+  const filterOutputFormats = (inputType: string) => {
+    if (!supportedFormats) return;
+    
+    const filteredFormats: string[] = [];
+    
+    // 같은 타입 내 변환
+    if (inputType === 'video') {
+      filteredFormats.push(...supportedFormats.video.output);
+    } else if (inputType === 'audio') {
+      filteredFormats.push(...supportedFormats.audio.output);
+    } else if (inputType === 'image') {
+      filteredFormats.push(...supportedFormats.image.output);
+    }
+    
+    // 비디오에서 이미지/오디오 추출 (실제로 지원하는 조합만)
+    if (inputType === 'video') {
+      // 비디오에서 이미지 추출 (첫 프레임)
+      filteredFormats.push('jpg', 'png', 'webp');
+      // 비디오에서 오디오 추출
+      filteredFormats.push('mp3', 'aac', 'wav');
+    }
+    
+    // 중복 제거 및 정렬
+    const uniqueFormats = Array.from(new Set(filteredFormats)).sort();
+    setAvailableFormats(uniqueFormats);
+  };
+
+  // 출력 형식 초기화
+  const populateOutputFormats = (formats: SupportedFormats) => {
+    const allFormats = [
+      ...formats.video.output,
+      ...formats.audio.output,
+      ...formats.image.output
+    ];
+    // 중복 제거
+    const uniqueFormats = Array.from(new Set(allFormats));
+    setAvailableFormats(uniqueFormats);
+  };
+
   const loadSupportedFormats = useCallback(async () => {
     try {
       const response = await fetch('/api/formats');
@@ -61,8 +111,10 @@ export default function Home() {
 
   // 지원하는 포맷 정보 로드
   useEffect(() => {
-    loadSupportedFormats();
-  }, [loadSupportedFormats]);
+    if (isAuthenticated) {
+      loadSupportedFormats();
+    }
+  }, [loadSupportedFormats, isAuthenticated]);
 
   // 슬라이더 초기 색상 설정
   useEffect(() => {
@@ -72,16 +124,17 @@ export default function Home() {
     }
   }, [outputFormat]);
 
-  const populateOutputFormats = (formats: SupportedFormats) => {
-    const allFormats = [
-      ...formats.video.output,
-      ...formats.audio.output,
-      ...formats.image.output
-    ];
-    // 중복 제거
-    const uniqueFormats = Array.from(new Set(allFormats));
-    setAvailableFormats(uniqueFormats);
-  };
+  // 로딩 중이거나 인증되지 않은 경우 로딩 화면 표시
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   // 파일 타입 감지
   const detectFileType = (filename: string): string | null => {
@@ -139,34 +192,6 @@ export default function Home() {
       setOutputFormat('');
       setError(null);
     }
-  };
-
-  // 출력 형식 필터링
-  const filterOutputFormats = (inputType: string) => {
-    if (!supportedFormats) return;
-    
-    const filteredFormats: string[] = [];
-    
-    // 같은 타입 내 변환
-    if (inputType === 'video') {
-      filteredFormats.push(...supportedFormats.video.output);
-    } else if (inputType === 'audio') {
-      filteredFormats.push(...supportedFormats.audio.output);
-    } else if (inputType === 'image') {
-      filteredFormats.push(...supportedFormats.image.output);
-    }
-    
-    // 비디오에서 이미지/오디오 추출 (실제로 지원하는 조합만)
-    if (inputType === 'video') {
-      // 비디오에서 이미지 추출 (첫 프레임)
-      filteredFormats.push('jpg', 'png', 'webp');
-      // 비디오에서 오디오 추출
-      filteredFormats.push('mp3', 'aac', 'wav');
-    }
-    
-    // 중복 제거 및 정렬
-    const uniqueFormats = Array.from(new Set(filteredFormats)).sort();
-    setAvailableFormats(uniqueFormats);
   };
 
   // 변환 조합이 지원되는지 확인
@@ -652,11 +677,26 @@ export default function Home() {
   };
 
   return (
-    <div className="container" suppressHydrationWarning={true}>
-      <h1>범용 파일 변환기</h1>
+    <div className="container">
+      {/* 헤더 영역 */}
+      <div className="header">
+        <div className="header-content">
+          <h1>범용 파일 변환기</h1>
+          <div className="user-info">
+            <span className="user-email">{user?.email}</span>
+            <button 
+              onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+              className="logout-btn"
+            >
+              로그아웃
+            </button>
+          </div>
+        </div>
+      </div>
+
       <p className="subtitle">비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요</p>
       
-      <form ref={formRef} onSubmit={handleSubmit}>
+      <form ref={formRef} onSubmit={handleSubmit} className="converter-form">
         <div className="file-section">
           <label htmlFor="fileInput">파일 업로드:</label>
           <input 
@@ -847,8 +887,8 @@ export default function Home() {
           {isConverting ? '변환 중...' : '변환하기'}
         </button>
         
-        {/* 지원하지 않는 변환 조합 안내 */}
-        {outputFormat && !isConversionSupported(fileType, outputFormat) && (
+        {/* 지원하지 않는 변환 조합 안내 - 포맷을 선택했을 때만 표시 */}
+        {outputFormat && fileType && !isConversionSupported(fileType, outputFormat) && (
           <div className="warning-message">
             <p>⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을 선택해주세요.</p>
           </div>

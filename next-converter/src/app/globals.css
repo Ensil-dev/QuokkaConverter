@@ -60,16 +60,57 @@ a {
   border: 1px solid var(--border-color);
 }
 
-h1 {
-  text-align: center;
-  color: var(--foreground);
-  margin-bottom: 10px;
-  font-size: 2.5em;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* 헤더 스타일 */
+.header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 2.2em;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--gray-alpha-100);
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 1px solid var(--border-color);
+}
+
+.user-email {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background: var(--error-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
 }
 
 .subtitle {
