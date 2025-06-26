@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -16,10 +16,20 @@ interface ConversionResult {
 // 파일 타입 감지
 const detectFileType = (filename: string) => {
   const ext = filename.split('.').pop()?.toLowerCase();
-  const videoExts = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', '3gp', 'm4v'];
+  const videoExts = [
+    'mp4',
+    'avi',
+    'mov',
+    'mkv',
+    'webm',
+    'flv',
+    'wmv',
+    '3gp',
+    'm4v',
+  ];
   const audioExts = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'];
   const imageExts = ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'tiff'];
-  
+
   if (videoExts.includes(ext || '')) return 'video';
   if (audioExts.includes(ext || '')) return 'audio';
   if (imageExts.includes(ext || '')) return 'image';
@@ -27,7 +37,8 @@ const detectFileType = (filename: string) => {
 };
 
 function isInAppBrowser() {
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
+  const ua =
+    typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
   return (
     ua.includes('kakaotalk') ||
     ua.includes('naver') ||
@@ -40,11 +51,13 @@ function redirectToExternalBrowser() {
   alert(
     '카카오톡 등 인앱 브라우저에서는 Google 로그인이 지원되지 않습니다. 크롬 또는 사파리 브라우저로 열어주세요.'
   );
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
+  const ua =
+    typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
   if (ua.includes('iphone') || ua.includes('ipad')) {
     window.location.href = 'x-web-search://www.quokkaconvert.com';
   } else {
-    window.location.href = 'intent://www.quokkaconvert.com#Intent;scheme=https;package=com.android.chrome;end';
+    window.location.href =
+      'intent://www.quokkaconvert.com#Intent;scheme=https;package=com.android.chrome;end';
   }
 }
 
@@ -69,23 +82,23 @@ export default function Home() {
   const [error, setError] = useState('');
   const [ffmpeg, setFfmpeg] = useState<FFmpeg | null>(null);
   const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
-  
+
   // 비디오 설정 옵션들 상태 관리
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [resolution, setResolution] = useState('original');
   const [fps, setFps] = useState(10);
   const [bitrate, setBitrate] = useState('');
   const [videoQuality, setVideoQuality] = useState('보통');
-  
+
   // 오디오 설정 옵션들 상태 관리
   const [sampleRate, setSampleRate] = useState('');
   const [channels, setChannels] = useState('');
   const [audioQuality, setAudioQuality] = useState('보통');
-  
+
   // 이미지 설정 옵션들 상태 관리
   const [imageResolution, setImageResolution] = useState('original');
   const [imageQuality, setImageQuality] = useState('보통');
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -96,7 +109,10 @@ export default function Home() {
         const ffmpegInstance = new FFmpeg();
         await ffmpegInstance.load({
           coreURL: await toBlobURL('/ffmpeg/ffmpeg-core.js', 'text/javascript'),
-          wasmURL: await toBlobURL('/ffmpeg/ffmpeg-core.wasm', 'application/wasm'),
+          wasmURL: await toBlobURL(
+            '/ffmpeg/ffmpeg-core.wasm',
+            'application/wasm'
+          ),
         });
         setFfmpeg(ffmpegInstance);
         setIsFFmpegLoaded(true);
@@ -121,16 +137,36 @@ export default function Home() {
   // 출력 형식 필터링
   const filterOutputFormats = (inputType: string) => {
     const filteredFormats: string[] = [];
-    
+
     // 같은 타입 내 변환
     if (inputType === 'video') {
-      filteredFormats.push('mp4', 'avi', 'mov', 'mkv', 'webm', 'gif', 'flv', 'wmv', 'm4v', '3gp');
+      filteredFormats.push(
+        'mp4',
+        'avi',
+        'mov',
+        'mkv',
+        'webm',
+        'gif',
+        'flv',
+        'wmv',
+        'm4v',
+        '3gp'
+      );
     } else if (inputType === 'audio') {
-      filteredFormats.push('mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus');
+      filteredFormats.push(
+        'mp3',
+        'wav',
+        'flac',
+        'aac',
+        'ogg',
+        'm4a',
+        'wma',
+        'opus'
+      );
     } else if (inputType === 'image') {
       filteredFormats.push('jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp');
     }
-    
+
     // 비디오에서 이미지/오디오 추출 (실제로 지원하는 조합만)
     if (inputType === 'video') {
       // 비디오에서 이미지 추출 (첫 프레임)
@@ -138,149 +174,202 @@ export default function Home() {
       // 비디오에서 오디오 추출
       filteredFormats.push('mp3', 'aac', 'wav');
     }
-    
+
     // 중복 제거 및 정렬
     const uniqueFormats = Array.from(new Set(filteredFormats)).sort();
     setAvailableFormats(uniqueFormats);
   };
 
   // 변환 조합이 지원되는지 확인
-  const isConversionSupported = (inputType: string | null, outputFormat: string): boolean => {
+  const isConversionSupported = (
+    inputType: string | null,
+    outputFormat: string
+  ): boolean => {
     if (!inputType || !outputFormat) return false;
-    
+
     // 같은 타입 내 변환은 항상 지원
-    if (inputType === 'video' && ['mp4', 'avi', 'mov', 'mkv', 'webm', 'gif', 'flv', 'wmv', 'm4v', '3gp'].includes(outputFormat)) {
+    if (
+      inputType === 'video' &&
+      [
+        'mp4',
+        'avi',
+        'mov',
+        'mkv',
+        'webm',
+        'gif',
+        'flv',
+        'wmv',
+        'm4v',
+        '3gp',
+      ].includes(outputFormat)
+    ) {
       return true;
     }
-    if (inputType === 'audio' && ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'].includes(outputFormat)) {
+    if (
+      inputType === 'audio' &&
+      ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'].includes(
+        outputFormat
+      )
+    ) {
       return true;
     }
-    if (inputType === 'image' && ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp'].includes(outputFormat)) {
+    if (
+      inputType === 'image' &&
+      ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp'].includes(
+        outputFormat
+      )
+    ) {
       return true;
     }
-    
+
     // 비디오에서 이미지/오디오 추출
-    if (inputType === 'video' && ['jpg', 'png', 'webp', 'mp3', 'aac', 'wav'].includes(outputFormat)) {
+    if (
+      inputType === 'video' &&
+      ['jpg', 'png', 'webp', 'mp3', 'aac', 'wav'].includes(outputFormat)
+    ) {
       return true;
     }
-    
+
     return false;
   };
 
   // 파일 업로드 처리
-  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      // 파일 크기 제한 검증 (100MB)
-      const maxSize = 100 * 1024 * 1024; // 100MB
-      if (selectedFile.size > maxSize) {
-        setError('파일 크기가 너무 큽니다. 100MB 이하의 파일을 선택해주세요.');
+  const handleFileUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFile = e.target.files?.[0];
+      if (selectedFile) {
+        // 파일 크기 제한 검증 (100MB)
+        const maxSize = 100 * 1024 * 1024; // 100MB
+        if (selectedFile.size > maxSize) {
+          setError(
+            '파일 크기가 너무 큽니다. 100MB 이하의 파일을 선택해주세요.'
+          );
+          setFile(null);
+          setFileType(null);
+          setOutputFormat('');
+          return;
+        }
+
+        setFile(selectedFile);
+        const detectedType = detectFileType(selectedFile.name);
+
+        if (detectedType === 'unknown') {
+          setError('지원하지 않는 파일 형식입니다. 다른 파일을 선택해주세요.');
+          setFile(null);
+          setFileType(null);
+          setOutputFormat('');
+          return;
+        }
+
+        setFileType(detectedType);
+        setError('');
+        setConvertedFile(null);
+        setResult(null);
+
+        // 파일 타입에 따라 출력 형식 필터링
+        if (detectedType) {
+          filterOutputFormats(detectedType);
+        }
+      } else {
         setFile(null);
         setFileType(null);
         setOutputFormat('');
-        return;
+        setError('');
+        setConvertedFile(null);
+        setResult(null);
       }
-      
-      setFile(selectedFile);
-      const detectedType = detectFileType(selectedFile.name);
-      
-      if (detectedType === 'unknown') {
-        setError('지원하지 않는 파일 형식입니다. 다른 파일을 선택해주세요.');
-        setFile(null);
-        setFileType(null);
-        setOutputFormat('');
-        return;
-      }
-      
-      setFileType(detectedType);
-      setError('');
-      setConvertedFile(null);
-      setResult(null);
-      
-      // 파일 타입에 따라 출력 형식 필터링
-      if (detectedType) {
-        filterOutputFormats(detectedType);
-      }
-    } else {
-      setFile(null);
-      setFileType(null);
-      setOutputFormat('');
-      setError('');
-      setConvertedFile(null);
-      setResult(null);
-    }
-  }, []);
+    },
+    []
+  );
 
   // 파일 변환 (클라이언트 사이드에서만 동작)
-  const convertFile = useCallback(async (inputFile: File, targetFormat: string, options: Record<string, unknown> = {}) => {
-    if (!ffmpeg || !isFFmpegLoaded) {
-      throw new Error('FFmpeg가 로드되지 않았습니다.');
-    }
-
-    try {
-      const inputExt = inputFile.name.split('.').pop()?.toLowerCase() || '';
-      const inputFileName = `input.${inputExt}`;
-      const outputFileName = `output.${targetFormat}`;
-
-      // 파일을 FFmpeg에 로드
-      const arrayBuffer = await inputFile.arrayBuffer();
-      await ffmpeg.writeFile(inputFileName, new Uint8Array(arrayBuffer));
-
-      // 변환 명령어 생성
-      const args = ['-i', inputFileName];
-
-      // 비디오 옵션 처리
-      if (options.resolution && options.resolution !== 'original') {
-        args.push('-vf', `scale=${options.resolution}:flags=fast_bilinear`);
+  const convertFile = useCallback(
+    async (
+      inputFile: File,
+      targetFormat: string,
+      options: Record<string, unknown> = {}
+    ) => {
+      if (!ffmpeg || !isFFmpegLoaded) {
+        throw new Error('FFmpeg가 로드되지 않았습니다.');
       }
 
-      if (options.fps) {
-        args.push('-r', String(options.fps));
-      }
-
-      if (options.bitrate) {
-        args.push('-b:v', options.bitrate as string);
-      }
-
-      // 품질 설정
-      if (options.quality) {
-        const qualityMap: Record<string, number> = { '낮음': 28, '보통': 23, '높음': 18 };
-        const qualityValue = qualityMap[options.quality as string];
-        if (qualityValue !== undefined) {
-          args.push('-crf', String(qualityValue));
-        }
-      }
-
-      // 재생속도 설정
-      if (options.playbackSpeed && options.playbackSpeed !== 1) {
-        args.push('-filter:v', `setpts=${1/(options.playbackSpeed as number)}*PTS`);
-      }
-
-      // 출력 파일
-      args.push(outputFileName);
-
-      console.log('FFmpeg 명령어:', args.join(' '));
-
-      // 변환 실행
-      await ffmpeg.exec(args);
-
-      // 결과 파일 읽기
-      const outputData = await ffmpeg.readFile(outputFileName);
-      
-      // 임시 파일 정리
       try {
-        await ffmpeg.deleteFile(inputFileName);
-        await ffmpeg.deleteFile(outputFileName);
-      } catch (cleanupError) {
-        console.warn('파일 정리 중 오류:', cleanupError);
-      }
+        const inputExt = inputFile.name.split('.').pop()?.toLowerCase() || '';
+        const inputFileName = `input.${inputExt}`;
+        const outputFileName = `output.${targetFormat}`;
 
-      return new Blob([outputData], { type: `application/octet-stream` });
-    } catch (error) {
-      console.error('변환 오류:', error);
-      throw new Error(`파일 변환에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
-    }
-  }, [ffmpeg, isFFmpegLoaded]);
+        // 파일을 FFmpeg에 로드
+        const arrayBuffer = await inputFile.arrayBuffer();
+        await ffmpeg.writeFile(inputFileName, new Uint8Array(arrayBuffer));
+
+        // 변환 명령어 생성
+        const args = ['-i', inputFileName];
+
+        // 비디오 옵션 처리
+        if (options.resolution && options.resolution !== 'original') {
+          args.push('-vf', `scale=${options.resolution}:flags=fast_bilinear`);
+        }
+
+        if (options.fps) {
+          args.push('-r', String(options.fps));
+        }
+
+        if (options.bitrate) {
+          args.push('-b:v', options.bitrate as string);
+        }
+
+        // 품질 설정
+        if (options.quality) {
+          const qualityMap: Record<string, number> = {
+            낮음: 28,
+            보통: 23,
+            높음: 18,
+          };
+          const qualityValue = qualityMap[options.quality as string];
+          if (qualityValue !== undefined) {
+            args.push('-crf', String(qualityValue));
+          }
+        }
+
+        // 재생속도 설정
+        if (options.playbackSpeed && options.playbackSpeed !== 1) {
+          args.push(
+            '-filter:v',
+            `setpts=${1 / (options.playbackSpeed as number)}*PTS`
+          );
+        }
+
+        // 출력 파일
+        args.push(outputFileName);
+
+        console.log('FFmpeg 명령어:', args.join(' '));
+
+        // 변환 실행
+        await ffmpeg.exec(args);
+
+        // 결과 파일 읽기
+        const outputData = await ffmpeg.readFile(outputFileName);
+
+        // 임시 파일 정리
+        try {
+          await ffmpeg.deleteFile(inputFileName);
+          await ffmpeg.deleteFile(outputFileName);
+        } catch (cleanupError) {
+          console.warn('파일 정리 중 오류:', cleanupError);
+        }
+
+        return new Blob([outputData], { type: `application/octet-stream` });
+      } catch (error) {
+        console.error('변환 오류:', error);
+        throw new Error(
+          `파일 변환에 실패했습니다: ${
+            error instanceof Error ? error.message : '알 수 없는 오류'
+          }`
+        );
+      }
+    },
+    [ffmpeg, isFFmpegLoaded]
+  );
 
   // 변환 실행
   const handleConvert = useCallback(async () => {
@@ -297,45 +386,46 @@ export default function Home() {
     try {
       // 변환 옵션 수집
       const options: Record<string, unknown> = {};
-      
+
       // 비디오 옵션들
       if (fileType === 'video') {
-        if (resolution && resolution !== 'original') options.resolution = resolution;
+        if (resolution && resolution !== 'original')
+          options.resolution = resolution;
         if (fps) options.fps = fps;
         if (bitrate) options.bitrate = bitrate;
         if (videoQuality) options.quality = videoQuality;
         if (playbackSpeed) options.playbackSpeed = playbackSpeed;
       }
-      
+
       // 오디오 옵션들
       if (fileType === 'audio') {
         if (sampleRate) options.sampleRate = sampleRate;
         if (channels) options.channels = channels;
         if (audioQuality) options.quality = audioQuality;
       }
-      
+
       // 이미지 옵션들
       if (fileType === 'image') {
-        if (imageResolution && imageResolution !== 'original') options.resolution = imageResolution;
+        if (imageResolution && imageResolution !== 'original')
+          options.resolution = imageResolution;
         if (imageQuality) options.quality = imageQuality;
       }
 
       setProgress(25);
-      
+
       // 파일 변환 실행
       const convertedBlob = await convertFile(file, outputFormat, options);
-      
+
       setProgress(100);
       setConvertedFile(convertedBlob);
-      
+
       // 결과 설정
       const resultUrl = URL.createObjectURL(convertedBlob);
       setResult({
         url: resultUrl,
         filename: `converted.${outputFormat}`,
-        size: (convertedBlob.size / (1024 * 1024)).toFixed(2)
+        size: (convertedBlob.size / (1024 * 1024)).toFixed(2),
       });
-      
     } catch (error) {
       console.error('변환 오류:', error);
       setError(error instanceof Error ? error.message : '변환에 실패했습니다.');
@@ -343,7 +433,23 @@ export default function Home() {
       setIsConverting(false);
       setProgress(0);
     }
-  }, [file, outputFormat, convertFile, isFFmpegLoaded, fileType, resolution, fps, bitrate, videoQuality, playbackSpeed, sampleRate, channels, audioQuality, imageResolution, imageQuality]);
+  }, [
+    file,
+    outputFormat,
+    convertFile,
+    isFFmpegLoaded,
+    fileType,
+    resolution,
+    fps,
+    bitrate,
+    videoQuality,
+    playbackSpeed,
+    sampleRate,
+    channels,
+    audioQuality,
+    imageResolution,
+    imageQuality,
+  ]);
 
   // 변환된 파일 다운로드
   const handleDownload = useCallback(() => {
@@ -363,26 +469,46 @@ export default function Home() {
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSpeed = parseFloat(e.target.value);
     setPlaybackSpeed(newSpeed);
-    
+
     // 슬라이더 색상 변경
     const slider = e.target;
-    slider.style.setProperty('--slider-color', newSpeed < 1 ? '#28a745' : newSpeed > 1 ? '#dc3545' : 'var(--primary-color)');
+    slider.style.setProperty(
+      '--slider-color',
+      newSpeed < 1
+        ? '#28a745'
+        : newSpeed > 1
+        ? '#dc3545'
+        : 'var(--primary-color)'
+    );
   };
 
   // 예상 시간 계산
-  const getEstimatedTime = (fileSize: number, inputType: string | null, outputFormat: string, playbackSpeed: number, resolution: string, fps: number, videoQuality: string): string => {
+  const getEstimatedTime = (
+    fileSize: number,
+    inputType: string | null,
+    outputFormat: string,
+    playbackSpeed: number,
+    resolution: string,
+    fps: number,
+    videoQuality: string
+  ): string => {
     const sizeInMB = fileSize / (1024 * 1024);
     let estimatedSeconds = 0;
-    
+
     if (inputType === 'video') {
-      const baseTime = estimateVideoDuration(sizeInMB, resolution, fps, videoQuality);
+      const baseTime = estimateVideoDuration(
+        sizeInMB,
+        resolution,
+        fps,
+        videoQuality
+      );
       estimatedSeconds = baseTime / playbackSpeed;
     } else if (inputType === 'audio') {
       estimatedSeconds = estimateAudioDuration(sizeInMB, audioQuality);
     } else if (inputType === 'image') {
       estimatedSeconds = 5; // 이미지는 빠름
     }
-    
+
     if (estimatedSeconds < 60) {
       return `${Math.ceil(estimatedSeconds)}초`;
     } else {
@@ -391,27 +517,41 @@ export default function Home() {
   };
 
   // 예상 파일 크기 계산
-  const getEstimatedFileSize = (fileSize: number, inputType: string | null, outputFormat: string, playbackSpeed: number, resolution: string, fps: number, bitrate: string, videoQuality: string): string => {
+  const getEstimatedFileSize = (
+    fileSize: number,
+    inputType: string | null,
+    outputFormat: string,
+    playbackSpeed: number,
+    resolution: string,
+    fps: number,
+    bitrate: string,
+    videoQuality: string
+  ): string => {
     const sizeInMB = fileSize / (1024 * 1024);
     let estimatedSize = sizeInMB;
-    
+
     if (inputType === 'video') {
       if (outputFormat === 'gif') {
         // GIF는 품질에 따라 크기 계산
-        const sizePerMinute = getGifSizePerMinute(resolution, fps, videoQuality);
-        const duration = estimateVideoDuration(sizeInMB, resolution, fps, videoQuality) / 60;
+        const sizePerMinute = getGifSizePerMinute(
+          resolution,
+          fps,
+          videoQuality
+        );
+        const duration =
+          estimateVideoDuration(sizeInMB, resolution, fps, videoQuality) / 60;
         estimatedSize = sizePerMinute * duration;
       } else {
         // 비디오는 품질과 해상도에 따라 크기 조정
         let qualityFactor = 1;
         if (videoQuality === '낮음') qualityFactor = 0.6;
         else if (videoQuality === '높음') qualityFactor = 1.4;
-        
+
         let resolutionFactor = 1;
         if (resolution === '640x360') resolutionFactor = 0.5;
         else if (resolution === '1280x720') resolutionFactor = 0.8;
         else if (resolution === '1920x1080') resolutionFactor = 1.2;
-        
+
         estimatedSize = sizeInMB * qualityFactor * resolutionFactor;
       }
     } else if (inputType === 'audio') {
@@ -423,12 +563,12 @@ export default function Home() {
       if (imageQuality === '낮음') estimatedSize *= 0.3;
       else if (imageQuality === '높음') estimatedSize *= 1.5;
     }
-    
+
     // WebP 변환 시 크기 감소
     if (outputFormat === 'webp') {
       estimatedSize *= 0.3;
     }
-    
+
     if (estimatedSize < 1) {
       return `${(estimatedSize * 1024).toFixed(1)} KB`;
     } else {
@@ -437,16 +577,21 @@ export default function Home() {
   };
 
   // 비디오 길이 추정
-  const estimateVideoDuration = (sizeInMB: number, resolution: string, fps: number, quality: string): number => {
+  const estimateVideoDuration = (
+    sizeInMB: number,
+    resolution: string,
+    fps: number,
+    quality: string
+  ): number => {
     let bitrate = 2000; // 기본 2Mbps
-    
+
     if (resolution === '640x360') bitrate = 800;
     else if (resolution === '1280x720') bitrate = 1500;
     else if (resolution === '1920x1080') bitrate = 3000;
-    
+
     if (quality === '낮음') bitrate *= 0.7;
     else if (quality === '높음') bitrate *= 1.3;
-    
+
     // 비트레이트로부터 길이 계산 (초 단위)
     return (sizeInMB * 8 * 1024) / bitrate;
   };
@@ -454,27 +599,31 @@ export default function Home() {
   // 오디오 길이 추정
   const estimateAudioDuration = (sizeInMB: number, quality: string): number => {
     let bitrate = 128; // 기본 128kbps
-    
+
     if (quality === '낮음') bitrate = 64;
     else if (quality === '높음') bitrate = 320;
-    
+
     return (sizeInMB * 8 * 1024) / bitrate;
   };
 
   // GIF 크기 계산 (분당)
-  const getGifSizePerMinute = (resolution: string, fps: number, quality: string): number => {
+  const getGifSizePerMinute = (
+    resolution: string,
+    fps: number,
+    quality: string
+  ): number => {
     let sizePerMinute = 10; // 기본 10MB/분
-    
+
     if (resolution === '640x360') sizePerMinute = 5;
     else if (resolution === '1280x720') sizePerMinute = 15;
     else if (resolution === '1920x1080') sizePerMinute = 30;
-    
+
     if (fps > 15) sizePerMinute *= 1.5;
     if (fps > 20) sizePerMinute *= 1.3;
-    
+
     if (quality === '낮음') sizePerMinute *= 0.5;
     else if (quality === '높음') sizePerMinute *= 1.5;
-    
+
     return sizePerMinute;
   };
 
@@ -493,21 +642,33 @@ export default function Home() {
   if (!session) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 font-sans">
-        {/* Google 로고 */}
-        <div className="mb-8">
-          <FcGoogle className="mx-auto" size={64} />
-          <span className='text-5xl font-bold text-gray-900 text-center mb-2'>QuokkaConvert</span>
+        {/* QuokkaConvert 로고 */}
+        <div
+          onClick={handleGoogleLogin}
+          className="flex items-center gap-3 cursor-pointer"
+          style={{ marginBottom: '10px'}}
+        >
+          <img
+            src="/quokka-favicon.svg"
+            alt="QuokkaConvert"
+            style={{ width: 64, height: 64 }}
+          />
+          <span className="text-2xl font-bold text-gray-900">
+            QuokkaConvert
+          </span>
         </div>
         {/* 카드 */}
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-10 flex flex-col items-center gap-8">
-          <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">Google 계정으로 로그인</h1>
+        <div
+          className="w-full max-w-sm bg-white rounded-2xl shadow-lg flex flex-col items-center gap-8"
+          style={{ padding: '30px', marginTop: 0 }} // mt-24 제거, 위에서 20px만 띄움
+        >
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-800 font-semibold rounded-lg py-3 text-lg shadow hover:shadow-md transition"
+            className="cursor-pointer w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-800 font-semibold rounded-lg py-3 text-lg shadow hover:shadow-md transition p-4"
           >
-            <FcGoogle size={24} />
-            <span>Google로 로그인</span>
+            <FcGoogle size={48} />
+            <span className="text-2xl">Google로 로그인</span>
           </button>
         </div>
       </div>
@@ -522,42 +683,58 @@ export default function Home() {
           <h1>범용 파일 변환기</h1>
           <div className="user-info">
             <span className="user-email">{session.user?.email}</span>
-            <button
-              onClick={() => signOut()}
-              className="logout-btn"
-            >
+            <button onClick={() => signOut()} className="logout-btn">
               로그아웃
             </button>
           </div>
         </div>
       </div>
-      
-      <p className="subtitle">비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요</p>
-      
-      <form ref={formRef} onSubmit={(e) => { e.preventDefault(); handleConvert(); }}>
+
+      <p className="subtitle">
+        비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요
+      </p>
+
+      <form
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleConvert();
+        }}
+      >
         <div className="file-section">
           <label htmlFor="fileInput">파일 업로드:</label>
-          <input 
+          <input
             ref={fileInputRef}
-            type="file" 
-            id="fileInput" 
+            type="file"
+            id="fileInput"
             onChange={handleFileUpload}
-            required 
+            required
           />
-          <p className="file-limit-note">최대 파일 크기: 100MB (로컬 실행 제한)</p>
+          <p className="file-limit-note">
+            최대 파일 크기: 100MB (로컬 실행 제한)
+          </p>
           {file && (
             <div className="file-info">
-              <p><strong>파일명:</strong> {file.name}</p>
-              <p><strong>크기:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB</p>
-              <p><strong>타입:</strong> {fileType ? fileType.charAt(0).toUpperCase() + fileType.slice(1) : '지원하지 않는 형식'}</p>
+              <p>
+                <strong>파일명:</strong> {file.name}
+              </p>
+              <p>
+                <strong>크기:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
+              </p>
+              <p>
+                <strong>타입:</strong>{' '}
+                {fileType
+                  ? fileType.charAt(0).toUpperCase() + fileType.slice(1)
+                  : '지원하지 않는 형식'}
+              </p>
             </div>
           )}
         </div>
 
         <div className="format-section">
           <label htmlFor="outputFormat">출력 형식:</label>
-          <select 
-            id="outputFormat" 
+          <select
+            id="outputFormat"
             value={outputFormat}
             onChange={(e) => setOutputFormat(e.target.value)}
             required
@@ -575,7 +752,9 @@ export default function Home() {
         {fileType === 'video' && outputFormat === 'gif' && (
           <div className="speed-control-section">
             <div className="speed-header">
-              <label htmlFor="playbackSpeed" className="speed-title">재생속도 조절</label>
+              <label htmlFor="playbackSpeed" className="speed-title">
+                재생속도 조절
+              </label>
               <div className="speed-display">{playbackSpeed}x</div>
             </div>
             <div className="speed-slider-container">
@@ -621,7 +800,11 @@ export default function Home() {
             <h3>비디오 설정</h3>
             <div className="option-row">
               <label htmlFor="resolution">해상도:</label>
-              <select id="resolution" value={resolution} onChange={(e) => setResolution(e.target.value)}>
+              <select
+                id="resolution"
+                value={resolution}
+                onChange={(e) => setResolution(e.target.value)}
+              >
                 <option value="original">원본</option>
                 <option value="640x360">640x360</option>
                 <option value="1280x720">1280x720</option>
@@ -630,20 +813,24 @@ export default function Home() {
             </div>
             <div className="option-row">
               <label htmlFor="fps">프레임레이트:</label>
-              <input 
-                type="number" 
-                id="fps" 
-                value={fps} 
+              <input
+                type="number"
+                id="fps"
+                value={fps}
                 onChange={(e) => setFps(Number(e.target.value))}
-                min="1" 
-                max="60" 
+                min="1"
+                max="60"
               />
             </div>
             {/* GIF 변환 시에는 비트레이트 옵션 숨김 */}
             {outputFormat !== 'gif' && (
               <div className="option-row">
                 <label htmlFor="bitrate">비트레이트:</label>
-                <select id="bitrate" value={bitrate} onChange={(e) => setBitrate(e.target.value)}>
+                <select
+                  id="bitrate"
+                  value={bitrate}
+                  onChange={(e) => setBitrate(e.target.value)}
+                >
                   <option value="">자동</option>
                   <option value="1000k">1000k</option>
                   <option value="2000k">2000k</option>
@@ -653,13 +840,19 @@ export default function Home() {
             )}
             <div className="option-row">
               <label htmlFor="videoQuality">품질:</label>
-              <select id="videoQuality" value={videoQuality} onChange={(e) => setVideoQuality(e.target.value)}>
+              <select
+                id="videoQuality"
+                value={videoQuality}
+                onChange={(e) => setVideoQuality(e.target.value)}
+              >
                 <option value="보통">보통</option>
                 <option value="낮음">낮음 (파일 크기 작음)</option>
                 <option value="높음">높음 (파일 크기 큼)</option>
               </select>
               {outputFormat === 'gif' && (
-                <span className="option-note">GIF는 품질 설정으로 크기를 조절합니다</span>
+                <span className="option-note">
+                  GIF는 품질 설정으로 크기를 조절합니다
+                </span>
               )}
             </div>
           </div>
@@ -671,7 +864,11 @@ export default function Home() {
             <h3>오디오 설정</h3>
             <div className="option-row">
               <label htmlFor="sampleRate">샘플레이트:</label>
-              <select id="sampleRate" value={sampleRate} onChange={(e) => setSampleRate(e.target.value)}>
+              <select
+                id="sampleRate"
+                value={sampleRate}
+                onChange={(e) => setSampleRate(e.target.value)}
+              >
                 <option value="">원본</option>
                 <option value="22050">22050 Hz</option>
                 <option value="44100">44100 Hz</option>
@@ -680,7 +877,11 @@ export default function Home() {
             </div>
             <div className="option-row">
               <label htmlFor="channels">채널:</label>
-              <select id="channels" value={channels} onChange={(e) => setChannels(e.target.value)}>
+              <select
+                id="channels"
+                value={channels}
+                onChange={(e) => setChannels(e.target.value)}
+              >
                 <option value="">원본</option>
                 <option value="1">모노</option>
                 <option value="2">스테레오</option>
@@ -688,7 +889,11 @@ export default function Home() {
             </div>
             <div className="option-row">
               <label htmlFor="audioQuality">품질:</label>
-              <select id="audioQuality" value={audioQuality} onChange={(e) => setAudioQuality(e.target.value)}>
+              <select
+                id="audioQuality"
+                value={audioQuality}
+                onChange={(e) => setAudioQuality(e.target.value)}
+              >
                 <option value="보통">보통</option>
                 <option value="낮음">낮음 (파일 크기 작음)</option>
                 <option value="높음">높음 (파일 크기 큼)</option>
@@ -703,7 +908,11 @@ export default function Home() {
             <h3>이미지 설정</h3>
             <div className="option-row">
               <label htmlFor="imageResolution">해상도:</label>
-              <select id="imageResolution" value={imageResolution} onChange={(e) => setImageResolution(e.target.value)}>
+              <select
+                id="imageResolution"
+                value={imageResolution}
+                onChange={(e) => setImageResolution(e.target.value)}
+              >
                 <option value="original">원본</option>
                 <option value="800x600">800x600</option>
                 <option value="1024x768">1024x768</option>
@@ -712,7 +921,11 @@ export default function Home() {
             </div>
             <div className="option-row">
               <label htmlFor="imageQuality">품질:</label>
-              <select id="imageQuality" value={imageQuality} onChange={(e) => setImageQuality(e.target.value)}>
+              <select
+                id="imageQuality"
+                value={imageQuality}
+                onChange={(e) => setImageQuality(e.target.value)}
+              >
                 <option value="보통">보통</option>
                 <option value="낮음">낮음 (파일 크기 작음)</option>
                 <option value="높음">높음 (파일 크기 큼)</option>
@@ -721,14 +934,22 @@ export default function Home() {
           </div>
         )}
 
-        <button type="submit" disabled={isConverting || !isConversionSupported(fileType, outputFormat)}>
+        <button
+          type="submit"
+          disabled={
+            isConverting || !isConversionSupported(fileType, outputFormat)
+          }
+        >
           {isConverting ? '변환 중...' : '변환하기'}
         </button>
-        
+
         {/* 지원하지 않는 변환 조합 안내 */}
         {outputFormat && !isConversionSupported(fileType, outputFormat) && (
           <div className="warning-message">
-            <p>⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을 선택해주세요.</p>
+            <p>
+              ⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을
+              선택해주세요.
+            </p>
           </div>
         )}
       </form>
@@ -738,7 +959,9 @@ export default function Home() {
         <div className="conversion-progress">
           <div className="progress-spinner"></div>
           <p>변환 중... {progress}%</p>
-          <p className="progress-note">변환 시간은 파일 크기와 형식에 따라 달라질 수 있습니다.</p>
+          <p className="progress-note">
+            변환 시간은 파일 크기와 형식에 따라 달라질 수 있습니다.
+          </p>
         </div>
       )}
 
@@ -752,15 +975,38 @@ export default function Home() {
             <div className="placeholder-info">
               <div className="placeholder-item">
                 <span className="placeholder-label">출력 형식:</span>
-                <span className="placeholder-value">{outputFormat.toUpperCase()}</span>
+                <span className="placeholder-value">
+                  {outputFormat.toUpperCase()}
+                </span>
               </div>
               <div className="placeholder-item">
                 <span className="placeholder-label">예상 크기:</span>
-                <span className="placeholder-value">{getEstimatedFileSize(file!.size, fileType, outputFormat, playbackSpeed, resolution, fps, bitrate, videoQuality)}</span>
+                <span className="placeholder-value">
+                  {getEstimatedFileSize(
+                    file!.size,
+                    fileType,
+                    outputFormat,
+                    playbackSpeed,
+                    resolution,
+                    fps,
+                    bitrate,
+                    videoQuality
+                  )}
+                </span>
               </div>
               <div className="placeholder-item">
                 <span className="placeholder-label">예상 시간:</span>
-                <span className="placeholder-value">{getEstimatedTime(file!.size, fileType, outputFormat, playbackSpeed, resolution, fps, videoQuality)}</span>
+                <span className="placeholder-value">
+                  {getEstimatedTime(
+                    file!.size,
+                    fileType,
+                    outputFormat,
+                    playbackSpeed,
+                    resolution,
+                    fps,
+                    videoQuality
+                  )}
+                </span>
               </div>
             </div>
           </div>
@@ -781,15 +1027,30 @@ export default function Home() {
               </div>
               <div className="placeholder-item">
                 <span className="placeholder-label">출력 형식:</span>
-                <span className="placeholder-value">{outputFormat.toUpperCase()}</span>
+                <span className="placeholder-value">
+                  {outputFormat.toUpperCase()}
+                </span>
               </div>
               <div className="placeholder-item">
                 <span className="placeholder-label">파일 크기:</span>
-                <span className="placeholder-value">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                <span className="placeholder-value">
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                </span>
               </div>
               <div className="placeholder-item">
                 <span className="placeholder-label">예상 크기:</span>
-                <span className="placeholder-value">{getEstimatedFileSize(file.size, fileType, outputFormat, playbackSpeed, resolution, fps, bitrate, videoQuality)}</span>
+                <span className="placeholder-value">
+                  {getEstimatedFileSize(
+                    file.size,
+                    fileType,
+                    outputFormat,
+                    playbackSpeed,
+                    resolution,
+                    fps,
+                    bitrate,
+                    videoQuality
+                  )}
+                </span>
               </div>
               {fileType === 'video' && outputFormat === 'gif' && (
                 <div className="placeholder-item">
@@ -823,7 +1084,17 @@ export default function Home() {
               )}
               <div className="placeholder-item">
                 <span className="placeholder-label">예상 시간:</span>
-                <span className="placeholder-value">{getEstimatedTime(file.size, fileType, outputFormat, playbackSpeed, resolution, fps, videoQuality)}</span>
+                <span className="placeholder-value">
+                  {getEstimatedTime(
+                    file.size,
+                    fileType,
+                    outputFormat,
+                    playbackSpeed,
+                    resolution,
+                    fps,
+                    videoQuality
+                  )}
+                </span>
               </div>
             </div>
           </div>
@@ -831,17 +1102,24 @@ export default function Home() {
       )}
 
       {/* GIF에서 WebP 변환 시 특별 안내 */}
-      {file && file.name.toLowerCase().endsWith('.gif') && outputFormat === 'webp' && (
-        <div className="info-message">
-          <p>💡 <strong>GIF → WebP 변환 팁:</strong> WebP는 GIF보다 훨씬 효율적인 압축을 사용하여 파일 크기가 90% 이상 감소할 수 있습니다!</p>
-        </div>
-      )}
+      {file &&
+        file.name.toLowerCase().endsWith('.gif') &&
+        outputFormat === 'webp' && (
+          <div className="info-message">
+            <p>
+              💡 <strong>GIF → WebP 변환 팁:</strong> WebP는 GIF보다 훨씬
+              효율적인 압축을 사용하여 파일 크기가 90% 이상 감소할 수 있습니다!
+            </p>
+          </div>
+        )}
 
       {result && (
         <div className="result">
           <h2>변환 결과</h2>
           <div className="resultInfo">
-            <p><strong>변환 완료!</strong></p>
+            <p>
+              <strong>변환 완료!</strong>
+            </p>
             <p>파일 크기: {result.size} MB</p>
             <p>출력 형식: {outputFormat.toUpperCase()}</p>
           </div>
