@@ -8,8 +8,8 @@
   "theme_color": "#F5D6B4",
   "icons": [
     {
-      "src": "/quokka-favicon.svg",
-      "sizes": "64x64",
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/svg+xml"
     },
     {

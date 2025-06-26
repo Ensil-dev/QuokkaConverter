@@ -1,29 +1,28 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 node_modules/
-/.pnp
+.pnp
 .pnp.*
 .yarn/*
-!.yarn/patches
-!.yarn/plugins
 !.yarn/releases
+!.yarn/plugins
 !.yarn/versions
-.cursor/
-.vscode/
+!.yarn/sdks
+
 # testing
-/coverage
+coverage/
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
 *.pem
+.vscode/
+.cursor/
 
 # debug
 npm-debug.log*
@@ -33,9 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel (로컬 실행 전용)
-.vercel
+.vercel/
 vercel.json
 
 # typescript
