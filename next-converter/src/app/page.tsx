@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 interface SupportedFormats {
   video: { input: string[]; output: string[] };
@@ -28,7 +28,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const loadSupportedFormats = async () => {
+  const loadSupportedFormats = useCallback(async () => {
     try {
       const response = await fetch('/api/formats');
       if (!response.ok) {
@@ -41,7 +41,7 @@ export default function Home() {
       console.error('포맷 정보 로드 실패:', error);
       setError('지원하는 포맷 정보를 불러올 수 없습니다. 페이지를 새로고침해주세요.');
     }
-  };
+  }, []);
 
   // 지원하는 포맷 정보 로드
   useEffect(() => {

@@ -20,23 +20,27 @@ npm run dev
 ## 상세 설치 과정
 
 ### 1. 저장소 클론
+
 ```bash
 git clone https://github.com/yourusername/converter_saas.git
 cd converter_saas/next-converter
 ```
 
 ### 2. 의존성 설치
+
 ```bash
 npm install
 ```
 
 ### 3. 개발 서버 실행
+
 ```bash
 npm run dev
 ```
 
 ### 4. 브라우저에서 접속
-```
+
+```text
 http://localhost:3001
 ```
 
@@ -57,18 +61,21 @@ http://localhost:3001
 ## 문제 해결
 
 ### 포트 충돌 시
+
 ```bash
 # 다른 포트로 실행
 npm run dev -- -p 3002
 ```
 
 ### 권한 문제 시
+
 ```bash
 # 관리자 권한으로 실행
 sudo npm run dev
 ```
 
 ### 메모리 부족 시
+
 ```bash
 # Node.js 메모리 제한 증가
 NODE_OPTIONS="--max-old-space-size=4096" npm run dev
