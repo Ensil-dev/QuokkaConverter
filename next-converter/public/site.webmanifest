@@ -1,0 +1,26 @@
+{
+  "name": "QuokkaConvert",
+  "short_name": "QuokkaConvert",
+  "description": "비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConvert",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5D6B4",
+  "theme_color": "#F5D6B4",
+  "icons": [
+    {
+      "src": "/quokka-favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+} 
