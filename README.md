@@ -1,11 +1,10 @@
 # 🎬 범용 파일 변환기 (Universal File Converter)
 
-**무료로 사용할 수 있는 온라인 파일 변환 서비스입니다. 비디오, 오디오, 이미지 파일을 원하는 형식으로 쉽고 빠르게 변환할 수 있습니다.**
+**무료로 사용할 수 있는 로컬 파일 변환 서비스입니다. 비디오, 오디오, 이미지 파일을 원하는 형식으로 쉽고 빠르게 변환할 수 있습니다.**
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.3.4-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
 ![FFmpeg](https://img.shields.io/badge/FFmpeg-6.0-green?style=for-the-badge&logo=ffmpeg)
-![Vercel](https://img.shields.io/badge/Vercel-Deploy-black?style=for-the-badge&logo=vercel)
 
 ## 📋 목차
 
@@ -25,15 +24,16 @@
 
 사이드프로젝트 시연영상을 GIF로 변환하려고 여러 온라인 변환 사이트를 돌아다녔는데, 무료 변환 횟수를 모두 사용하자마자 "유료 결제하세요!"라는 메시지가 나왔습니다.
 
-그래서 직접 **FFmpeg 라이브러리**를 활용해서 **완전 무료**로 사용할 수 있는 파일 변환기를 만들었습니다.
+그래서 직접 **FFmpeg 라이브러리**를 활용해서 **완전 무료**로 사용할 수 있는 로컬 파일 변환기를 만들었습니다.
 
 ### 🎯 **이 변환기의 장점**
 
 - ✅ **완전 무료** - 사용 횟수 제한 없음
-- ✅ **개인정보 보호** - 파일이 서버에 저장되지 않음
+- ✅ **개인정보 보호** - 파일이 로컬에서만 처리됨
 - ✅ **빠른 변환** - 최적화된 FFmpeg 설정
 - ✅ **다양한 형식** - 비디오, 오디오, 이미지 모두 지원
 - ✅ **간편한 사용** - 드래그 앤 드롭으로 쉽게 사용
+- ✅ **제한 없음** - 100MB 파일, 5분 변환 시간 지원
 
 ## ✨ 주요 기능
 
@@ -128,7 +128,7 @@
 
 ## 🛠️ 설치 및 실행
 
-### **옵션 1: 로컬 실행 (비용 $0)**
+### **🚀 로컬 실행 (완전 무료, 제한 없음)**
 
 ```bash
 # 1. 저장소 클론
@@ -136,39 +136,31 @@ git clone https://github.com/yourusername/converter_saas.git
 cd converter_saas/next-converter
 
 # 2. 한 번에 설치 및 실행
-npm run setup && npm run run
+npm run setup && npm run run-local
 
 # 3. 브라우저에서 접속
 # http://localhost:3001
 ```
 
-**장점**: 완전 무료, 제한 없음, 프라이버시 보호  
-**단점**: 설치 과정 필요, 외부 접근 설정 필요
+**장점**: 
+- ✅ 완전 무료 (비용 $0)
+- ✅ 제한 없음 (100MB 파일, 5분 변환 시간)
+- ✅ 프라이버시 보호 (파일이 로컬에서만 처리)
+- ✅ 빠른 속도 (로컬 네트워크)
+- ✅ 안정성 (서버 다운타임 없음)
 
-### **옵션 2: Vercel 배포 (비용 $0-500/월)**
-
-```bash
-# 1. 저장소 클론
-git clone https://github.com/yourusername/converter_saas.git
-cd converter_saas/next-converter
-
-# 2. 의존성 설치
-npm install
-
-# 3. Vercel 배포
-npx vercel --prod
-```
-
-**장점**: 간편한 사용, URL 공유 가능, 모바일 접근  
-**단점**: 사용량에 따른 비용, 제한사항 존재
+**단점**: 
+- 설치 과정 필요
+- 외부 접근 설정 필요
 
 ### **사전 요구사항**
 
 - Node.js 18.0.0 이상
 - npm 또는 yarn
 - 최소 4GB RAM (로컬 실행 시)
+- FFmpeg (자동 설치됨)
 
-### **상세 설치 과정 (로컬 실행)**
+### **상세 설치 과정**
 
 #### **1. 저장소 클론**
 
@@ -186,7 +178,11 @@ npm install
 #### **3. 개발 서버 실행**
 
 ```bash
-npm run dev
+# 개발 모드 (포트 3001)
+npm run run-local
+
+# 또는 프로덕션 모드
+npm run run-local-prod
 ```
 
 #### **4. 브라우저에서 접속**
@@ -195,12 +191,32 @@ npm run dev
 http://localhost:3001
 ```
 
-#### **5. 프로덕션 빌드**
+#### **5. 포트 변경 (선택사항)**
 
 ```bash
-npm run build
-npm start
+# 다른 포트로 실행
+PORT=8080 npm run dev
 ```
+
+### **🔧 문제 해결**
+
+#### **포트가 이미 사용 중인 경우**
+```bash
+# 다른 포트로 실행
+npm run dev -- -p 3002
+```
+
+#### **FFmpeg 오류가 발생하는 경우**
+```bash
+# 의존성 재설치
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### **메모리 부족 오류**
+- 더 작은 파일로 시도
+- 다른 프로그램 종료
+- 가상 메모리 증가
 
 ## 🔧 API 문서
 
