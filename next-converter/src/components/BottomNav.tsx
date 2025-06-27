@@ -33,16 +33,18 @@ export default function BottomNav() {
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 border-t border-zinc-700 bg-zinc-900 shadow-md transition-all duration-300 ease-in-out ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+      className={`fixed bottom-0 left-0 right-0 h-[80px] w-full border-t border-zinc-700 bg-zinc-900 shadow-md transition-all duration-300 ease-in-out ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
     >
-      <ul className="flex justify-center gap-x-6 py-2">
+      <ul className="m-0 grid w-full list-none grid-cols-2 p-0">
         {tabs.map(({ href, icon, label }) => {
           const active = pathname === href || (href !== '/convert' && pathname.startsWith(href));
           return (
-            <li key={href}>
+            <li key={href} className="m-0 p-0">
               <Link
                 href={href}
-                className={`flex min-h-[48px] min-w-[64px] flex-col items-center justify-center gap-y-1 whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors ${active ? 'bg-zinc-800 text-purple-500' : 'text-gray-400 hover:text-gray-100'}`}
+                className={`flex h-[80px] w-full flex-col items-center justify-center gap-y-1 text-sm transition-colors ${
+                  active ? 'bg-zinc-800 text-purple-500' : 'text-gray-400 hover:text-gray-100'
+                }`}
               >
                 {icon}
                 <span>{label}</span>
