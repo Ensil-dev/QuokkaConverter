@@ -2,8 +2,10 @@ import BottomNav from '@/components/BottomNav';
 
 export default function ConvertLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen pb-16">
-      {children}
+    <div className="flex h-screen flex-col overflow-hidden">
+      <main className="min-h-[calc(100vh-80px)] w-full flex-1 overflow-y-auto">
+        <div className="container min-h-full">{children}</div>
+      </main>
       <BottomNav />
     </div>
   );

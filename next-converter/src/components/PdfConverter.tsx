@@ -60,7 +60,7 @@ export default function PdfConverter() {
   };
 
   return (
-    <div className="container">
+    <div className="container rounded-[15px]">
       <Header subtitle="이미지 → PDF 변환과 병합 및 분할 기능을 제공합니다" />
       <form onSubmit={handleSubmit}>
         <div className="file-section">
@@ -79,40 +79,38 @@ export default function PdfConverter() {
           <select
             id="operation"
             value={operation}
-            onChange={(e) =>
-              setOperation(e.target.value as 'images' | 'merge' | 'split')
-            }
+            onChange={(e) => setOperation(e.target.value as 'images' | 'merge' | 'split')}
           >
-            <option value="images">이미지 → PDF</option>
+            <option value="images">이미지 → PDF 변환</option>
             <option value="merge">PDF 병합</option>
-            <option value="split">페이지 분리</option>
+            <option value="split">PDF 페이지 분리</option>
           </select>
         </div>
-      {operation === 'split' && (
-        <div className="option-row">
-          <label htmlFor="page">페이지 번호:</label>
-          <input
-            id="page"
-            type="number"
-            min={1}
-            value={page}
-            onChange={(e) => setPage(Number(e.target.value))}
-          />
-        </div>
-      )}
-      {error && (
-        <div className="error-message">
-          <p>{error}</p>
-        </div>
-      )}
-      {result && (
-        <div className="result">
-          <h2>완료</h2>
-          <button type="button" onClick={download} className="download-btn">
-            파일 다운로드
-          </button>
-        </div>
-      )}
+        {operation === 'split' && (
+          <div className="option-row">
+            <label htmlFor="page">페이지 번호:</label>
+            <input
+              id="page"
+              type="number"
+              min={1}
+              value={page}
+              onChange={(e) => setPage(Number(e.target.value))}
+            />
+          </div>
+        )}
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
+          </div>
+        )}
+        {result && (
+          <div className="result">
+            <h2>완료</h2>
+            <button type="button" onClick={download} className="download-btn">
+              파일 다운로드
+            </button>
+          </div>
+        )}
         <button type="submit" disabled={loading}>
           {loading ? '처리 중...' : '실행'}
         </button>

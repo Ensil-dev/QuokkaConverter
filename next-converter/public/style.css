@@ -5,19 +5,19 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+  height: 100%;
   padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .container {
   max-width: 800px;
   margin: 0 auto;
   background: white;
-  border-radius: 15px;
+  /* border-radius: 15px; */
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 40px;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -41,7 +41,8 @@ form {
   gap: 25px;
 }
 
-.file-section, .format-section {
+.file-section,
+.format-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -53,29 +54,41 @@ label {
   font-size: 1.1em;
 }
 
-input[type="file"] {
+input[type='file'] {
   padding: 15px;
   border: 2px dashed #ddd;
   border-radius: 10px;
   background: #f8f9fa;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-input[type="file"]:hover {
+input[type='file']:hover {
   border-color: #667eea;
   background: #f0f2ff;
 }
 
-select, input[type="number"] {
+select,
+input[type='number'] {
   padding: 12px 15px;
   border: 2px solid #ddd;
   border-radius: 8px;
   font-size: 1em;
   transition: border-color 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-select:focus, input[type="number"]:focus {
+select:focus,
+input[type='number']:focus {
   outline: none;
   border-color: #667eea;
 }
@@ -117,11 +130,12 @@ select:focus, input[type="number"]:focus {
   font-size: 0.95em;
 }
 
-.option-row select, .option-row input {
+.option-row select,
+.option-row input {
   flex: 1;
 }
 
-button[type="submit"] {
+button[type='submit'] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 15px 30px;
@@ -134,12 +148,12 @@ button[type="submit"] {
   margin-top: 10px;
 }
 
-button[type="submit"]:hover {
+button[type='submit']:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
-button[type="submit"]:disabled {
+button[type='submit']:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
@@ -207,20 +221,20 @@ button[type="submit"]:disabled {
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .container {
-    padding: 20px;
-    margin: 10px;
+    margin: 0 auto;
+    padding: 30px 20px;
   }
-  
+
   h1 {
     font-size: 2em;
   }
-  
+
   .option-row {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
-  
+
   .option-row label {
     min-width: auto;
   }

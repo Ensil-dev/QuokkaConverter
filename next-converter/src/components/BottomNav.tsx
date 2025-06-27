@@ -24,17 +24,17 @@ export default function BottomNav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  if (pathname === '/convert') return null;
-
+  if (pathname === '/convert') {
+    // convert 자체 페이지(예: 리디렉트 대상)일 경우만 숨김
+    return null;
+  }
   const tabs = [
     { href: '/convert/media', icon: <FaImage size={20} />, label: '미디어' },
     { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF' },
   ];
 
   return (
-    <nav
-      className={`fixed bottom-0 left-0 right-0 h-[80px] w-full border-t border-zinc-700 bg-zinc-900 shadow-md transition-all duration-300 ease-in-out ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
-    >
+    <nav className="z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
       <ul className="m-0 grid w-full list-none grid-cols-2 p-0">
         {tabs.map(({ href, icon, label }) => {
           const active = pathname === href || (href !== '/convert' && pathname.startsWith(href));
@@ -42,8 +42,10 @@ export default function BottomNav() {
             <li key={href} className="m-0 p-0">
               <Link
                 href={href}
-                className={`flex h-[80px] w-full flex-col items-center justify-center gap-y-1 text-sm transition-colors ${
-                  active ? 'bg-zinc-800 text-purple-500' : 'text-gray-400 hover:text-gray-100'
+                className={`flex h-[80px] w-full flex-col items-center justify-center gap-y-1 text-sm transition-all duration-300 ease-in-out ${
+                  active
+                    ? 'scale-95 bg-zinc-800 text-[skyblue] ring-2 ring-purple-500 ring-offset-2'
+                    : 'text-gray-400 hover:scale-105 hover:text-gray-100'
                 }`}
               >
                 {icon}

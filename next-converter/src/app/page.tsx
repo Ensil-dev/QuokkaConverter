@@ -40,7 +40,7 @@ export default function Home() {
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center ">
         <div className="text-center">
           <FaSpinner className="mx-auto mb-4 h-8 w-8 animate-spin text-blue-500" />
           <p className="text-sm text-gray-600">로딩 중...</p>
