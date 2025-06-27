@@ -83,7 +83,7 @@ export default function PdfConverter() {
           >
             <option value="images">이미지 → PDF 변환</option>
             <option value="merge">PDF 병합</option>
-            <option value="split">PDF 페이지 분리</option>
+            <option value="split">PDF 페이지 분할</option>
           </select>
         </div>
         {operation === 'split' && (
