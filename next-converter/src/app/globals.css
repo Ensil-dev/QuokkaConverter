@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   --primary-color: #667eea;
   --secondary-color: #764ba2;
@@ -31,6 +35,8 @@ body {
   height: 100%; /* ✅ min-h-screen 기준 제공 */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
 }
 
 * {
@@ -47,6 +53,8 @@ a {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
   }
 }
 
@@ -896,4 +904,17 @@ button[type='submit']:disabled {
     margin-left: auto;
     margin-right: auto;
   }
+
+  .scrollbar-none {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
