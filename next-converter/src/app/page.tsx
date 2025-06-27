@@ -683,21 +683,29 @@ export default function Home() {
   }
 
   return (
-    <div className="container" suppressHydrationWarning={true}>
+    <div
+      className="mx-auto my-5 max-w-[800px] p-[30px] bg-background rounded-[15px] shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-border dark:shadow-[0_20px_40px_rgba(0,0,0,0.3)] max-[768px]:w-full max-[768px]:max-w-[100vw] max-[768px]:box-border max-[768px]:m-[10px_0] max-[768px]:p-[20px] max-[768px]:rounded-[10px] max-[480px]:m-[5px_0] max-[480px]:p-[10px] lg:flex lg:flex-col lg:items-center"
+      suppressHydrationWarning={true}
+    >
       {/* 헤더 */}
-      <div className="header">
-        <div className="header-content">
-          <h1 className="select-none">QuokkaConvert</h1>
-          <div className="user-info">
-            <span className="user-email">{session.user?.email}</span>
-            <button onClick={() => signOut()} className="logout-btn">
+      <div className="mb-[30px] pb-[20px] border-b-2 border-border">
+        <div className="flex flex-wrap items-center justify-between gap-[20px] max-[550px]:justify-center">
+          <h1 className="select-none m-0 text-[2.2em]">QuokkaConvert</h1>
+          <div className="flex items-center gap-[15px] bg-[var(--gray-alpha-100)] px-[15px] py-[10px] rounded-[25px] border border-border">
+            <span className="text-[var(--text-muted)] text-[0.9em] font-medium">
+              {session.user?.email}
+            </span>
+            <button
+              onClick={() => signOut()}
+              className="bg-error text-white px-4 py-2 rounded-[20px] text-[0.9em] font-medium cursor-pointer transition-all duration-300 transform hover:bg-[#c82333] hover:-translate-y-px"
+            >
               로그아웃
             </button>
           </div>
         </div>
       </div>
 
-      <p className="subtitle">
+      <p className="text-center text-muted mb-[30px] text-[1.1em] leading-[1.5]">
         비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요
       </p>
 

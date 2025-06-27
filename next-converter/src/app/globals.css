@@ -54,77 +54,6 @@ a {
   }
 }
 
-.container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 30px;
-  background: var(--background);
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
-}
-
-/* 헤더 스타일 */
-.header {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.header-content h1 {
-  margin: 0;
-  font-size: 2.2em;
-  user-select: none;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: var(--gray-alpha-100);
-  padding: 10px 15px;
-  border-radius: 25px;
-  border: 1px solid var(--border-color);
-}
-
-.user-email {
-  color: var(--text-muted);
-  font-size: 0.9em;
-  font-weight: 500;
-}
-
-.logout-btn {
-  background: var(--error-color);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.9em;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-  background: #c82333;
-  transform: translateY(-1px);
-}
-
-.subtitle {
-  text-align: center;
-  color: var(--text-muted);
-  margin-bottom: 30px;
-  font-size: 1.1em;
-  line-height: 1.5;
-}
 
 form {
   display: flex;
@@ -738,14 +667,6 @@ button[type='submit']:disabled {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-  .container {
-    width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
-    margin: 10px 0;
-    padding: 20px;
-    border-radius: 10px;
-  }
   .option-row select,
   .option-row input,
   .download-btn,
@@ -852,25 +773,12 @@ button[type='submit']:disabled {
 }
 
 @media (max-width: 480px) {
-  .container {
-    width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
-    margin: 5px 0;
-    padding: 10px;
-  }
 }
 
 @media (max-width: 550px) {
-  .header-content {
-    justify-content: center;
-  }
 }
 
 @media (prefers-color-scheme: dark) {
-  .container {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  }
 }
 
 /* 로그인 페이지 애니메이션 */
@@ -902,15 +810,4 @@ button[type='submit']:disabled {
 }
 
 @media (min-width: 1024px) {
-  .container {
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  body > * {
-    margin-left: auto;
-    margin-right: auto;
-  }
 }
