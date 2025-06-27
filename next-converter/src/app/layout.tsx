@@ -16,10 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "QuokkaConvert",
   description: "비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConvert",
+  metadataBase: new URL("https://next-converter.vercel.app"),
   openGraph: {
     title: "QuokkaConvert",
     description: "비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConvert",
-    metadataBase: new URL("https://next-converter.vercel.app"),
     url: "https://next-converter.vercel.app",
     siteName: "QuokkaConvert",
     images: [
