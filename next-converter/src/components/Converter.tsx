@@ -12,6 +12,7 @@ interface ConversionResult {
   url: string;
   filename: string;
   size: string;
+  format: string;
 }
 
 // 파일 타입 감지
@@ -357,6 +358,7 @@ export default function Converter() {
         url: resultUrl,
         filename: `converted.${outputFormat}`,
         size: (convertedBlob.size / (1024 * 1024)).toFixed(2),
+        format: outputFormat,
       });
     } catch (error) {
       console.error('변환 오류:', error);
@@ -389,13 +391,14 @@ export default function Converter() {
       const url = URL.createObjectURL(convertedFile);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `converted.${outputFormat}`;
+      const format = result?.format || outputFormat;
+      a.download = `converted.${format}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
-  }, [convertedFile, outputFormat]);
+  }, [convertedFile, result, outputFormat]);
 
   // 재생속도 변경
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -974,7 +977,7 @@ export default function Converter() {
               <strong>변환 완료!</strong>
             </p>
             <p>파일 크기: {result.size} MB</p>
-            <p>출력 형식: {outputFormat.toUpperCase()}</p>
+            <p>출력 형식: {result.format.toUpperCase()}</p>
           </div>
           <button onClick={handleDownload} className="download-btn">
             파일 다운로드
