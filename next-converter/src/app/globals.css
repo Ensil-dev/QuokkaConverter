@@ -82,6 +82,7 @@ a {
 .header-content h1 {
   margin: 0;
   font-size: 2.2em;
+  user-select: none;
 }
 
 .user-info {
@@ -898,4 +899,14 @@ button[type='submit']:disabled {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }

@@ -653,7 +653,7 @@ export default function Home() {
             alt="QuokkaConvert"
             style={{ width: 64, height: 64, marginRight: 8 }}
           />
-          <span className="text-2xl font-bold text-gray-900">
+          <span className="text-2xl font-bold text-gray-900 select-none">
             QuokkaConvert
           </span>
         </div>
@@ -685,7 +685,7 @@ export default function Home() {
       {/* 헤더 */}
       <div className="header">
         <div className="header-content">
-          <h1>QuokkaConvert</h1>
+          <h1 className="select-none">QuokkaConvert</h1>
           <div className="user-info">
             <span className="user-email">{session.user?.email}</span>
             <button onClick={() => signOut()} className="logout-btn">
