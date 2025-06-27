@@ -22,7 +22,7 @@ export async function mergePdfs(pdfs: Uint8Array[]): Promise<Uint8Array> {
   for (const pdfBytes of pdfs) {
     const pdf = await PDFDocument.load(pdfBytes);
     const pages = await merged.copyPages(pdf, pdf.getPageIndices());
-    pages.forEach((p: any) => merged.addPage(p));
+    pages.forEach((p) => merged.addPage(p));
   }
   const bytes = await merged.save();
   return new Uint8Array(bytes);
