@@ -66,6 +66,7 @@ a {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  border: 1px solid var(--border-color);
 }
 
 /* 헤더 스타일 */
