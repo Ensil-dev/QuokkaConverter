@@ -60,7 +60,11 @@ const handleGoogleLogin = () => {
   }
 };
 
-export default function Converter() {
+interface ConverterProps {
+  showModeSelector?: boolean;
+}
+
+export default function Converter({ showModeSelector = true }: ConverterProps) {
   const { data: session, status } = useSession();
   const [mode, setMode] = useState<'media' | 'pdf'>('media');
   const [file, setFile] = useState<File | null>(null);
@@ -579,13 +583,19 @@ export default function Converter() {
 
       <p className="subtitle">비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요</p>
 
-      <div className="format-section">
-        <label htmlFor="mode">메뉴 선택:</label>
-        <select id="mode" value={mode} onChange={(e) => setMode(e.target.value as 'media' | 'pdf')}>
-          <option value="media">미디어 변환</option>
-          <option value="pdf">PDF 변환</option>
-        </select>
-      </div>
+      {showModeSelector && (
+        <div className="format-section">
+          <label htmlFor="mode">메뉴 선택:</label>
+          <select
+            id="mode"
+            value={mode}
+            onChange={(e) => setMode(e.target.value as 'media' | 'pdf')}
+          >
+            <option value="media">미디어 변환</option>
+            <option value="pdf">PDF 변환</option>
+          </select>
+        </div>
+      )}
 
       {mode === 'media' && (
       <form
