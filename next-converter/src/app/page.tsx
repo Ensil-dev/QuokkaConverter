@@ -6,6 +6,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
 import { FaSpinner } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import Image from 'next/image';
 
 interface ConversionResult {
   url: string;
@@ -648,10 +649,12 @@ export default function Home() {
           className="flex items-center gap-3 cursor-pointer"
           style={{ marginBottom: '10px' }}
         >
-          <img
+          <Image
             src="/apple-touch-icon.png"
             alt="QuokkaConvert"
-            style={{ width: 64, height: 64, marginRight: 8 }}
+            width={64}
+            height={64}
+            className="mr-[8px]"
           />
           <span className="text-2xl font-bold text-gray-900 select-none">
             QuokkaConvert
@@ -659,9 +662,8 @@ export default function Home() {
         </div>
         {/* 카드 */}
         <div
-          className="w-full max-w-[400px] min-w-[340px] bg-white rounded-2xl shadow-lg flex flex-col items-center gap-4"
+          className="w-full max-w-[400px] min-w-[340px] bg-white rounded-2xl shadow-lg flex flex-col items-center gap-4 p-[10px]"
           style={{
-            padding: '10px',
             marginTop: 0,
             maxWidth: '400px',
             minWidth: '320px',
