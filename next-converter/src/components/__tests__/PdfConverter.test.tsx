@@ -1,5 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import PdfConverter from '../PdfConverter';
+jest.mock('next-auth/react', () => ({
+  useSession: () => ({ data: null }),
+  signOut: jest.fn(),
+}));
 
 describe('PdfConverter component', () => {
   test('shows page input when split selected', () => {

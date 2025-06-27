@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
 import { FaSpinner } from 'react-icons/fa';
 
 import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
+import Header from '@/components/Header';
 
 interface ConversionResult {
   url: string;
@@ -569,19 +570,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   return (
     <div className="container" suppressHydrationWarning={true}>
       {/* 헤더 */}
-      <div className="header">
-        <div className="header-content">
-          <h1 className="select-none">QuokkaConvert</h1>
-          <div className="user-info">
-            <span className="user-email">{session.user?.email}</span>
-            <button onClick={() => signOut({ callbackUrl: '/' })} className="logout-btn">
-              로그아웃
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <p className="subtitle">비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요</p>
+      <Header subtitle="비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요" />
 
       {showModeSelector && (
         <div className="format-section">
