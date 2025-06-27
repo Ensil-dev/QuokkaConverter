@@ -35,7 +35,7 @@ function AuthErrorContent() {
         <div className="mt-8 space-y-6">
           <div className="text-center">
             <Link
-              href="/auth/signin"
+              href="/"
               className="text-blue-600 hover:text-blue-500 font-medium"
             >
               다시 로그인하기
