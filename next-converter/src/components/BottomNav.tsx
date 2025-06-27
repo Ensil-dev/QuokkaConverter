@@ -33,7 +33,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 border-t border-neutral-700 bg-neutral-900 shadow-md transition-all duration-300 ease-in-out ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+      className={`fixed bottom-0 left-0 right-0 border-t border-zinc-700 bg-zinc-900 shadow-md transition-all duration-300 ease-in-out ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
     >
       <ul className="flex justify-center gap-x-6 py-2">
         {tabs.map(({ href, icon, label }) => {
@@ -42,10 +42,10 @@ export default function BottomNav() {
             <li key={href}>
               <Link
                 href={href}
-                className={`flex min-h-[48px] min-w-[64px] flex-col items-center justify-center whitespace-nowrap rounded-md px-4 text-sm transition-colors ${active ? 'border-t-2 border-blue-500 text-white' : 'text-gray-400 hover:text-white'}`}
+                className={`flex min-h-[48px] min-w-[64px] flex-col items-center justify-center gap-y-1 whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors ${active ? 'bg-zinc-800 text-purple-500' : 'text-gray-400 hover:text-gray-100'}`}
               >
                 {icon}
-                <span className="mt-1">{label}</span>
+                <span>{label}</span>
               </Link>
             </li>
           );
