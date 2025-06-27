@@ -1,11 +1,6 @@
-import Converter from '@/components/Converter';
-import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 
-export default async function ConvertPage() {
-  const session = await auth();
-  if (!session) {
-    redirect('/');
-  }
-  return <Converter />;
+export default function ConvertPage() {
+  redirect('/convert/media');
+  return null;
 }
