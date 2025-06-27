@@ -3,26 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaImage, FaFilePdf } from 'react-icons/fa';
-import { useEffect, useState } from 'react';
+
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(true);
 
-  useEffect(() => {
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const currentY = window.scrollY;
-      if (currentY > lastY && currentY > 50) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-      lastY = currentY;
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   if (pathname === '/convert') {
     // convert 자체 페이지(예: 리디렉트 대상)일 경우만 숨김
@@ -34,7 +19,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
+    <nav className="bottom-nav z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
       <ul className="m-0 grid w-full list-none grid-cols-2 p-0">
         {tabs.map(({ href, icon, label }) => {
           const active = pathname === href || (href !== '/convert' && pathname.startsWith(href));
