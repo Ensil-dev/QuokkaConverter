@@ -565,7 +565,7 @@ export default function Converter() {
           <h1 className="select-none">QuokkaConvert</h1>
           <div className="user-info">
             <span className="user-email">{session.user?.email}</span>
-            <button onClick={() => signOut()} className="logout-btn">
+            <button onClick={() => signOut({ callbackUrl: '/' })} className="logout-btn">
               로그아웃
             </button>
           </div>
