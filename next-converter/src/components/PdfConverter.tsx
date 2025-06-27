@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Header from '@/components/Header';
 
 export default function PdfConverter() {
   const [operation, setOperation] = useState<'images' | 'merge' | 'split'>('images');
@@ -59,32 +60,34 @@ export default function PdfConverter() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="format-section">
-        <label htmlFor="operation">작업 선택:</label>
-        <select
-          id="operation"
-          value={operation}
-          onChange={(e) =>
-            setOperation(e.target.value as 'images' | 'merge' | 'split')
-          }
-        >
-          <option value="images">이미지 → PDF</option>
-          <option value="merge">PDF 병합</option>
-          <option value="split">페이지 분리</option>
-        </select>
-      </div>
-      <div className="file-section">
-        <label htmlFor="pdfFiles">파일 업로드:</label>
-        <input
-          id="pdfFiles"
-          type="file"
-          multiple={operation !== 'split'}
-          accept={operation === 'images' ? 'image/*' : 'application/pdf'}
-          onChange={handleChange}
-          required
-        />
-      </div>
+    <div className="container">
+      <Header subtitle="이미지 → PDF 변환과 병합 및 분할 기능을 제공합니다" />
+      <form onSubmit={handleSubmit}>
+        <div className="file-section">
+          <label htmlFor="pdfFiles">파일 업로드:</label>
+          <input
+            id="pdfFiles"
+            type="file"
+            multiple={operation !== 'split'}
+            accept={operation === 'images' ? 'image/*' : 'application/pdf'}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="format-section">
+          <label htmlFor="operation">작업 선택:</label>
+          <select
+            id="operation"
+            value={operation}
+            onChange={(e) =>
+              setOperation(e.target.value as 'images' | 'merge' | 'split')
+            }
+          >
+            <option value="images">이미지 → PDF</option>
+            <option value="merge">PDF 병합</option>
+            <option value="split">페이지 분리</option>
+          </select>
+        </div>
       {operation === 'split' && (
         <div className="option-row">
           <label htmlFor="page">페이지 번호:</label>
@@ -110,9 +113,10 @@ export default function PdfConverter() {
           </button>
         </div>
       )}
-      <button type="submit" disabled={loading}>
-        {loading ? '처리 중...' : '실행'}
-      </button>
-    </form>
+        <button type="submit" disabled={loading}>
+          {loading ? '처리 중...' : '실행'}
+        </button>
+      </form>
+    </div>
   );
 }
