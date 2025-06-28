@@ -54,11 +54,7 @@ function redirectToExternalBrowser() {
 }
 
 const handleGoogleLogin = () => {
-  if (typeof window !== 'undefined' && isInAppBrowser()) {
-    redirectToExternalBrowser();
-  } else {
-    signIn('google', { callbackUrl: '/convert' });
-  }
+  signIn('google', { callbackUrl: '/convert' });
 };
 
 interface ConverterProps {

@@ -4,14 +4,9 @@ import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FaSpinner } from 'react-icons/fa';
 import LoginCard from '@/components/LoginCard';
-import { isInAppBrowser, redirectToExternalBrowser } from '@/lib/browser';
 
 const handleGoogleLogin = () => {
-  if (typeof window !== 'undefined' && isInAppBrowser()) {
-    redirectToExternalBrowser();
-  } else {
-    signIn('google', { callbackUrl: '/convert' });
-  }
+  signIn('google', { callbackUrl: '/convert' });
 };
 
 export default function Home() {
