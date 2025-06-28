@@ -28,7 +28,7 @@ function logUsage(fileSize: number) {
   resetDailyUsage();
   dailyUsage.conversions++;
   dailyUsage.totalSize += fileSize;
-  
+
   console.log(`📊 사용량 통계: ${dailyUsage.conversions}회 변환, ${(dailyUsage.totalSize / (1024 * 1024)).toFixed(2)}MB 처리`);
 }
 
@@ -44,22 +44,61 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 허용된 사용자 확인
-    const allowedEmails = process.env.ALLOWED_EMAILS?.split(",").map(email => email.trim()) || [];
-    if (allowedEmails.length > 0 && session.user?.email && !allowedEmails.includes(session.user.email)) {
-      console.log(`접근 거부: ${session.user.email}`);
+    // 환경 변수에서 허용된 이메일 목록 추출
+    const allowedEmails: string[] = process.env.ALLOWED_EMAILS?.split(",").map(email => email.trim()) || [];
+
+    // 이메일 마스킹 함수
+    function maskEmail(email: string): string {
+      if (!email.includes("@")) return "[Invalid Email]";
+      const [name, domain] = email.split("@");
+      const maskedName =
+        name.length <= 2
+          ? name[0] + "*"
+          : name[0] + "*".repeat(name.length - 2) + name.slice(-1);
+      return `${maskedName}@${domain}`;
+    }
+
+    // 세션 타입 정의 (예시, 실제 프로젝트 타입에 맞게 수정 가능)
+    interface Session {
+      user?: {
+        email?: string;
+      };
+    }
+
+    // 세션 객체 예시 (실제로는 외부에서 주입됨)
+    // declare const session: Session;
+
+    // NextResponse 타입 import (Next.js API 환경 기준)
+    // import { NextResponse } from "next/server";
+
+    if (
+      allowedEmails.length > 0 &&
+      session.user?.email &&
+      !allowedEmails.includes(session.user.email)
+    ) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`접근 거부: ${maskEmail(session.user.email)}`);
+      } else {
+        console.warn("접근 거부: 허용되지 않은 사용자");
+      }
+
       return NextResponse.json(
-        { error: '접근 권한이 없습니다.' },
+        { error: "접근 권한이 없습니다." },
         { status: 403 }
       );
     }
 
-    console.log(`변환 요청: ${session.user?.email}`);
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`변환 요청: ${maskEmail(session.user?.email ?? "[Unknown]")}`);
+    } else {
+      console.log("변환 요청: 인증된 사용자로부터 요청 수신");
+    }
 
     // FormData 파싱
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    
+
     if (!file) {
       return NextResponse.json(
         { error: '파일이 업로드되지 않았습니다.' },
@@ -88,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     // 입력 파일 정보
     const inputExt = file.name.split('.').pop()?.toLowerCase() || '';
-    
+
     // 출력 형식이 지정되지 않은 경우 기본값 설정
     let targetFormat = outputFormat;
     if (!targetFormat) {
@@ -118,35 +157,35 @@ export async function POST(request: NextRequest) {
       codec?: string;
       playbackSpeed?: number;
     } = {};
-    
+
     if (resolution && resolution !== 'original') {
       convertOptions.resolution = resolution;
     }
-    
+
     if (fps) {
       convertOptions.fps = Number(fps);
     }
-    
+
     if (bitrate) {
       convertOptions.bitrate = bitrate;
     }
-    
+
     if (quality && ['낮음', '보통', '높음'].includes(quality)) {
       convertOptions.quality = quality;
     }
-    
+
     if (sampleRate) {
       convertOptions.sampleRate = Number(sampleRate);
     }
-    
+
     if (channels) {
       convertOptions.channels = Number(channels);
     }
-    
+
     if (codec) {
       convertOptions.codec = codec;
     }
-    
+
     if (playbackSpeed) {
       convertOptions.playbackSpeed = Number(playbackSpeed);
     }
@@ -184,7 +223,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('변환 오류:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('시간이 초과')) {
         return NextResponse.json(
@@ -192,13 +231,13 @@ export async function POST(request: NextRequest) {
           { status: 408 }
         );
       }
-      
+
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
       );
     }
-    
+
     return NextResponse.json(
       { error: '알 수 없는 오류가 발생했습니다.' },
       { status: 500 }
