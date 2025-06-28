@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth';
+import InAppRedirectGuard from '@/components/InAppRedirectGuard';
 
 export const metadata: Metadata = {
   title: 'QuokkaConverter',
@@ -52,6 +53,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body suppressHydrationWarning={true}>
+        <InAppRedirectGuard />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
