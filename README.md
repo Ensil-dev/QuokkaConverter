@@ -1,10 +1,10 @@
-# QuokkaConvert
+# QuokkaConverter
 
 로컬에서 무제한으로 사용가능한 범용 파일 변환 서비스입니다.
 
 ## 소개
 
-**QuokkaConvert**는 비디오, 오디오, 이미지 등 다양한 파일을 쉽고 빠르게 원하는 형식으로 변환할 수 있는 SaaS 서비스입니다. Google OAuth 기반 인증, 클라이언트 사이드 FFmpeg(wasm) 변환, 직관적인 UI/UX, 다양한 변환 옵션, 예상 크기/시간 미리보기, 강력한 보안과 비용 최적화까지 모두 갖추었습니다.
+**QuokkaConverter**는 비디오, 오디오, 이미지 등 다양한 파일을 쉽고 빠르게 원하는 형식으로 변환할 수 있는 SaaS 서비스입니다. Google OAuth 기반 인증, 클라이언트 사이드 FFmpeg(wasm) 변환, 직관적인 UI/UX, 다양한 변환 옵션, 예상 크기/시간 미리보기, 강력한 보안과 비용 최적화까지 모두 갖추었습니다.
 
 ## 주요 기능
 - 다양한 포맷(MP4, MOV, GIF, PNG, WebP, MP3, WAV 등) 상호 변환
@@ -52,4 +52,4 @@ ALLOWED_EMAILS=your@email.com,another@email.com
 
 ---
 
-QuokkaConvert와 함께 쉽게 파일을 변환하세요! 🦘🐨
+QuokkaConverter와 함께 쉽게 파일을 변환하세요! 🦘🐨

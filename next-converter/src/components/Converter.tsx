@@ -46,10 +46,10 @@ function redirectToExternalBrowser() {
   );
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
   if (ua.includes('iphone') || ua.includes('ipad')) {
-    window.location.href = 'x-web-search://www.quokkaconvert.com';
+    window.location.href = 'x-web-search://www.QuokkaConverter.com';
   } else {
     window.location.href =
-      'intent://www.quokkaconvert.com#Intent;scheme=https;package=com.android.chrome;end';
+      'intent://www.QuokkaConverter.com#Intent;scheme=https;package=com.android.chrome;end';
   }
 }
 
