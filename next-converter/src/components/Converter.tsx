@@ -2,8 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { toBlobURL } from '@ffmpeg/util';
 import { FaSpinner } from 'react-icons/fa';
 
 import LoginCard from '@/components/LoginCard';
@@ -77,7 +75,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     initFFmpeg()
       .then(() => {
         setIsFFmpegLoaded(true);
-        console.log('FFmpeg 준비 완료 (S3 기반)');
+        // console.log('FFmpeg 준비 완료 (S3 기반)');
       })
       .catch((err) => {
         console.error('FFmpeg 초기화 실패:', err);
@@ -252,7 +250,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       setConvertedFile(convertBlob);
 
       // 결과 설정
-      const resultUrl = URL.createObjectURL(convertBlob);
+      // const resultUrl = URL.createObjectURL(convertBlob);
+
       setResult({
         url: URL.createObjectURL(convertBlob),
         filename: `converted.${outputFormat}`,
