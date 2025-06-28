@@ -18,6 +18,7 @@ export default function LoginCard({ onLogin }: LoginCardProps) {
           <Image
             src="/apple-touch-icon.png"
             alt="QuokkaConvert"
+            priority
             width={64}
             height={64}
             className="mr-[8px] select-none"
