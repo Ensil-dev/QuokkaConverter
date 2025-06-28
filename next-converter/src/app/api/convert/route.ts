@@ -58,15 +58,6 @@ export async function POST(request: NextRequest) {
       return `${maskedName}@${domain}`;
     }
 
-    // 세션 타입 정의 (예시, 실제 프로젝트 타입에 맞게 수정 가능)
-    interface Session {
-      user?: {
-        email?: string;
-      };
-    }
-
-    // 세션 객체 예시 (실제로는 외부에서 주입됨)
-    // declare const session: Session;
 
     // NextResponse 타입 import (Next.js API 환경 기준)
     // import { NextResponse } from "next/server";
