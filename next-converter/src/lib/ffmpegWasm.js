@@ -4,10 +4,15 @@ import { toBlobURL } from '@ffmpeg/util';
 let ffmpeg = null;
 
 // FFmpeg 초기화
-async function initFFmpeg() {
+export async function initFFmpeg() {
   if (ffmpeg) return ffmpeg;
 
   const base = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL ?? '/ffmpeg';
+
+  // const coreURL = `${base}/ffmpeg-core.js`;
+  // const wasmURL = `${base}/ffmpeg-core.wasm`;
+  // console.log('FFmpeg 요청 대상 JS URL:', coreURL);
+  // console.log('FFmpeg 요청 대상 WASM URL:', wasmURL);
 
   ffmpeg = new FFmpeg();
 
