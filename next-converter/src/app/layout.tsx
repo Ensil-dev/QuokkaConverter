@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth';
-import useInAppBrowserRedirect from '@/lib/hooks/useInAppBrowserRedirect';
+import InAppRedirectGuard from '@/components/InAppRedirectGuard';
 
 export const metadata: Metadata = {
   title: 'QuokkaConverter',
@@ -50,10 +50,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  useInAppBrowserRedirect();
   return (
     <html lang="ko">
       <body suppressHydrationWarning={true}>
+        <InAppRedirectGuard />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
