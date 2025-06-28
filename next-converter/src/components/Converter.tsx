@@ -9,6 +9,7 @@ import { FaSpinner } from 'react-icons/fa';
 import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
 import Header from '@/components/Header';
+import { convertFileWithWasm, initFFmpeg } from '@/lib/ffmpegWasm';
 
 interface ConversionResult {
   url: string;
@@ -50,7 +51,6 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const [convertedFile, setConvertedFile] = useState<Blob | null>(null);
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState('');
-  const [ffmpeg, setFfmpeg] = useState<FFmpeg | null>(null);
   const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
 
   // 비디오 설정 옵션들 상태 관리
@@ -74,23 +74,15 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
   // FFmpeg 로드
   useEffect(() => {
-    const initFFmpeg = async () => {
-      try {
-        const ffmpegInstance = new FFmpeg();
-        await ffmpegInstance.load({
-          coreURL: await toBlobURL('/ffmpeg/ffmpeg-core.js', 'text/javascript'),
-          wasmURL: await toBlobURL('/ffmpeg/ffmpeg-core.wasm', 'application/wasm'),
-        });
-        setFfmpeg(ffmpegInstance);
+    initFFmpeg()
+      .then(() => {
         setIsFFmpegLoaded(true);
-        console.log('FFmpeg 로드 완료');
-      } catch (error) {
-        console.error('FFmpeg 로드 실패:', error);
+        console.log('FFmpeg 준비 완료 (S3 기반)');
+      })
+      .catch((err) => {
+        console.error('FFmpeg 초기화 실패:', err);
         setError('FFmpeg 로드에 실패했습니다.');
-      }
-    };
-
-    initFFmpeg();
+      });
   }, []);
 
   // 슬라이더 초기 색상 설정
@@ -206,86 +198,6 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     }
   }, []);
 
-  // 파일 변환 (클라이언트 사이드에서만 동작)
-  const convertFile = useCallback(
-    async (inputFile: File, targetFormat: string, options: Record<string, unknown> = {}) => {
-      if (!ffmpeg || !isFFmpegLoaded) {
-        throw new Error('FFmpeg가 로드되지 않았습니다.');
-      }
-
-      try {
-        const inputExt = inputFile.name.split('.').pop()?.toLowerCase() || '';
-        const inputFileName = `input.${inputExt}`;
-        const outputFileName = `output.${targetFormat}`;
-
-        // 파일을 FFmpeg에 로드
-        const arrayBuffer = await inputFile.arrayBuffer();
-        await ffmpeg.writeFile(inputFileName, new Uint8Array(arrayBuffer));
-
-        // 변환 명령어 생성
-        const args = ['-i', inputFileName];
-
-        // 비디오 옵션 처리
-        if (options.resolution && options.resolution !== 'original') {
-          args.push('-vf', `scale=${options.resolution}:flags=fast_bilinear`);
-        }
-
-        if (options.fps) {
-          args.push('-r', String(options.fps));
-        }
-
-        if (options.bitrate) {
-          args.push('-b:v', options.bitrate as string);
-        }
-
-        // 품질 설정
-        if (options.quality) {
-          const qualityMap: Record<string, number> = {
-            낮음: 28,
-            보통: 23,
-            높음: 18,
-          };
-          const qualityValue = qualityMap[options.quality as string];
-          if (qualityValue !== undefined) {
-            args.push('-crf', String(qualityValue));
-          }
-        }
-
-        // 재생속도 설정
-        if (options.playbackSpeed && options.playbackSpeed !== 1) {
-          args.push('-filter:v', `setpts=${1 / (options.playbackSpeed as number)}*PTS`);
-        }
-
-        // 출력 파일
-        args.push(outputFileName);
-
-        console.log('FFmpeg 명령어:', args.join(' '));
-
-        // 변환 실행
-        await ffmpeg.exec(args);
-
-        // 결과 파일 읽기
-        const outputData = await ffmpeg.readFile(outputFileName);
-
-        // 임시 파일 정리
-        try {
-          await ffmpeg.deleteFile(inputFileName);
-          await ffmpeg.deleteFile(outputFileName);
-        } catch (cleanupError) {
-          console.warn('파일 정리 중 오류:', cleanupError);
-        }
-
-        return new Blob([outputData], { type: `application/octet-stream` });
-      } catch (error) {
-        console.error('변환 오류:', error);
-        throw new Error(
-          `파일 변환에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
-        );
-      }
-    },
-    [ffmpeg, isFFmpegLoaded]
-  );
-
   // 변환 실행
   const handleConvert = useCallback(async () => {
     if (!file || !outputFormat || !isFFmpegLoaded) {
@@ -311,6 +223,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         if (playbackSpeed) options.playbackSpeed = playbackSpeed;
       }
 
+      setProgress(25);
+
       // 오디오 옵션들
       if (fileType === 'audio') {
         if (sampleRate) options.sampleRate = sampleRate;
@@ -318,26 +232,31 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         if (audioQuality) options.quality = audioQuality;
       }
 
+      setProgress(50);
+
       // 이미지 옵션들
       if (fileType === 'image') {
         if (imageResolution && imageResolution !== 'original') options.resolution = imageResolution;
         if (imageQuality) options.quality = imageQuality;
       }
 
-      setProgress(25);
+      setProgress(75);
 
       // 파일 변환 실행
-      const convertedBlob = await convertFile(file, outputFormat, options);
+      const inputExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+      const buffer = await file.arrayBuffer();
+      const { data } = await convertFileWithWasm(buffer, inputExt, outputFormat, options);
 
+      const convertBlob = new Blob([data], { type: 'application/octet-stream' });
       setProgress(100);
-      setConvertedFile(convertedBlob);
+      setConvertedFile(convertBlob);
 
       // 결과 설정
-      const resultUrl = URL.createObjectURL(convertedBlob);
+      const resultUrl = URL.createObjectURL(convertBlob);
       setResult({
-        url: resultUrl,
+        url: URL.createObjectURL(convertBlob),
         filename: `converted.${outputFormat}`,
-        size: (convertedBlob.size / (1024 * 1024)).toFixed(2),
+        size: (convertBlob.size / 1024 / 1024).toFixed(2),
         format: outputFormat,
       });
     } catch (error) {
@@ -350,8 +269,6 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   }, [
     file,
     outputFormat,
-    convertFile,
-    isFFmpegLoaded,
     fileType,
     resolution,
     fps,
@@ -560,248 +477,248 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       )}
 
       {mode === 'media' && (
-      <form
-        ref={formRef}
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleConvert();
-        }}
-      >
-        <div className="file-section">
-          <label htmlFor="fileInput">파일 업로드:</label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            id="fileInput"
-            onChange={handleFileUpload}
-            required
-          />
-          <p className="file-limit-note">최대 파일 크기: 100MB (로컬 실행 제한)</p>
-          {file && (
-            <div className="file-info">
-              <p>
-                <strong>파일명:</strong> {file.name}
-              </p>
-              <p>
-                <strong>크기:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
-              </p>
-              <p>
-                <strong>타입:</strong>{' '}
-                {fileType
-                  ? fileType.charAt(0).toUpperCase() + fileType.slice(1)
-                  : '지원하지 않는 형식'}
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="format-section">
-          <label htmlFor="outputFormat">출력 형식:</label>
-          <select
-            id="outputFormat"
-            value={outputFormat}
-            onChange={(e) => setOutputFormat(e.target.value)}
-            required
-          >
-            <option value="">변환할 형식을 선택하세요</option>
-            {availableFormats.map((format, index) => (
-              <option key={`${format}-${index}`} value={format}>
-                {format.toUpperCase()}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* GIF 변환 시에만 재생속도 옵션을 컨테이너 상단에 표시 */}
-        {fileType === 'video' && outputFormat === 'gif' && (
-          <div className="speed-control-section">
-            <div className="speed-header">
-              <label htmlFor="playbackSpeed" className="speed-title">
-                재생속도 조절
-              </label>
-              <div className="speed-display">{playbackSpeed}x</div>
-            </div>
-            <div className="speed-slider-container">
-              <div className="speed-labels">
-                <span className="speed-indicator slow">
-                  <span className="speed-icon">🐌</span>
-                  <span className="speed-text">느림</span>
-                </span>
-                <span className="speed-indicator fast">
-                  <span className="speed-icon">⚡</span>
-                  <span className="speed-text">빠름</span>
-                </span>
+        <form
+          ref={formRef}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleConvert();
+          }}
+        >
+          <div className="file-section">
+            <label htmlFor="fileInput">파일 업로드:</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="fileInput"
+              onChange={handleFileUpload}
+              required
+            />
+            <p className="file-limit-note">최대 파일 크기: 100MB (로컬 실행 제한)</p>
+            {file && (
+              <div className="file-info">
+                <p>
+                  <strong>파일명:</strong> {file.name}
+                </p>
+                <p>
+                  <strong>크기:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
+                </p>
+                <p>
+                  <strong>타입:</strong>{' '}
+                  {fileType
+                    ? fileType.charAt(0).toUpperCase() + fileType.slice(1)
+                    : '지원하지 않는 형식'}
+                </p>
               </div>
-              <div className="slider-track">
-                <input
-                  type="range"
-                  id="playbackSpeed"
-                  min="0.25"
-                  max="2.0"
-                  step="0.25"
-                  value={playbackSpeed}
-                  className="speed-slider"
-                  onChange={handleSpeedChange}
-                />
-                <div className="slider-markers">
-                  <span className="marker">0.25x</span>
-                  <span className="marker">0.5x</span>
-                  <span className="marker">0.75x</span>
-                  <span className="marker">1.0x</span>
-                  <span className="marker">1.25x</span>
-                  <span className="marker">1.5x</span>
-                  <span className="marker">1.75x</span>
-                  <span className="marker">2.0x</span>
+            )}
+          </div>
+
+          <div className="format-section">
+            <label htmlFor="outputFormat">출력 형식:</label>
+            <select
+              id="outputFormat"
+              value={outputFormat}
+              onChange={(e) => setOutputFormat(e.target.value)}
+              required
+            >
+              <option value="">변환할 형식을 선택하세요</option>
+              {availableFormats.map((format, index) => (
+                <option key={`${format}-${index}`} value={format}>
+                  {format.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* GIF 변환 시에만 재생속도 옵션을 컨테이너 상단에 표시 */}
+          {fileType === 'video' && outputFormat === 'gif' && (
+            <div className="speed-control-section">
+              <div className="speed-header">
+                <label htmlFor="playbackSpeed" className="speed-title">
+                  재생속도 조절
+                </label>
+                <div className="speed-display">{playbackSpeed}x</div>
+              </div>
+              <div className="speed-slider-container">
+                <div className="speed-labels">
+                  <span className="speed-indicator slow">
+                    <span className="speed-icon">🐌</span>
+                    <span className="speed-text">느림</span>
+                  </span>
+                  <span className="speed-indicator fast">
+                    <span className="speed-icon">⚡</span>
+                    <span className="speed-text">빠름</span>
+                  </span>
+                </div>
+                <div className="slider-track">
+                  <input
+                    type="range"
+                    id="playbackSpeed"
+                    min="0.25"
+                    max="2.0"
+                    step="0.25"
+                    value={playbackSpeed}
+                    className="speed-slider"
+                    onChange={handleSpeedChange}
+                  />
+                  <div className="slider-markers">
+                    <span className="marker">0.25x</span>
+                    <span className="marker">0.5x</span>
+                    <span className="marker">0.75x</span>
+                    <span className="marker">1.0x</span>
+                    <span className="marker">1.25x</span>
+                    <span className="marker">1.5x</span>
+                    <span className="marker">1.75x</span>
+                    <span className="marker">2.0x</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* 비디오 옵션 */}
-        {fileType === 'video' && (
-          <div className="options-section">
-            <h3>비디오 설정</h3>
-            <div className="option-row">
-              <label htmlFor="resolution">해상도:</label>
-              <select
-                id="resolution"
-                value={resolution}
-                onChange={(e) => setResolution(e.target.value)}
-              >
-                <option value="original">원본</option>
-                <option value="640x360">640x360</option>
-                <option value="1280x720">1280x720</option>
-                <option value="1920x1080">1920x1080</option>
-              </select>
-            </div>
-            <div className="option-row">
-              <label htmlFor="fps">프레임레이트:</label>
-              <input
-                type="number"
-                id="fps"
-                value={fps}
-                onChange={(e) => setFps(Number(e.target.value))}
-                min="1"
-                max="60"
-              />
-            </div>
-            {/* GIF 변환 시에는 비트레이트 옵션 숨김 */}
-            {outputFormat !== 'gif' && (
+          {/* 비디오 옵션 */}
+          {fileType === 'video' && (
+            <div className="options-section">
+              <h3>비디오 설정</h3>
               <div className="option-row">
-                <label htmlFor="bitrate">비트레이트:</label>
-                <select id="bitrate" value={bitrate} onChange={(e) => setBitrate(e.target.value)}>
-                  <option value="">자동</option>
-                  <option value="1000k">1000k</option>
-                  <option value="2000k">2000k</option>
-                  <option value="5000k">5000k</option>
+                <label htmlFor="resolution">해상도:</label>
+                <select
+                  id="resolution"
+                  value={resolution}
+                  onChange={(e) => setResolution(e.target.value)}
+                >
+                  <option value="original">원본</option>
+                  <option value="640x360">640x360</option>
+                  <option value="1280x720">1280x720</option>
+                  <option value="1920x1080">1920x1080</option>
                 </select>
               </div>
-            )}
-            <div className="option-row">
-              <label htmlFor="videoQuality">품질:</label>
-              <select
-                id="videoQuality"
-                value={videoQuality}
-                onChange={(e) => setVideoQuality(e.target.value)}
-              >
-                <option value="보통">보통</option>
-                <option value="낮음">낮음 (파일 크기 작음)</option>
-                <option value="높음">높음 (파일 크기 큼)</option>
-              </select>
-              {outputFormat === 'gif' && (
-                <span className="option-note">GIF는 품질 설정으로 크기를 조절합니다</span>
+              <div className="option-row">
+                <label htmlFor="fps">프레임레이트:</label>
+                <input
+                  type="number"
+                  id="fps"
+                  value={fps}
+                  onChange={(e) => setFps(Number(e.target.value))}
+                  min="1"
+                  max="60"
+                />
+              </div>
+              {/* GIF 변환 시에는 비트레이트 옵션 숨김 */}
+              {outputFormat !== 'gif' && (
+                <div className="option-row">
+                  <label htmlFor="bitrate">비트레이트:</label>
+                  <select id="bitrate" value={bitrate} onChange={(e) => setBitrate(e.target.value)}>
+                    <option value="">자동</option>
+                    <option value="1000k">1000k</option>
+                    <option value="2000k">2000k</option>
+                    <option value="5000k">5000k</option>
+                  </select>
+                </div>
               )}
+              <div className="option-row">
+                <label htmlFor="videoQuality">품질:</label>
+                <select
+                  id="videoQuality"
+                  value={videoQuality}
+                  onChange={(e) => setVideoQuality(e.target.value)}
+                >
+                  <option value="보통">보통</option>
+                  <option value="낮음">낮음 (파일 크기 작음)</option>
+                  <option value="높음">높음 (파일 크기 큼)</option>
+                </select>
+                {outputFormat === 'gif' && (
+                  <span className="option-note">GIF는 품질 설정으로 크기를 조절합니다</span>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* 오디오 옵션 */}
-        {fileType === 'audio' && (
-          <div className="options-section">
-            <h3>오디오 설정</h3>
-            <div className="option-row">
-              <label htmlFor="sampleRate">샘플레이트:</label>
-              <select
-                id="sampleRate"
-                value={sampleRate}
-                onChange={(e) => setSampleRate(e.target.value)}
-              >
-                <option value="">원본</option>
-                <option value="22050">22050 Hz</option>
-                <option value="44100">44100 Hz</option>
-                <option value="48000">48000 Hz</option>
-              </select>
+          {/* 오디오 옵션 */}
+          {fileType === 'audio' && (
+            <div className="options-section">
+              <h3>오디오 설정</h3>
+              <div className="option-row">
+                <label htmlFor="sampleRate">샘플레이트:</label>
+                <select
+                  id="sampleRate"
+                  value={sampleRate}
+                  onChange={(e) => setSampleRate(e.target.value)}
+                >
+                  <option value="">원본</option>
+                  <option value="22050">22050 Hz</option>
+                  <option value="44100">44100 Hz</option>
+                  <option value="48000">48000 Hz</option>
+                </select>
+              </div>
+              <div className="option-row">
+                <label htmlFor="channels">채널:</label>
+                <select id="channels" value={channels} onChange={(e) => setChannels(e.target.value)}>
+                  <option value="">원본</option>
+                  <option value="1">모노</option>
+                  <option value="2">스테레오</option>
+                </select>
+              </div>
+              <div className="option-row">
+                <label htmlFor="audioQuality">품질:</label>
+                <select
+                  id="audioQuality"
+                  value={audioQuality}
+                  onChange={(e) => setAudioQuality(e.target.value)}
+                >
+                  <option value="보통">보통</option>
+                  <option value="낮음">낮음 (파일 크기 작음)</option>
+                  <option value="높음">높음 (파일 크기 큼)</option>
+                </select>
+              </div>
             </div>
-            <div className="option-row">
-              <label htmlFor="channels">채널:</label>
-              <select id="channels" value={channels} onChange={(e) => setChannels(e.target.value)}>
-                <option value="">원본</option>
-                <option value="1">모노</option>
-                <option value="2">스테레오</option>
-              </select>
-            </div>
-            <div className="option-row">
-              <label htmlFor="audioQuality">품질:</label>
-              <select
-                id="audioQuality"
-                value={audioQuality}
-                onChange={(e) => setAudioQuality(e.target.value)}
-              >
-                <option value="보통">보통</option>
-                <option value="낮음">낮음 (파일 크기 작음)</option>
-                <option value="높음">높음 (파일 크기 큼)</option>
-              </select>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* 이미지 옵션 */}
-        {fileType === 'image' && (
-          <div className="options-section">
-            <h3>이미지 설정</h3>
-            <div className="option-row">
-              <label htmlFor="imageResolution">해상도:</label>
-              <select
-                id="imageResolution"
-                value={imageResolution}
-                onChange={(e) => setImageResolution(e.target.value)}
-              >
-                <option value="original">원본</option>
-                <option value="800x600">800x600</option>
-                <option value="1024x768">1024x768</option>
-                <option value="1920x1080">1920x1080</option>
-              </select>
+          {/* 이미지 옵션 */}
+          {fileType === 'image' && (
+            <div className="options-section">
+              <h3>이미지 설정</h3>
+              <div className="option-row">
+                <label htmlFor="imageResolution">해상도:</label>
+                <select
+                  id="imageResolution"
+                  value={imageResolution}
+                  onChange={(e) => setImageResolution(e.target.value)}
+                >
+                  <option value="original">원본</option>
+                  <option value="800x600">800x600</option>
+                  <option value="1024x768">1024x768</option>
+                  <option value="1920x1080">1920x1080</option>
+                </select>
+              </div>
+              <div className="option-row">
+                <label htmlFor="imageQuality">품질:</label>
+                <select
+                  id="imageQuality"
+                  value={imageQuality}
+                  onChange={(e) => setImageQuality(e.target.value)}
+                >
+                  <option value="보통">보통</option>
+                  <option value="낮음">낮음 (파일 크기 작음)</option>
+                  <option value="높음">높음 (파일 크기 큼)</option>
+                </select>
+              </div>
             </div>
-            <div className="option-row">
-              <label htmlFor="imageQuality">품질:</label>
-              <select
-                id="imageQuality"
-                value={imageQuality}
-                onChange={(e) => setImageQuality(e.target.value)}
-              >
-                <option value="보통">보통</option>
-                <option value="낮음">낮음 (파일 크기 작음)</option>
-                <option value="높음">높음 (파일 크기 큼)</option>
-              </select>
+          )}
+
+          <button
+            type="submit"
+            disabled={isConverting || !isConversionSupported(fileType, outputFormat)}
+          >
+            {isConverting ? '변환 중...' : '변환하기'}
+          </button>
+
+          {/* 지원하지 않는 변환 조합 안내 */}
+          {outputFormat && !isConversionSupported(fileType, outputFormat) && (
+            <div className="warning-message">
+              <p>⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을 선택해주세요.</p>
             </div>
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={isConverting || !isConversionSupported(fileType, outputFormat)}
-        >
-          {isConverting ? '변환 중...' : '변환하기'}
-        </button>
-
-        {/* 지원하지 않는 변환 조합 안내 */}
-        {outputFormat && !isConversionSupported(fileType, outputFormat) && (
-          <div className="warning-message">
-            <p>⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을 선택해주세요.</p>
-          </div>
-        )}
-      </form>
+          )}
+        </form>
       )}
 
       {mode === 'pdf' && <PdfConverter />}
