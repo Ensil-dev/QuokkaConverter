@@ -23,7 +23,7 @@ export default function LoginCard({ onLogin }: LoginCardProps) {
             height={64}
             className="mr-[8px] select-none"
           />
-          <span className="select-none text-2xl font-bold text-black dark:text-white">
+          <span className="select-none text-2xl font-bold text-black dark:text-white z-50">
             QuokkaConverter
           </span>
         </div>
