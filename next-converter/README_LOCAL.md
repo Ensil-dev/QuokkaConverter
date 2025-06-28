@@ -4,8 +4,8 @@
 
 ```bash
 # 1. 저장소 클론
-git clone https://github.com/yourusername/converter_saas.git
-cd converter_saas/next-converter
+git clone https://github.com/yourusername/quokkaconverter.git
+cd quokkaconverter/next-converter
 
 # 2. 의존성 설치
 npm install
@@ -22,8 +22,8 @@ npm run dev
 ### 1. 저장소 클론
 
 ```bash
-git clone https://github.com/yourusername/converter_saas.git
-cd converter_saas/next-converter
+git clone https://github.com/yourusername/quokkaconverter.git
+cd quokkaconverter/next-converter
 ```
 
 ### 2. 의존성 설치
@@ -41,7 +41,7 @@ npm run dev
 ### 4. 브라우저에서 접속
 
 ```text
-http://localhost:3001
+http://localhost:3000
 ```
 
 ## 장점
