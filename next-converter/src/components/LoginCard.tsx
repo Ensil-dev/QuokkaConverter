@@ -23,7 +23,9 @@ export default function LoginCard({ onLogin }: LoginCardProps) {
             height={64}
             className="mr-[8px] select-none"
           />
-          <span className="select-none text-2xl font-bold text-gray-900">QuokkaConverter</span>
+          <span className="select-none text-2xl font-bold text-black dark:text-white">
+            QuokkaConverter
+          </span>
         </div>
         <div
           className="flex w-full min-w-[340px] max-w-[400px] flex-col items-center gap-4 rounded-2xl bg-white shadow-lg"
