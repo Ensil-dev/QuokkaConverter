@@ -11,7 +11,7 @@ export default function Header({ subtitle }: HeaderProps) {
     <>
       <div className="header">
         <div className="header-content">
-          <h1 className="select-none">QuokkaConvert</h1>
+          <h1 className="select-none">QuokkaConverter</h1>
           {session && (
             <div className="user-info">
               <span className="user-email">{session.user?.email}</span>

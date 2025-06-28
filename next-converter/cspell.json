@@ -19,7 +19,7 @@
     "movflags",
     "NEXTAUTH",
     "Quokka",
-    "quokkaconvert",
+    "QuokkaConverter",
     "setpts",
     "vercel",
     "vorbis",

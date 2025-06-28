@@ -3,20 +3,20 @@ import './globals.css';
 import { AuthProvider } from '@/lib/auth';
 
 export const metadata: Metadata = {
-  title: 'QuokkaConvert',
-  description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConvert',
+  title: 'QuokkaConverter',
+  description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
   metadataBase: new URL('https://next-converter.vercel.app'),
   openGraph: {
-    title: 'QuokkaConvert',
-    description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConvert',
+    title: 'QuokkaConverter',
+    description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
     url: 'https://next-converter.vercel.app',
-    siteName: 'QuokkaConvert',
+    siteName: 'QuokkaConverter',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'QuokkaConvert - 범용 파일 변환 SaaS',
+        alt: 'QuokkaConverter - 범용 파일 변환 SaaS',
       },
     ],
     locale: 'ko_KR',
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'QuokkaConvert',
-    description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConvert',
+    title: 'QuokkaConverter',
+    description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
     images: ['/og-image.png'],
     site: '@your_twitter',
   },
