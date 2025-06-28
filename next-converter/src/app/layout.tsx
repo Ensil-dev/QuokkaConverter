@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth';
 import InAppRedirectGuard from '@/components/InAppRedirectGuard';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'QuokkaConverter',
@@ -55,6 +56,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={true}>
         <InAppRedirectGuard />
         <AuthProvider>{children}</AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
