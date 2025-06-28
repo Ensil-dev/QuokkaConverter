@@ -30,29 +30,6 @@ const detectFileType = (filename: string) => {
   return 'unknown';
 };
 
-function isInAppBrowser() {
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
-  return (
-    ua.includes('kakaotalk') ||
-    ua.includes('naver') ||
-    ua.includes('fbav') ||
-    ua.includes('instagram')
-  );
-}
-
-function redirectToExternalBrowser() {
-  alert(
-    '카카오톡 등 인앱 브라우저에서는 Google 로그인이 지원되지 않습니다. 크롬 또는 사파리 브라우저로 열어주세요.'
-  );
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
-  if (ua.includes('iphone') || ua.includes('ipad')) {
-    window.location.href = 'x-web-search://www.quokkaconverter.com';
-  } else {
-    window.location.href =
-      'intent://www.quokkaconverter.com#Intent;scheme=https;package=com.android.chrome;end';
-  }
-}
-
 const handleGoogleLogin = () => {
   signIn('google', { callbackUrl: '/convert' });
 };
