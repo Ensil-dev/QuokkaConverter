@@ -23,7 +23,7 @@ export async function initFFmpeg() {
       wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
     });
 
-    console.log('FFmpeg WebAssembly 로드 완료');
+    // console.log('FFmpeg WebAssembly 로드 완료');
     return ffmpeg;
   } catch (error) {
     console.error('FFmpeg WebAssembly 로드 실패:', error);
@@ -74,7 +74,7 @@ export async function convertFileWithWasm(inputBuffer, inputFormat, outputFormat
     args.push(outputFileName);
 
     // 변환 실행
-    console.log('FFmpeg 명령어:', args.join(' '));
+    // console.log('FFmpeg 명령어:', args.join(' '));
     await ffmpegInstance.exec(args);
 
     // 결과 파일 읽기

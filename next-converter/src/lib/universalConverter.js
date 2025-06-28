@@ -213,7 +213,7 @@ function convertVideo(inputPath, outputPath, options = {}) {
 
   args.push('-y', outputPath);
 
-  console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
+  // console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
 
   const result = spawnSync(ffmpegPath, args, { 
     encoding: 'buffer', 
@@ -380,7 +380,7 @@ function convertAudio(inputPath, outputPath, options = {}) {
 
   args.push('-y', outputPath);
 
-  console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
+  // console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
 
   const result = spawnSync(ffmpegPath, args, { 
     encoding: 'buffer', 
@@ -460,7 +460,7 @@ function convertImage(inputPath, outputPath, options = {}) {
 
   args.push('-y', outputPath);
 
-  console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
+  // console.log('FFmpeg 명령어:', [ffmpegPath, ...args].join(' '));
 
   const result = spawnSync(ffmpegPath, args, { 
     encoding: 'buffer', 
@@ -564,7 +564,7 @@ function convertToGif(inputPath, outputPath, options = {}) {
     '-y', outputPath
   ];
 
-  console.log('FFmpeg 명령어:', [ffmpegPath, ...ffmpegArgs].join(' '));
+  // console.log('FFmpeg 명령어:', [ffmpegPath, ...ffmpegArgs].join(' '));
 
   const ffmpegResult = spawnSync(ffmpegPath, ffmpegArgs, { 
     encoding: 'buffer', 
