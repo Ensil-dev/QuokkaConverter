@@ -38,6 +38,22 @@ NEXTAUTH_URL=http://localhost:3000
 ALLOWED_EMAILS=your@email.com,another@email.com
 ```
 
+## 개발자 가이드
+- 과거 커밋에 포함된 `server/node_modules` 폴더를 삭제하려면 `git filter-repo` 명령을 사용합니다.
+
+```bash
+git filter-repo --path server/node_modules --invert-paths
+```
+
+- 필터링 후 새 원격 저장소에 강제 푸시해 기존 히스토리를 정리합니다.
+
+```bash
+git remote add clean <NEW_REPO_URL>
+git push -f clean main
+```
+
+- 작업 전에 반드시 백업을 남기고, 팀원과 공유된 환경에서는 주의해서 실행하세요.
+
 ## 비용 이슈 및 최적화 방안
 - 서버리스 환경(Vercel)에서 FFmpeg 설치 불가 → ffmpeg.wasm으로 대체
 - 대용량 파일 제한(100MB), 변환 옵션별 예상 크기/시간 안내
