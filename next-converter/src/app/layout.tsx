@@ -5,11 +5,11 @@ import { AuthProvider } from '@/lib/auth';
 export const metadata: Metadata = {
   title: 'QuokkaConverter',
   description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
-  metadataBase: new URL('https://next-converter.vercel.app'),
+  metadataBase: new URL('https://quokkaconverter.vercel.app'),
   openGraph: {
     title: 'QuokkaConverter',
     description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
-    url: 'https://next-converter.vercel.app',
+    url: 'https://quokkaconverter.vercel.app',
     siteName: 'QuokkaConverter',
     images: [
       {
