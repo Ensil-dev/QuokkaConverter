@@ -4,13 +4,15 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Loading from '@/components/Loading';
 import { loginWithGoogle, downloadBlob } from '@/lib/utils';
+import useConversionEstimates from '@/lib/hooks/useConversionEstimates';
+import { getAvailableOutputFormats } from '@/lib/utils/conversionHelper';
 
 import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
 import Header from '@/components/Header';
 import ErrorMessage from '@/components/ErrorMessage';
 import { convertFileWithWasm, initFFmpeg } from '@/lib/ffmpegWasm';
-import { detectFileType, isConversionSupported, SUPPORTED_FORMATS } from '@/lib/utils/fileFormats';
+import { detectFileType, isConversionSupported } from '@/lib/utils/fileFormats';
 
 interface ConversionResult {
   url: string;
@@ -36,6 +38,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState('');
   const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
+
+  const { getEstimatedTime, getEstimatedFileSize } = useConversionEstimates();
 
   // 비디오 설정 옵션들 상태 관리
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
@@ -79,16 +83,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
   // 출력 형식 필터링
   const filterOutputFormats = (inputType: string) => {
-    const formats = new Set<string>();
-    if (inputType === 'video') {
-      SUPPORTED_FORMATS.video.output.forEach((f) => formats.add(f));
-      ['jpg', 'png', 'webp', 'mp3', 'aac', 'wav'].forEach((f) => formats.add(f));
-    } else if (inputType === 'audio') {
-      SUPPORTED_FORMATS.audio.output.forEach((f) => formats.add(f));
-    } else if (inputType === 'image') {
-      SUPPORTED_FORMATS.image.output.forEach((f) => formats.add(f));
-    }
-    setAvailableFormats(Array.from(formats).sort());
+    setAvailableFormats(getAvailableOutputFormats(inputType));
   };
 
 
@@ -243,136 +238,6 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     );
   };
 
-  // 예상 시간 계산
-  const getEstimatedTime = (
-    fileSize: number,
-    inputType: string | null,
-    outputFormat: string,
-    playbackSpeed: number,
-    resolution: string,
-    fps: number,
-    videoQuality: string
-  ): string => {
-    const sizeInMB = fileSize / (1024 * 1024);
-    let estimatedSeconds = 0;
-
-    if (inputType === 'video') {
-      const baseTime = estimateVideoDuration(sizeInMB, resolution, fps, videoQuality);
-      estimatedSeconds = baseTime / playbackSpeed;
-    } else if (inputType === 'audio') {
-      estimatedSeconds = estimateAudioDuration(sizeInMB, audioQuality);
-    } else if (inputType === 'image') {
-      estimatedSeconds = 5; // 이미지는 빠름
-    }
-
-    if (estimatedSeconds < 60) {
-      return `${Math.ceil(estimatedSeconds)}초`;
-    } else {
-      return `${Math.ceil(estimatedSeconds / 60)}분`;
-    }
-  };
-
-  // 예상 파일 크기 계산
-  const getEstimatedFileSize = (
-    fileSize: number,
-    inputType: string | null,
-    outputFormat: string,
-    playbackSpeed: number,
-    resolution: string,
-    fps: number,
-    bitrate: string,
-    videoQuality: string
-  ): string => {
-    const sizeInMB = fileSize / (1024 * 1024);
-    let estimatedSize = sizeInMB;
-
-    if (inputType === 'video') {
-      if (outputFormat === 'gif') {
-        // GIF는 품질에 따라 크기 계산
-        const sizePerMinute = getGifSizePerMinute(resolution, fps, videoQuality);
-        const duration = estimateVideoDuration(sizeInMB, resolution, fps, videoQuality) / 60;
-        estimatedSize = sizePerMinute * duration;
-      } else {
-        // 비디오는 품질과 해상도에 따라 크기 조정
-        let qualityFactor = 1;
-        if (videoQuality === '낮음') qualityFactor = 0.6;
-        else if (videoQuality === '높음') qualityFactor = 1.4;
-
-        let resolutionFactor = 1;
-        if (resolution === '640x360') resolutionFactor = 0.5;
-        else if (resolution === '1280x720') resolutionFactor = 0.8;
-        else if (resolution === '1920x1080') resolutionFactor = 1.2;
-
-        estimatedSize = sizeInMB * qualityFactor * resolutionFactor;
-      }
-    } else if (inputType === 'audio') {
-      // 오디오는 품질에 따라 크기 조정
-      if (audioQuality === '낮음') estimatedSize *= 0.5;
-      else if (audioQuality === '높음') estimatedSize *= 1.5;
-    } else if (inputType === 'image') {
-      // 이미지는 품질에 따라 크기 조정
-      if (imageQuality === '낮음') estimatedSize *= 0.3;
-      else if (imageQuality === '높음') estimatedSize *= 1.5;
-    }
-
-    // WebP 변환 시 크기 감소
-    if (outputFormat === 'webp') {
-      estimatedSize *= 0.3;
-    }
-
-    if (estimatedSize < 1) {
-      return `${(estimatedSize * 1024).toFixed(1)} KB`;
-    } else {
-      return `${estimatedSize.toFixed(1)} MB`;
-    }
-  };
-
-  // 비디오 길이 추정
-  const estimateVideoDuration = (
-    sizeInMB: number,
-    resolution: string,
-    fps: number,
-    quality: string
-  ): number => {
-    let bitrate = 2000; // 기본 2Mbps
-
-    if (resolution === '640x360') bitrate = 800;
-    else if (resolution === '1280x720') bitrate = 1500;
-    else if (resolution === '1920x1080') bitrate = 3000;
-
-    if (quality === '낮음') bitrate *= 0.7;
-    else if (quality === '높음') bitrate *= 1.3;
-
-    // 비트레이트로부터 길이 계산 (초 단위)
-    return (sizeInMB * 8 * 1024) / bitrate;
-  };
-
-  // 오디오 길이 추정
-  const estimateAudioDuration = (sizeInMB: number, quality: string): number => {
-    let bitrate = 128; // 기본 128kbps
-
-    if (quality === '낮음') bitrate = 64;
-    else if (quality === '높음') bitrate = 320;
-
-    return (sizeInMB * 8 * 1024) / bitrate;
-  };
-
-  // GIF 크기 계산 (분당)
-  const getGifSizePerMinute = (resolution: string, fps: number, quality: string): number => {
-    let sizePerMinute = 10; // 기본 10MB/분
-
-    if (resolution === '640x360') sizePerMinute = 5;
-    else if (resolution === '1280x720') sizePerMinute = 15;
-    else if (resolution === '1920x1080') sizePerMinute = 30;
-
-    if (fps > 15) sizePerMinute *= 1.5;
-    if (fps > 20) sizePerMinute *= 1.3;
-
-    if (quality === '낮음') sizePerMinute *= 0.5;
-    else if (quality === '높음') sizePerMinute *= 1.5;
-
-    return sizePerMinute;
-  };
 
   // 로그인 상태 확인
   if (status === 'loading') {
@@ -685,7 +550,9 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
                     resolution,
                     fps,
                     bitrate,
-                    videoQuality
+                    videoQuality,
+                    audioQuality,
+                    imageQuality
                   )}
                 </span>
               </div>
@@ -699,7 +566,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
                     playbackSpeed,
                     resolution,
                     fps,
-                    videoQuality
+                    videoQuality,
+                    audioQuality
                   )}
                 </span>
               </div>
@@ -739,7 +607,9 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
                     resolution,
                     fps,
                     bitrate,
-                    videoQuality
+                    videoQuality,
+                    audioQuality,
+                    imageQuality
                   )}
                 </span>
               </div>
@@ -783,7 +653,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
                     playbackSpeed,
                     resolution,
                     fps,
-                    videoQuality
+                    videoQuality,
+                    audioQuality
                   )}
                 </span>
               </div>
