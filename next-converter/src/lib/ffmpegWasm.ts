@@ -91,7 +91,7 @@ export async function convertFileWithWasm(
     await ffmpegInstance.exec(args);
 
     // 결과 파일 읽기
-    const outputData = await ffmpegInstance.readFile(outputFileName);
+    const outputData = await ffmpegInstance.readFile(outputFileName) as Uint8Array;
 
     // 임시 파일 정리
     try {
@@ -108,7 +108,8 @@ export async function convertFileWithWasm(
 
   } catch (error) {
     console.error('FFmpeg WebAssembly 변환 오류:', error);
-    throw new Error(`파일 변환에 실패했습니다: ${error.message}`);
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`파일 변환에 실패했습니다: ${message}`);
   }
 }
 
