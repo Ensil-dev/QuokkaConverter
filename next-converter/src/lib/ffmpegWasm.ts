@@ -1,10 +1,18 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
 
-let ffmpeg = null;
+export interface WasmConvertOptions {
+  resolution?: string;
+  fps?: number;
+  bitrate?: string;
+  quality?: '낮음' | '보통' | '높음';
+  playbackSpeed?: number;
+}
+
+let ffmpeg: FFmpeg | null = null;
 
 // FFmpeg 초기화
-export async function initFFmpeg() {
+export async function initFFmpeg(): Promise<FFmpeg> {
   if (ffmpeg) return ffmpeg;
 
   const base = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL ?? '/ffmpeg';
@@ -32,7 +40,12 @@ export async function initFFmpeg() {
 }
 
 // 파일 변환 함수
-export async function convertFileWithWasm(inputBuffer, inputFormat, outputFormat, options = {}) {
+export async function convertFileWithWasm(
+  inputBuffer: ArrayBuffer,
+  inputFormat: string,
+  outputFormat: string,
+  options: WasmConvertOptions = {}
+): Promise<{ data: Uint8Array; size: number }> {
   try {
     const ffmpegInstance = await initFFmpeg();
 
@@ -116,7 +129,7 @@ export const SUPPORTED_FORMATS = {
 };
 
 // 변환 지원 여부 확인
-export function isConversionSupported(inputFormat, outputFormat) {
+export function isConversionSupported(inputFormat: string, outputFormat: string): boolean {
   const inputExt = inputFormat.toLowerCase();
   const outputExt = outputFormat.toLowerCase();
 

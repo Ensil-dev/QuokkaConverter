@@ -2,6 +2,34 @@ import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
+export interface VideoOptions {
+  resolution?: string;
+  fps?: number;
+  bitrate?: string;
+  codec?: string;
+  quality?: '낮음' | '보통' | '높음';
+}
+
+export interface AudioOptions {
+  bitrate?: string;
+  sampleRate?: number;
+  channels?: number;
+  codec?: string;
+  quality?: '낮음' | '보통' | '높음';
+}
+
+export interface ImageOptions {
+  resolution?: string;
+  quality?: '낮음' | '보통' | '높음';
+  format?: string;
+}
+
+export interface ConvertOptions extends VideoOptions, AudioOptions, ImageOptions {
+  input: string;
+  output?: string;
+  format?: string;
+}
+
 // 지원하는 포맷 정의
 export const SUPPORTED_FORMATS = {
   video: {
@@ -19,7 +47,7 @@ export const SUPPORTED_FORMATS = {
 };
 
 // 파일 타입 감지
-function detectFileType(filename) {
+function detectFileType(filename: string): 'video' | 'audio' | 'image' | null {
   const ext = path.extname(filename).toLowerCase().slice(1);
   
   if (SUPPORTED_FORMATS.video.input.includes(ext) || SUPPORTED_FORMATS.video.output.includes(ext)) {
@@ -34,7 +62,7 @@ function detectFileType(filename) {
 }
 
 // FFmpeg 의존성 확인
-function checkFFmpeg() {
+function checkFFmpeg(): boolean {
   try {
     execSync('ffmpeg -version', { stdio: 'ignore' });
     return true;
@@ -44,7 +72,7 @@ function checkFFmpeg() {
 }
 
 // 비디오 변환
-function convertVideo(inputPath, outputPath, options = {}) {
+function convertVideo(inputPath: string, outputPath: string, options: VideoOptions = {}): { output: string; size: number } {
   const {
     resolution,
     fps,
@@ -102,7 +130,7 @@ function convertVideo(inputPath, outputPath, options = {}) {
 }
 
 // 오디오 변환
-function convertAudio(inputPath, outputPath, options = {}) {
+function convertAudio(inputPath: string, outputPath: string, options: AudioOptions = {}): { output: string; size: number } {
   const {
     bitrate,
     sampleRate,
@@ -157,7 +185,7 @@ function convertAudio(inputPath, outputPath, options = {}) {
 }
 
 // 이미지 변환
-function convertImage(inputPath, outputPath, options = {}) {
+function convertImage(inputPath: string, outputPath: string, options: ImageOptions = {}): { output: string; size: number } {
   const {
     resolution,
     quality,
@@ -195,7 +223,7 @@ function convertImage(inputPath, outputPath, options = {}) {
 }
 
 // GIF 특별 처리 (최적화)
-function convertToGif(inputPath, outputPath, options = {}) {
+function convertToGif(inputPath: string, outputPath: string, options: { resolution?: string; fps?: number; optimize?: number } = {}): { output: string; size: number } {
   const {
     resolution,
     fps = 10,
@@ -252,7 +280,7 @@ function convertToGif(inputPath, outputPath, options = {}) {
 }
 
 // 메인 변환 함수
-export async function convertFile(options) {
+export async function convertFile(options: ConvertOptions): Promise<{ output: string; size: number }> {
   const {
     input,
     output,
@@ -302,7 +330,7 @@ export async function convertFile(options) {
 }
 
 // 지원하는 변환 조합 확인
-export function isConversionSupported(inputFormat, outputFormat) {
+export function isConversionSupported(inputFormat: string, outputFormat: string): boolean {
   const inputType = detectFileType(`file.${inputFormat}`);
   const outputType = detectFileType(`file.${outputFormat}`);
   

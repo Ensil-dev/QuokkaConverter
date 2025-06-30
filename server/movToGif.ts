@@ -1,8 +1,20 @@
 import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
 
-function check_dependencies() {
-  const missing = [];
+export interface MovToGifOptions {
+  input: string;
+  output?: string;
+  framerate?: number;
+  loop?: number;
+  optimize?: number;
+  width?: number;
+  scale?: string;
+  delay?: number;
+  quality?: '낮음' | '보통' | '높음';
+}
+
+function check_dependencies(): void {
+  const missing: string[] = [];
   try { execSync('ffmpeg -version', { stdio: 'ignore' }); } catch { missing.push('ffmpeg'); }
   try { execSync('gifsicle --version', { stdio: 'ignore' }); } catch { missing.push('gifsicle'); }
   if (missing.length > 0) {
@@ -10,7 +22,7 @@ function check_dependencies() {
   }
 }
 
-function apply_quality_preset(preset, state) {
+function apply_quality_preset(preset: '낮음' | '보통' | '높음', state: MovToGifOptions): void {
   switch (preset) {
     case '낮음':
       state.framerate = 8; state.optimize = 1;
@@ -28,8 +40,8 @@ function apply_quality_preset(preset, state) {
   }
 }
 
-export async function movToGif(options) {
-  const state = { ...options };
+export async function movToGif(options: MovToGifOptions): Promise<{ output: string; size: number }> {
+  const state: MovToGifOptions = { ...options };
   if (state.loop === undefined) state.loop = 0;
   if (!state.input) throw new Error('입력 파일이 지정되지 않았습니다.');
   if (!fs.existsSync(state.input)) throw new Error(`입력 파일을 찾을 수 없습니다: ${state.input}`);
