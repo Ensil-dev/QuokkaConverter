@@ -64,7 +64,11 @@ export default function PdfConverter() {
             id="pdfFiles"
             type="file"
             multiple={operation !== 'split'}
-            accept={operation === 'images' ? 'image/*' : 'application/pdf'}
+            accept={
+              operation === 'images'
+                ? 'image/jpeg,image/png'
+                : 'application/pdf'
+            }
             onChange={handleChange}
             required
           />

@@ -6,11 +6,22 @@ const redDot = Buffer.from(
   'base64'
 );
 
+const gifDot = Buffer.from(
+  'R0lGODlhAQABAIABAP///wAAACwAAAAAAQABAAACAkQBADs=',
+  'base64'
+);
+
 describe('pdf utils', () => {
   test('imagesToPdf creates pdf with same page count as images', async () => {
     const result = await imagesToPdf([redDot]);
     const doc = await PDFDocument.load(result);
     expect(doc.getPageCount()).toBe(1);
+  });
+
+  test('imagesToPdf throws error for unsupported format', async () => {
+    await expect(imagesToPdf([gifDot])).rejects.toThrow(
+      '지원하지 않는 이미지 형식입니다. (JPG, PNG만 가능)'
+    );
   });
 
   test('mergePdfs merges pages', async () => {

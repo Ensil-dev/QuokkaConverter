@@ -61,6 +61,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '잘못된 작업입니다.' }, { status: 400 });
   } catch (err) {
     const message = err instanceof Error ? err.message : '처리 중 오류 발생';
+    if (message === '지원하지 않는 이미지 형식입니다. (JPG, PNG만 가능)') {
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

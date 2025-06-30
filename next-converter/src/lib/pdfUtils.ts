@@ -7,7 +7,11 @@ export async function imagesToPdf(images: Uint8Array[]): Promise<Uint8Array> {
     try {
       embedded = await pdfDoc.embedJpg(img);
     } catch {
-      embedded = await pdfDoc.embedPng(img);
+      try {
+        embedded = await pdfDoc.embedPng(img);
+      } catch {
+        throw new Error('지원하지 않는 이미지 형식입니다. (JPG, PNG만 가능)');
+      }
     }
     const { width, height } = embedded.scale(1);
     const page = pdfDoc.addPage([width, height]);
