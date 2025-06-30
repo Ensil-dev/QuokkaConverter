@@ -2,6 +2,7 @@ import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import ffmpeg from 'ffmpeg-static';
+import { detectFileType } from './utils/fileFormats';
 
 export interface ConvertOptions {
   input: string;
@@ -46,36 +47,7 @@ const getFFmpegPath = () => {
   throw new Error('FFmpeg 실행 파일을 찾을 수 없습니다.');
 };
 
-// 지원하는 포맷 정의
-export const SUPPORTED_FORMATS = {
-  video: {
-    input: ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'm4v', '3gp'],
-    output: ['mp4', 'avi', 'mov', 'mkv', 'webm', 'gif', 'flv', 'wmv', 'm4v', '3gp']
-  },
-  audio: {
-    input: ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'],
-    output: ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus']
-  },
-  image: {
-    input: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp', 'svg'],
-    output: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp']
-  }
-};
 
-// 파일 타입 감지
-function detectFileType(filename: string): 'video' | 'audio' | 'image' | null {
-  const ext = path.extname(filename).toLowerCase().slice(1);
-  
-  if (SUPPORTED_FORMATS.video.input.includes(ext) || SUPPORTED_FORMATS.video.output.includes(ext)) {
-    return 'video';
-  } else if (SUPPORTED_FORMATS.audio.input.includes(ext) || SUPPORTED_FORMATS.audio.output.includes(ext)) {
-    return 'audio';
-  } else if (SUPPORTED_FORMATS.image.input.includes(ext) || SUPPORTED_FORMATS.image.output.includes(ext)) {
-    return 'image';
-  }
-  
-  return null;
-}
 
 // FFmpeg 의존성 확인 (서버리스 환경에서는 항상 사용 가능)
 function checkFFmpeg(): string {
@@ -699,18 +671,3 @@ export async function convertFile(options: ConvertOptions): Promise<{ output: st
 }
 
 // 지원하는 변환 조합 확인
-export function isConversionSupported(inputFormat: string, outputFormat: string): boolean {
-  const inputType = detectFileType(`file.${inputFormat}`);
-  const outputType = detectFileType(`file.${outputFormat}`);
-  
-  if (!inputType || !outputType) return false;
-  
-  // 같은 타입 내에서의 변환은 항상 지원
-  if (inputType === outputType) return true;
-  
-  // 특별한 경우들
-  if (inputType === 'video' && outputType === 'image') return true; // 비디오에서 이미지 추출
-  if (inputType === 'video' && outputType === 'audio') return true; // 비디오에서 오디오 추출
-  
-  return false;
-} 

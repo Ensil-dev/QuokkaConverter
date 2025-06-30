@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { convertFileWithWasm, SUPPORTED_FORMATS } from '@/lib/ffmpegWasm';
+import { convertFileWithWasm } from '@/lib/ffmpegWasm';
+import { SUPPORTED_FORMATS } from '@/lib/utils/fileFormats';
 
 // 비용 제어를 위한 제한 설정 (Vercel 배포용)
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB (Vercel 제한)

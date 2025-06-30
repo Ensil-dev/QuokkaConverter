@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isConversionSupported } from '@/lib/universalConverter';
+import { isConversionSupported } from '@/lib/utils/fileFormats';
 
 export async function POST(request: NextRequest) {
   try {

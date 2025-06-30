@@ -1,6 +1,7 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
 
+
 export interface WasmConvertOptions {
   resolution?: string;
   fps?: number;
@@ -114,43 +115,3 @@ export async function convertFileWithWasm(
 }
 
 // 지원하는 포맷 정의
-export const SUPPORTED_FORMATS = {
-  video: {
-    input: ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'm4v', '3gp'],
-    output: ['mp4', 'avi', 'mov', 'mkv', 'webm', 'gif', 'flv', 'wmv', 'm4v', '3gp']
-  },
-  audio: {
-    input: ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'],
-    output: ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus']
-  },
-  image: {
-    input: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp', 'svg'],
-    output: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp']
-  }
-};
-
-// 변환 지원 여부 확인
-export function isConversionSupported(inputFormat: string, outputFormat: string): boolean {
-  const inputExt = inputFormat.toLowerCase();
-  const outputExt = outputFormat.toLowerCase();
-
-  // 비디오 변환
-  if (SUPPORTED_FORMATS.video.input.includes(inputExt) &&
-    SUPPORTED_FORMATS.video.output.includes(outputExt)) {
-    return true;
-  }
-
-  // 오디오 변환
-  if (SUPPORTED_FORMATS.audio.input.includes(inputExt) &&
-    SUPPORTED_FORMATS.audio.output.includes(outputExt)) {
-    return true;
-  }
-
-  // 이미지 변환
-  if (SUPPORTED_FORMATS.image.input.includes(inputExt) &&
-    SUPPORTED_FORMATS.image.output.includes(outputExt)) {
-    return true;
-  }
-
-  return false;
-} 
