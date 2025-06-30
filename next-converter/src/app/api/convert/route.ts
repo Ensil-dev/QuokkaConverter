@@ -135,14 +135,13 @@ export async function POST(request: NextRequest) {
 
     // 파일을 ArrayBuffer로 변환
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
 
     // 변환 옵션 구성
     const convertOptions: {
       resolution?: string;
       fps?: number;
       bitrate?: string;
-      quality?: string;
+      quality?: '낮음' | '보통' | '높음';
       sampleRate?: number;
       channels?: number;
       codec?: string;
@@ -162,7 +161,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (quality && ['낮음', '보통', '높음'].includes(quality)) {
-      convertOptions.quality = quality;
+      convertOptions.quality = quality as '낮음' | '보통' | '높음';
     }
 
     if (sampleRate) {
@@ -185,7 +184,7 @@ export async function POST(request: NextRequest) {
 
     // 타임아웃 설정으로 비용 제어
     const conversionPromise = convertFileWithWasm(
-      buffer,
+      arrayBuffer,
       inputExt,
       targetFormat,
       convertOptions

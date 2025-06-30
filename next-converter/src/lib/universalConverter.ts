@@ -90,7 +90,11 @@ function checkFFmpeg(): string {
 }
 
 // 비디오 변환 (최적화)
-function convertVideo(inputPath: string, outputPath: string, options: ConvertOptions = {}): { output: string; size: number } {
+function convertVideo(
+  inputPath: string,
+  outputPath: string,
+  options: Partial<Omit<ConvertOptions, 'input' | 'output'>> = {}
+): { output: string; size: number } {
   const {
     resolution,
     fps,
@@ -281,7 +285,11 @@ function convertVideo(inputPath: string, outputPath: string, options: ConvertOpt
 }
 
 // 오디오 변환 (최적화)
-function convertAudio(inputPath: string, outputPath: string, options: ConvertOptions = {}): { output: string; size: number } {
+function convertAudio(
+  inputPath: string,
+  outputPath: string,
+  options: Partial<Omit<ConvertOptions, 'input' | 'output'>> = {}
+): { output: string; size: number } {
   const {
     bitrate,
     sampleRate,
@@ -448,7 +456,11 @@ function convertAudio(inputPath: string, outputPath: string, options: ConvertOpt
 }
 
 // 이미지 변환 (최적화)
-function convertImage(inputPath: string, outputPath: string, options: ConvertOptions = {}): { output: string; size: number } {
+function convertImage(
+  inputPath: string,
+  outputPath: string,
+  options: Partial<Omit<ConvertOptions, 'input' | 'output'>> = {}
+): { output: string; size: number } {
   const {
     resolution,
     quality
@@ -528,7 +540,11 @@ function convertImage(inputPath: string, outputPath: string, options: ConvertOpt
 }
 
 // GIF 특별 처리 (최적화)
-function convertToGif(inputPath: string, outputPath: string, options: ConvertOptions = {}): { output: string; size: number } {
+function convertToGif(
+  inputPath: string,
+  outputPath: string,
+  options: Partial<Omit<ConvertOptions, 'input' | 'output'>> = {}
+): { output: string; size: number } {
   const {
     resolution,
     fps = 10,
@@ -539,7 +555,7 @@ function convertToGif(inputPath: string, outputPath: string, options: ConvertOpt
   console.log('GIF 변환 시작:', { inputPath, outputPath, options });
 
   const ffmpegPath = checkFFmpeg();
-  let filters = [];
+  const filters: string[] = [];
   
   // 재생속도 조절 (setpts 필터 사용)
   if (playbackSpeed !== 1.0) {
