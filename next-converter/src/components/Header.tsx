@@ -1,12 +1,13 @@
 'use client';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
+import { useAuth } from '@/lib/auth';
 
 interface HeaderProps {
   subtitle: string;
 }
 
 export default function Header({ subtitle }: HeaderProps) {
-  const { data: session } = useSession();
+  const { session } = useAuth();
   return (
     <>
       <div className="header">

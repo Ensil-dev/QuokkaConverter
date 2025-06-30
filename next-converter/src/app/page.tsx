@@ -1,13 +1,13 @@
 'use client';
 import { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
 import LoginCard from '@/components/LoginCard';
 import { loginWithGoogle } from '@/lib/utils';
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { session, status } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
