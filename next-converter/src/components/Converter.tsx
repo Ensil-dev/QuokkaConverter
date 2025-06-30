@@ -9,6 +9,7 @@ import { getAvailableOutputFormats } from '@/lib/utils/conversionHelper';
 
 import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
+import ResultPlaceholder from '@/components/ResultPlaceholder';
 import Header from '@/components/Header';
 import ErrorMessage from '@/components/ErrorMessage';
 import { convertFileWithWasm } from '@/lib/ffmpegWasm';
@@ -523,138 +524,100 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
       {/* 변환 중일 때 결과 영역 미리 확보 */}
       {isConverting && (
-        <div className="result-placeholder">
-          <div className="placeholder-content">
-            <div className="placeholder-icon">⏳</div>
-            <h2>변환 결과 준비 중...</h2>
-            <p>변환이 완료되면 여기에 결과가 표시됩니다</p>
-            <div className="placeholder-info">
-              <div className="placeholder-item">
-                <span className="placeholder-label">출력 형식:</span>
-                <span className="placeholder-value">{outputFormat.toUpperCase()}</span>
-              </div>
-              <div className="placeholder-item">
-                <span className="placeholder-label">예상 크기:</span>
-                <span className="placeholder-value">
-                  {getEstimatedFileSize(
-                    file!.size,
-                    fileType,
-                    outputFormat,
-                    playbackSpeed,
-                    resolution,
-                    fps,
-                    bitrate,
-                    videoQuality,
-                    audioQuality,
-                    imageQuality
-                  )}
-                </span>
-              </div>
-              <div className="placeholder-item">
-                <span className="placeholder-label">예상 시간:</span>
-                <span className="placeholder-value">
-                  {getEstimatedTime(
-                    file!.size,
-                    fileType,
-                    outputFormat,
-                    playbackSpeed,
-                    resolution,
-                    fps,
-                    videoQuality,
-                    audioQuality
-                  )}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ResultPlaceholder
+          icon="⏳"
+          title="변환 결과 준비 중..."
+          message="변환이 완료되면 여기에 결과가 표시됩니다"
+          info={[
+            { label: '출력 형식', value: outputFormat.toUpperCase() },
+            {
+              label: '예상 크기',
+              value: getEstimatedFileSize(
+                file!.size,
+                fileType,
+                outputFormat,
+                playbackSpeed,
+                resolution,
+                fps,
+                bitrate,
+                videoQuality,
+                audioQuality,
+                imageQuality,
+              ),
+            },
+            {
+              label: '예상 시간',
+              value: getEstimatedTime(
+                file!.size,
+                fileType,
+                outputFormat,
+                playbackSpeed,
+                resolution,
+                fps,
+                videoQuality,
+                audioQuality,
+              ),
+            },
+          ]}
+        />
       )}
 
       {/* 파일 업로드 및 출력 형식 선택 완료 시 결과 영역 미리 확보 */}
       {file && outputFormat && !isConverting && !result && !error && (
-        <div className="result-placeholder ready">
-          <div className="placeholder-content">
-            <div className="placeholder-icon">📁</div>
-            <h2>변환 준비 완료</h2>
-            <p>변환 버튼을 클릭하면 여기에 결과가 표시됩니다</p>
-            <div className="placeholder-info">
-              <div className="placeholder-item">
-                <span className="placeholder-label">입력 파일:</span>
-                <span className="placeholder-value">{file.name}</span>
-              </div>
-              <div className="placeholder-item">
-                <span className="placeholder-label">출력 형식:</span>
-                <span className="placeholder-value">{outputFormat.toUpperCase()}</span>
-              </div>
-              <div className="placeholder-item">
-                <span className="placeholder-label">파일 크기:</span>
-                <span className="placeholder-value">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
-              </div>
-              <div className="placeholder-item">
-                <span className="placeholder-label">예상 크기:</span>
-                <span className="placeholder-value">
-                  {getEstimatedFileSize(
-                    file.size,
-                    fileType,
-                    outputFormat,
-                    playbackSpeed,
-                    resolution,
-                    fps,
-                    bitrate,
-                    videoQuality,
-                    audioQuality,
-                    imageQuality
-                  )}
-                </span>
-              </div>
-              {fileType === 'video' && outputFormat === 'gif' && (
-                <div className="placeholder-item">
-                  <span className="placeholder-label">재생속도:</span>
-                  <span className="placeholder-value">{playbackSpeed}x</span>
-                </div>
-              )}
-              {fileType === 'video' && resolution !== 'original' && (
-                <div className="placeholder-item">
-                  <span className="placeholder-label">해상도:</span>
-                  <span className="placeholder-value">{resolution}</span>
-                </div>
-              )}
-              {fileType === 'video' && fps !== 10 && (
-                <div className="placeholder-item">
-                  <span className="placeholder-label">프레임레이트:</span>
-                  <span className="placeholder-value">{fps} FPS</span>
-                </div>
-              )}
-              {fileType === 'video' && bitrate && outputFormat !== 'gif' && (
-                <div className="placeholder-item">
-                  <span className="placeholder-label">비트레이트:</span>
-                  <span className="placeholder-value">{bitrate}</span>
-                </div>
-              )}
-              {fileType === 'video' && videoQuality !== '보통' && (
-                <div className="placeholder-item">
-                  <span className="placeholder-label">품질:</span>
-                  <span className="placeholder-value">{videoQuality}</span>
-                </div>
-              )}
-              <div className="placeholder-item">
-                <span className="placeholder-label">예상 시간:</span>
-                <span className="placeholder-value">
-                  {getEstimatedTime(
-                    file.size,
-                    fileType,
-                    outputFormat,
-                    playbackSpeed,
-                    resolution,
-                    fps,
-                    videoQuality,
-                    audioQuality
-                  )}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ResultPlaceholder
+          ready
+          icon="📁"
+          title="변환 준비 완료"
+          message="변환 버튼을 클릭하면 여기에 결과가 표시됩니다"
+          info={[
+            { label: '입력 파일', value: file.name },
+            { label: '출력 형식', value: outputFormat.toUpperCase() },
+            { label: '파일 크기', value: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
+            {
+              label: '예상 크기',
+              value: getEstimatedFileSize(
+                file.size,
+                fileType,
+                outputFormat,
+                playbackSpeed,
+                resolution,
+                fps,
+                bitrate,
+                videoQuality,
+                audioQuality,
+                imageQuality,
+              ),
+            },
+            ...(fileType === 'video' && outputFormat === 'gif'
+              ? [{ label: '재생속도', value: `${playbackSpeed}x` }]
+              : []),
+            ...(fileType === 'video' && resolution !== 'original'
+              ? [{ label: '해상도', value: resolution }]
+              : []),
+            ...(fileType === 'video' && fps !== 10
+              ? [{ label: '프레임레이트', value: `${fps} FPS` }]
+              : []),
+            ...(fileType === 'video' && bitrate && outputFormat !== 'gif'
+              ? [{ label: '비트레이트', value: bitrate }]
+              : []),
+            ...(fileType === 'video' && videoQuality !== '보통'
+              ? [{ label: '품질', value: videoQuality }]
+              : []),
+            {
+              label: '예상 시간',
+              value: getEstimatedTime(
+                file.size,
+                fileType,
+                outputFormat,
+                playbackSpeed,
+                resolution,
+                fps,
+                videoQuality,
+                audioQuality,
+              ),
+            },
+          ]}
+        />
       )}
 
       {/* GIF에서 WebP 변환 시 특별 안내 */}
