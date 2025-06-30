@@ -6,10 +6,6 @@ import Loading from '@/components/Loading';
 import LoginCard from '@/components/LoginCard';
 import { loginWithGoogle } from '@/lib/utils';
 
-const handleGoogleLogin = () => {
-  loginWithGoogle();
-};
-
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -24,5 +20,5 @@ export default function Home() {
     return <Loading />;
   }
 
-  return <LoginCard onLogin={handleGoogleLogin} />;
+  return <LoginCard onLogin={loginWithGoogle} />;
 }
