@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/auth';
 import Loading from '@/components/Loading';
 import { loginWithGoogle, downloadBlob } from '@/lib/utils';
 import useConversionEstimates from '@/lib/hooks/useConversionEstimates';
@@ -11,7 +11,8 @@ import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
 import Header from '@/components/Header';
 import ErrorMessage from '@/components/ErrorMessage';
-import { convertFileWithWasm, initFFmpeg } from '@/lib/ffmpegWasm';
+import { convertFileWithWasm } from '@/lib/ffmpegWasm';
+import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { detectFileType, isConversionSupported } from '@/lib/utils/fileFormats';
 
 interface ConversionResult {
@@ -26,7 +27,7 @@ interface ConverterProps {
 }
 
 export default function Converter({ showModeSelector = true }: ConverterProps) {
-  const { data: session, status } = useSession();
+  const { session, status } = useAuth();
   const [mode, setMode] = useState<'media' | 'pdf'>('media');
   const [file, setFile] = useState<File | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const [convertedFile, setConvertedFile] = useState<Blob | null>(null);
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState('');
-  const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
+  const { isReady: isFFmpegLoaded, error: ffmpegError } = useFFmpeg();
 
   const { getEstimatedTime, getEstimatedFileSize } = useConversionEstimates();
 
@@ -60,18 +61,11 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // FFmpeg 로드
   useEffect(() => {
-    initFFmpeg()
-      .then(() => {
-        setIsFFmpegLoaded(true);
-        // console.log('FFmpeg 준비 완료 (S3 기반)');
-      })
-      .catch((err) => {
-        console.error('FFmpeg 초기화 실패:', err);
-        setError('FFmpeg 로드에 실패했습니다.');
-      });
-  }, []);
+    if (ffmpegError) {
+      setError(ffmpegError);
+    }
+  }, [ffmpegError]);
 
   // 슬라이더 초기 색상 설정
   useEffect(() => {
