@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import { downloadBlob } from '@/lib/utils';
 import ErrorMessage from '@/components/ErrorMessage';
+import ResultPlaceholder from '@/components/ResultPlaceholder';
+import usePdfEstimates from '@/lib/hooks/usePdfEstimates';
 
 export default function PdfConverter() {
   const [operation, setOperation] = useState<'images' | 'merge' | 'split'>('images');
@@ -11,6 +13,12 @@ export default function PdfConverter() {
   const [result, setResult] = useState<Blob | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { getEstimatedFileSize, getEstimatedTime } = usePdfEstimates();
+  const operationLabel = {
+    images: '이미지 → PDF 변환',
+    merge: 'PDF 병합',
+    split: 'PDF 페이지 분할',
+  }[operation];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFiles(e.target.files);
@@ -110,6 +118,37 @@ export default function PdfConverter() {
           {loading ? '처리 중...' : '실행'}
         </button>
       </form>
+
+      {loading && (
+        <ResultPlaceholder
+          icon="⏳"
+          title="변환 결과 준비 중..."
+          message="변환이 완료되면 여기에 결과가 표시됩니다"
+          info={[
+            { label: '작업', value: operationLabel },
+            { label: '예상 크기', value: getEstimatedFileSize(files, operation) },
+            { label: '예상 시간', value: getEstimatedTime(files) },
+          ]}
+        />
+      )}
+
+      {files && !loading && !result && (
+        <ResultPlaceholder
+          ready
+          icon="📁"
+          title="변환 준비 완료"
+          message="실행 버튼을 클릭하면 여기에 결과가 표시됩니다"
+          info={[
+            files.length === 1
+              ? { label: '입력 파일', value: files[0].name }
+              : { label: '파일 수', value: files.length },
+            { label: '작업', value: operationLabel },
+            ...(operation === 'split' ? [{ label: '페이지', value: page }] : []),
+            { label: '예상 크기', value: getEstimatedFileSize(files, operation) },
+            { label: '예상 시간', value: getEstimatedTime(files) },
+          ]}
+        />
+      )}
     </div>
   );
 }
