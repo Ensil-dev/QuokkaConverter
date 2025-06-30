@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Header from '@/components/Header';
+import { downloadBlob } from '@/lib/utils';
 
 export default function PdfConverter() {
   const [operation, setOperation] = useState<'images' | 'merge' | 'split'>('images');
@@ -49,14 +50,7 @@ export default function PdfConverter() {
 
   const download = () => {
     if (!result) return;
-    const url = URL.createObjectURL(result);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'result.pdf';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadBlob(result, 'result.pdf');
   };
 
   return (
