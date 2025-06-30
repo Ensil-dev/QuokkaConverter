@@ -279,6 +279,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     audioQuality,
     imageResolution,
     imageQuality,
+    isFFmpegLoaded
   ]);
 
   // 변환된 파일 다운로드
