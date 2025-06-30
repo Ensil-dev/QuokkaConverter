@@ -1,11 +1,7 @@
 import PdfConverter from '@/components/PdfConverter';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+import requireAuth from '@/lib/requireAuth';
 
 export default async function PdfConvertPage() {
-  const session = await auth();
-  if (!session) {
-    redirect('/');
-  }
+  await requireAuth();
   return <PdfConverter />;
 }

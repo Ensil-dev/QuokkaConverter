@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useSession, signIn } from 'next-auth/react';
-import { FaSpinner } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
+import Loading from '@/components/Loading';
+import { loginWithGoogle, downloadBlob } from '@/lib/utils';
 
 import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
@@ -30,7 +31,7 @@ const detectFileType = (filename: string) => {
 };
 
 const handleGoogleLogin = () => {
-  signIn('google', { callbackUrl: '/convert' });
+  loginWithGoogle();
 };
 
 interface ConverterProps {
@@ -285,15 +286,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   // 변환된 파일 다운로드
   const handleDownload = useCallback(() => {
     if (convertedFile) {
-      const url = URL.createObjectURL(convertedFile);
-      const a = document.createElement('a');
-      a.href = url;
       const format = result?.format || outputFormat;
-      a.download = `converted.${format}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      downloadBlob(convertedFile, `converted.${format}`);
     }
   }, [convertedFile, result, outputFormat]);
 
@@ -443,14 +437,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
   // 로그인 상태 확인
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <FaSpinner className="mx-auto mb-4 h-8 w-8 animate-spin text-blue-500" />
-          <p className="text-sm text-gray-600">로딩 중...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!session) {

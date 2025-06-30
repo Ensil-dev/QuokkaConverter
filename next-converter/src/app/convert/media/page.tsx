@@ -1,11 +1,7 @@
 import Converter from '@/components/Converter';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+import requireAuth from '@/lib/requireAuth';
 
 export default async function MediaConvertPage() {
-  const session = await auth();
-  if (!session) {
-    redirect('/');
-  }
+  await requireAuth();
   return <Converter showModeSelector={false} />;
 }
