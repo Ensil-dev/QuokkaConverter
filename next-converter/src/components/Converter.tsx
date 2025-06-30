@@ -8,6 +8,7 @@ import { loginWithGoogle, downloadBlob } from '@/lib/utils';
 import LoginCard from '@/components/LoginCard';
 import PdfConverter from '@/components/PdfConverter';
 import Header from '@/components/Header';
+import ErrorMessage from '@/components/ErrorMessage';
 import { convertFileWithWasm, initFFmpeg } from '@/lib/ffmpegWasm';
 
 interface ConversionResult {
@@ -30,9 +31,6 @@ const detectFileType = (filename: string) => {
   return 'unknown';
 };
 
-const handleGoogleLogin = () => {
-  loginWithGoogle();
-};
 
 interface ConverterProps {
   showModeSelector?: boolean;
@@ -441,7 +439,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   }
 
   if (!session) {
-    return <LoginCard onLogin={handleGoogleLogin} />;
+    return <LoginCard onLogin={loginWithGoogle} />;
   }
 
   return (
@@ -875,12 +873,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         </div>
       )}
 
-      {error && (
-        <div className="error-message">
-          <h3>오류 발생</h3>
-          <p>{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage title="오류 발생" message={error} />}
     </div>
   );
 }

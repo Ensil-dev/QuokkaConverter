@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
 import { downloadBlob } from '@/lib/utils';
+import ErrorMessage from '@/components/ErrorMessage';
 
 export default function PdfConverter() {
   const [operation, setOperation] = useState<'images' | 'merge' | 'split'>('images');
@@ -92,11 +93,7 @@ export default function PdfConverter() {
             />
           </div>
         )}
-        {error && (
-          <div className="error-message">
-            <p>{error}</p>
-          </div>
-        )}
+        {error && <ErrorMessage message={error} />}
         {result && (
           <div className="result">
             <h2>완료</h2>
