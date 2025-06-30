@@ -1,12 +1,13 @@
 'use client';
 import { useEffect } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { FaSpinner } from 'react-icons/fa';
+import Loading from '@/components/Loading';
 import LoginCard from '@/components/LoginCard';
+import { loginWithGoogle } from '@/lib/utils';
 
 const handleGoogleLogin = () => {
-  signIn('google', { callbackUrl: '/convert' });
+  loginWithGoogle();
 };
 
 export default function Home() {
@@ -20,14 +21,7 @@ export default function Home() {
   }, [session, router]);
 
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center ">
-        <div className="text-center">
-          <FaSpinner className="mx-auto mb-4 h-8 w-8 animate-spin text-blue-500" />
-          <p className="text-sm text-gray-600">로딩 중...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return <LoginCard onLogin={handleGoogleLogin} />;
