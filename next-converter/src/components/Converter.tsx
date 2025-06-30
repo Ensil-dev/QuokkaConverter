@@ -10,6 +10,7 @@ import PdfConverter from '@/components/PdfConverter';
 import Header from '@/components/Header';
 import ErrorMessage from '@/components/ErrorMessage';
 import { convertFileWithWasm, initFFmpeg } from '@/lib/ffmpegWasm';
+import { detectFileType, isConversionSupported, SUPPORTED_FORMATS } from '@/lib/utils/fileFormats';
 
 interface ConversionResult {
   url: string;
@@ -17,20 +18,6 @@ interface ConversionResult {
   size: string;
   format: string;
 }
-
-// 파일 타입 감지
-const detectFileType = (filename: string) => {
-  const ext = filename.split('.').pop()?.toLowerCase();
-  const videoExts = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', '3gp', 'm4v'];
-  const audioExts = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'];
-  const imageExts = ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'tiff'];
-
-  if (videoExts.includes(ext || '')) return 'video';
-  if (audioExts.includes(ext || '')) return 'audio';
-  if (imageExts.includes(ext || '')) return 'image';
-  return 'unknown';
-};
-
 
 interface ConverterProps {
   showModeSelector?: boolean;
@@ -92,64 +79,18 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
   // 출력 형식 필터링
   const filterOutputFormats = (inputType: string) => {
-    const filteredFormats: string[] = [];
-
-    // 같은 타입 내 변환
+    const formats = new Set<string>();
     if (inputType === 'video') {
-      filteredFormats.push('mp4', 'avi', 'mov', 'mkv', 'webm', 'gif', 'flv', 'wmv', 'm4v', '3gp');
+      SUPPORTED_FORMATS.video.output.forEach((f) => formats.add(f));
+      ['jpg', 'png', 'webp', 'mp3', 'aac', 'wav'].forEach((f) => formats.add(f));
     } else if (inputType === 'audio') {
-      filteredFormats.push('mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus');
+      SUPPORTED_FORMATS.audio.output.forEach((f) => formats.add(f));
     } else if (inputType === 'image') {
-      filteredFormats.push('jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp');
+      SUPPORTED_FORMATS.image.output.forEach((f) => formats.add(f));
     }
-
-    // 비디오에서 이미지/오디오 추출 (실제로 지원하는 조합만)
-    if (inputType === 'video') {
-      // 비디오에서 이미지 추출 (첫 프레임)
-      filteredFormats.push('jpg', 'png', 'webp');
-      // 비디오에서 오디오 추출
-      filteredFormats.push('mp3', 'aac', 'wav');
-    }
-
-    // 중복 제거 및 정렬
-    const uniqueFormats = Array.from(new Set(filteredFormats)).sort();
-    setAvailableFormats(uniqueFormats);
+    setAvailableFormats(Array.from(formats).sort());
   };
 
-  // 변환 조합이 지원되는지 확인
-  const isConversionSupported = (inputType: string | null, outputFormat: string): boolean => {
-    if (!inputType || !outputFormat) return false;
-
-    // 같은 타입 내 변환은 항상 지원
-    if (
-      inputType === 'video' &&
-      ['mp4', 'avi', 'mov', 'mkv', 'webm', 'gif', 'flv', 'wmv', 'm4v', '3gp'].includes(outputFormat)
-    ) {
-      return true;
-    }
-    if (
-      inputType === 'audio' &&
-      ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma', 'opus'].includes(outputFormat)
-    ) {
-      return true;
-    }
-    if (
-      inputType === 'image' &&
-      ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp'].includes(outputFormat)
-    ) {
-      return true;
-    }
-
-    // 비디오에서 이미지/오디오 추출
-    if (
-      inputType === 'video' &&
-      ['jpg', 'png', 'webp', 'mp3', 'aac', 'wav'].includes(outputFormat)
-    ) {
-      return true;
-    }
-
-    return false;
-  };
 
   // 파일 업로드 처리
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,7 +109,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       setFile(selectedFile);
       const detectedType = detectFileType(selectedFile.name);
 
-      if (detectedType === 'unknown') {
+      if (!detectedType) {
         setError('지원하지 않는 파일 형식입니다. 다른 파일을 선택해주세요.');
         setFile(null);
         setFileType(null);
@@ -692,13 +633,17 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
           <button
             type="submit"
-            disabled={isConverting || !isConversionSupported(fileType, outputFormat)}
+            disabled={
+              isConverting ||
+              !file ||
+              !isConversionSupported(file.name, outputFormat)
+            }
           >
             {isConverting ? '변환 중...' : '변환하기'}
           </button>
 
           {/* 지원하지 않는 변환 조합 안내 */}
-          {outputFormat && !isConversionSupported(fileType, outputFormat) && (
+          {outputFormat && file && !isConversionSupported(file.name, outputFormat) && (
             <div className="warning-message">
               <p>⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을 선택해주세요.</p>
             </div>
