@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import Image from 'next/image';
 import { FcGoogle } from 'react-icons/fc';
 
@@ -6,7 +7,7 @@ interface LoginCardProps {
   onLogin: () => void;
 }
 
-export default function LoginCard({ onLogin }: LoginCardProps) {
+const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
   return (
     <div className="flex justify-center">
       <div className="flex min-h-screen min-w-[340px] max-w-[400px] flex-col items-center justify-center bg-gray-100 font-sans">
@@ -48,4 +49,6 @@ export default function LoginCard({ onLogin }: LoginCardProps) {
       </div>
     </div>
   );
-}
+});
+
+export default LoginCard;

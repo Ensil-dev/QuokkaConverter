@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '@/lib/auth';
 import Loading from '@/components/Loading';
 import { loginWithGoogle, downloadBlob } from '@/lib/utils';
@@ -232,6 +232,120 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       newSpeed < 1 ? '#28a745' : newSpeed > 1 ? '#dc3545' : 'var(--primary-color)'
     );
   };
+
+  const convertingInfo = useMemo(() => {
+    if (!file) return [] as { label: string; value: React.ReactNode }[];
+    return [
+      { label: '출력 형식', value: outputFormat.toUpperCase() },
+      {
+        label: '예상 크기',
+        value: getEstimatedFileSize(
+          file.size,
+          fileType,
+          outputFormat,
+          playbackSpeed,
+          resolution,
+          fps,
+          bitrate,
+          videoQuality,
+          audioQuality,
+          imageQuality,
+        ),
+      },
+      {
+        label: '예상 시간',
+        value: getEstimatedTime(
+          file.size,
+          fileType,
+          outputFormat,
+          playbackSpeed,
+          resolution,
+          fps,
+          videoQuality,
+          audioQuality,
+        ),
+      },
+    ];
+  }, [
+    file,
+    fileType,
+    outputFormat,
+    playbackSpeed,
+    resolution,
+    fps,
+    bitrate,
+    videoQuality,
+    audioQuality,
+    imageQuality,
+    getEstimatedFileSize,
+    getEstimatedTime,
+  ]);
+
+  const readyInfo = useMemo(() => {
+    if (!file) return [] as { label: string; value: React.ReactNode }[];
+    const base = [
+      { label: '입력 파일', value: file.name },
+      { label: '출력 형식', value: outputFormat.toUpperCase() },
+      { label: '파일 크기', value: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
+      {
+        label: '예상 크기',
+        value: getEstimatedFileSize(
+          file.size,
+          fileType,
+          outputFormat,
+          playbackSpeed,
+          resolution,
+          fps,
+          bitrate,
+          videoQuality,
+          audioQuality,
+          imageQuality,
+        ),
+      },
+    ];
+    if (fileType === 'video' && outputFormat === 'gif') {
+      base.push({ label: '재생속도', value: `${playbackSpeed}x` });
+    }
+    if (fileType === 'video' && resolution !== 'original') {
+      base.push({ label: '해상도', value: resolution });
+    }
+    if (fileType === 'video' && fps !== 10) {
+      base.push({ label: '프레임레이트', value: `${fps} FPS` });
+    }
+    if (fileType === 'video' && bitrate && outputFormat !== 'gif') {
+      base.push({ label: '비트레이트', value: bitrate });
+    }
+    if (fileType === 'video' && videoQuality !== '보통') {
+      base.push({ label: '품질', value: videoQuality });
+    }
+    base.push({
+      label: '예상 시간',
+      value: getEstimatedTime(
+        file.size,
+        fileType,
+        outputFormat,
+        playbackSpeed,
+        resolution,
+        fps,
+        videoQuality,
+        audioQuality,
+      ),
+    });
+    return base;
+  }, [
+    file,
+    fileType,
+    outputFormat,
+    playbackSpeed,
+    resolution,
+    fps,
+    bitrate,
+    videoQuality,
+    audioQuality,
+    imageQuality,
+    getEstimatedFileSize,
+    getEstimatedTime,
+  ]);
 
 
   // 로그인 상태 확인
@@ -528,37 +642,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
           icon="⏳"
           title="변환 결과 준비 중..."
           message="변환이 완료되면 여기에 결과가 표시됩니다"
-          info={[
-            { label: '출력 형식', value: outputFormat.toUpperCase() },
-            {
-              label: '예상 크기',
-              value: getEstimatedFileSize(
-                file!.size,
-                fileType,
-                outputFormat,
-                playbackSpeed,
-                resolution,
-                fps,
-                bitrate,
-                videoQuality,
-                audioQuality,
-                imageQuality,
-              ),
-            },
-            {
-              label: '예상 시간',
-              value: getEstimatedTime(
-                file!.size,
-                fileType,
-                outputFormat,
-                playbackSpeed,
-                resolution,
-                fps,
-                videoQuality,
-                audioQuality,
-              ),
-            },
-          ]}
+          info={convertingInfo}
         />
       )}
 
@@ -569,54 +653,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
           icon="📁"
           title="변환 준비 완료"
           message="변환 버튼을 클릭하면 여기에 결과가 표시됩니다"
-          info={[
-            { label: '입력 파일', value: file.name },
-            { label: '출력 형식', value: outputFormat.toUpperCase() },
-            { label: '파일 크기', value: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
-            {
-              label: '예상 크기',
-              value: getEstimatedFileSize(
-                file.size,
-                fileType,
-                outputFormat,
-                playbackSpeed,
-                resolution,
-                fps,
-                bitrate,
-                videoQuality,
-                audioQuality,
-                imageQuality,
-              ),
-            },
-            ...(fileType === 'video' && outputFormat === 'gif'
-              ? [{ label: '재생속도', value: `${playbackSpeed}x` }]
-              : []),
-            ...(fileType === 'video' && resolution !== 'original'
-              ? [{ label: '해상도', value: resolution }]
-              : []),
-            ...(fileType === 'video' && fps !== 10
-              ? [{ label: '프레임레이트', value: `${fps} FPS` }]
-              : []),
-            ...(fileType === 'video' && bitrate && outputFormat !== 'gif'
-              ? [{ label: '비트레이트', value: bitrate }]
-              : []),
-            ...(fileType === 'video' && videoQuality !== '보통'
-              ? [{ label: '품질', value: videoQuality }]
-              : []),
-            {
-              label: '예상 시간',
-              value: getEstimatedTime(
-                file.size,
-                fileType,
-                outputFormat,
-                playbackSpeed,
-                resolution,
-                fps,
-                videoQuality,
-                audioQuality,
-              ),
-            },
-          ]}
+          info={readyInfo}
         />
       )}
 
