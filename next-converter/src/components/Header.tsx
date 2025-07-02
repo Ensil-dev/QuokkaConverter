@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { signOut } from 'next-auth/react';
 import { useAuth } from '@/lib/auth';
 
@@ -6,7 +7,7 @@ interface HeaderProps {
   subtitle: string;
 }
 
-export default function Header({ subtitle }: HeaderProps) {
+const Header = React.memo(function Header({ subtitle }: HeaderProps) {
   const { session } = useAuth();
   return (
     <>
@@ -26,4 +27,6 @@ export default function Header({ subtitle }: HeaderProps) {
       <p className="subtitle">{subtitle}</p>
     </>
   );
-}
+});
+
+export default Header;
