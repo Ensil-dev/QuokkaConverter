@@ -1,11 +1,11 @@
 'use client';
-
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaImage, FaFilePdf } from 'react-icons/fa';
 
 
-export default function BottomNav() {
+const BottomNav = React.memo(function BottomNav() {
   const pathname = usePathname();
 
 
@@ -42,4 +42,6 @@ export default function BottomNav() {
       </ul>
     </nav>
   );
-}
+});
+
+export default BottomNav;

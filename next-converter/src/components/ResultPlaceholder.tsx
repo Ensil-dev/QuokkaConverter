@@ -14,7 +14,7 @@ interface ResultPlaceholderProps {
   ready?: boolean;
 }
 
-export default function ResultPlaceholder({
+const ResultPlaceholder = React.memo(function ResultPlaceholder({
   icon,
   title,
   message,
@@ -38,4 +38,6 @@ export default function ResultPlaceholder({
       </div>
     </div>
   );
-}
+});
+
+export default ResultPlaceholder;
