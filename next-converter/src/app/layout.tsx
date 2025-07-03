@@ -46,6 +46,9 @@ export const viewport = {
   initialScale: 1,
 };
 
+const ffmpegBase = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL;
+const ffmpegOrigin = ffmpegBase ? new URL(ffmpegBase).origin : undefined;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -53,6 +56,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        {ffmpegOrigin && (
+          <link rel="preconnect" href={ffmpegOrigin} crossOrigin="anonymous" />
+        )}
+      </head>
       <body suppressHydrationWarning={true}>
         <InAppRedirectGuard />
         <AuthProvider>{children}</AuthProvider>
