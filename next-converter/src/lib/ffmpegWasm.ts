@@ -1,4 +1,4 @@
-import { FFmpeg } from '@ffmpeg/ffmpeg';
+import type { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
 
 
@@ -16,6 +16,7 @@ let ffmpeg: FFmpeg | null = null;
 export async function initFFmpeg(): Promise<FFmpeg> {
   if (ffmpeg) return ffmpeg;
 
+  const { FFmpeg } = await import('@ffmpeg/ffmpeg');
   const ffmpegCdn = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL ?? '/ffmpeg';
 
   // const coreURL = `${ffmpegCdn}/ffmpeg-core.js`;
