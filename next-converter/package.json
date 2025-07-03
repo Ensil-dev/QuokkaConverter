@@ -1,6 +1,11 @@
 {
   "name": "quokkaconverter",
   "version": "0.1.0",
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead"
+  ],
   "private": true,
   "scripts": {
     "dev": "next dev",
