@@ -1,11 +1,17 @@
 {
   "name": "quokkaconverter",
   "version": "0.1.0",
-  "browserslist": [
-    "> 0.5%",
-    "last 2 versions",
-    "not dead"
-  ],
+  "browserslist": {
+    "production": [
+      "last 2 Chrome versions",
+      "last 2 Firefox versions",
+      "last 2 Safari versions",
+      "last 2 Edge versions"
+    ],
+    "development": [
+      "last 1 Chrome version"
+    ]
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
