@@ -16,10 +16,10 @@ let ffmpeg: FFmpeg | null = null;
 export async function initFFmpeg(): Promise<FFmpeg> {
   if (ffmpeg) return ffmpeg;
 
-  const base = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL ?? '/ffmpeg';
+  const ffmpegCdn = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL ?? '/ffmpeg';
 
-  // const coreURL = `${base}/ffmpeg-core.js`;
-  // const wasmURL = `${base}/ffmpeg-core.wasm`;
+  // const coreURL = `${ffmpegCdn}/ffmpeg-core.js`;
+  // const wasmURL = `${ffmpegCdn}/ffmpeg-core.wasm`;
   // console.log('FFmpeg 요청 대상 JS URL:', coreURL);
   // console.log('FFmpeg 요청 대상 WASM URL:', wasmURL);
 
@@ -28,8 +28,8 @@ export async function initFFmpeg(): Promise<FFmpeg> {
   try {
     // FFmpeg WebAssembly 로드
     await ffmpeg.load({
-      coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+      coreURL: await toBlobURL(`${ffmpegCdn}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${ffmpegCdn}/ffmpeg-core.wasm`, 'application/wasm'),
     });
 
     // console.log('FFmpeg WebAssembly 로드 완료');
