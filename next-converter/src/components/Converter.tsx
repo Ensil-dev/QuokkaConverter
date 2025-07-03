@@ -39,7 +39,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const [convertedFile, setConvertedFile] = useState<Blob | null>(null);
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState('');
-  const { isReady: isFFmpegLoaded, error: ffmpegError } = useFFmpeg();
+  const { isReady: isFFmpegLoaded, error: ffmpegError, loadFFmpeg } = useFFmpeg();
 
   const { getEstimatedTime, getEstimatedFileSize } = useConversionEstimates();
 
@@ -128,9 +128,17 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
   // 변환 실행
   const handleConvert = useCallback(async () => {
-    if (!file || !outputFormat || !isFFmpegLoaded) {
+    if (!file || !outputFormat) {
       setError('파일과 출력 형식을 선택해주세요.');
       return;
+    }
+
+    if (!isFFmpegLoaded) {
+      try {
+        await loadFFmpeg();
+      } catch {
+        return;
+      }
     }
 
     setIsConverting(true);
@@ -209,7 +217,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     audioQuality,
     imageResolution,
     imageQuality,
-    isFFmpegLoaded
+    isFFmpegLoaded,
+    loadFFmpeg
   ]);
 
   // 변환된 파일 다운로드
