@@ -123,27 +123,18 @@ export async function imagesToGifWithWasm(
   try {
     const ffmpegInstance = await initFFmpeg();
 
-    const listEntries: string[] = [];
     for (let i = 0; i < buffers.length; i++) {
-      const name = `frame${i}.png`;
+      const name = `frame_${String(i).padStart(4, '0')}.png`;
       await ffmpegInstance.writeFile(name, new Uint8Array(buffers[i]));
-      listEntries.push(`file '${name}'`);
     }
 
-    await ffmpegInstance.writeFile(
-      'list.txt',
-      new TextEncoder().encode(listEntries.join('\n'))
-    );
-
     await ffmpegInstance.exec([
-      '-f',
-      'concat',
-      '-safe',
-      '0',
-      '-i',
-      'list.txt',
       '-r',
       String(fps),
+      '-start_number',
+      '0',
+      '-i',
+      'frame_%04d.png',
       '-loop',
       '0',
       'output.gif',
@@ -153,9 +144,8 @@ export async function imagesToGifWithWasm(
 
     try {
       for (let i = 0; i < buffers.length; i++) {
-        await ffmpegInstance.deleteFile(`frame${i}.png`);
+        await ffmpegInstance.deleteFile(`frame_${String(i).padStart(4, '0')}.png`);
       }
-      await ffmpegInstance.deleteFile('list.txt');
       await ffmpegInstance.deleteFile('output.gif');
     } catch (cleanupError) {
       console.warn('파일 정리 중 오류:', cleanupError);
