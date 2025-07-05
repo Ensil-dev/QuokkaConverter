@@ -69,6 +69,14 @@ export default function GifMaker() {
       ]
     : [];
 
+  const preparedInfo = files
+    ? [
+        { label: '파일 수', value: files.length },
+        { label: 'FPS', value: fps },
+        { label: '품질', value: quality },
+      ]
+    : [];
+
   return (
     <div className="container rounded-[15px]">
       <Header subtitle="이미지를 이어붙여 하나의 GIF로 만들 수 있어요" />
@@ -117,6 +125,15 @@ export default function GifMaker() {
           title="GIF 변환 중"
           message="변환이 완료되면 여기에 결과가 표시됩니다"
           info={loadingInfo}
+        />
+      )}
+      {files && files.length >= 2 && !loading && !result && !error && (
+        <ResultPlaceholder
+          ready
+          icon="📁"
+          title="변환 준비 완료"
+          message="변환 버튼을 클릭하면 여기에 결과가 표시됩니다"
+          info={preparedInfo}
         />
       )}
       {result && (
