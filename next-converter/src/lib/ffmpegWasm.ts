@@ -115,4 +115,58 @@ export async function convertFileWithWasm(
   }
 }
 
+// 여러 이미지를 하나의 GIF로 합치는 함수
+export async function imagesToGifWithWasm(
+  buffers: ArrayBuffer[],
+  fps = 10
+): Promise<{ data: Uint8Array; size: number }> {
+  try {
+    const ffmpegInstance = await initFFmpeg();
+
+    const listEntries: string[] = [];
+    for (let i = 0; i < buffers.length; i++) {
+      const name = `frame${i}.png`;
+      await ffmpegInstance.writeFile(name, new Uint8Array(buffers[i]));
+      listEntries.push(`file '${name}'`);
+    }
+
+    await ffmpegInstance.writeFile(
+      'list.txt',
+      new TextEncoder().encode(listEntries.join('\n'))
+    );
+
+    await ffmpegInstance.exec([
+      '-f',
+      'concat',
+      '-safe',
+      '0',
+      '-i',
+      'list.txt',
+      '-r',
+      String(fps),
+      '-loop',
+      '0',
+      'output.gif',
+    ]);
+
+    const outputData = (await ffmpegInstance.readFile('output.gif')) as Uint8Array;
+
+    try {
+      for (let i = 0; i < buffers.length; i++) {
+        await ffmpegInstance.deleteFile(`frame${i}.png`);
+      }
+      await ffmpegInstance.deleteFile('list.txt');
+      await ffmpegInstance.deleteFile('output.gif');
+    } catch (cleanupError) {
+      console.warn('파일 정리 중 오류:', cleanupError);
+    }
+
+    return { data: outputData, size: outputData.length };
+  } catch (error) {
+    console.error('GIF 생성 오류:', error);
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`GIF 생성에 실패했습니다: ${message}`);
+  }
+}
+
 // 지원하는 포맷 정의

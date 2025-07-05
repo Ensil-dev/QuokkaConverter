@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaImage, FaFilePdf } from 'react-icons/fa';
+import { FaImage, FaFilePdf, FaImages } from 'react-icons/fa';
 
 
 const BottomNav = React.memo(function BottomNav() {
@@ -15,12 +15,13 @@ const BottomNav = React.memo(function BottomNav() {
   }
   const tabs = [
     { href: '/convert/media', icon: <FaImage size={20} />, label: '미디어' },
+    { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF' },
     { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF' },
   ];
 
   return (
     <nav className="bottom-nav z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
-      <ul className="m-0 grid w-full list-none grid-cols-2 p-0">
+      <ul className="m-0 grid w-full list-none grid-cols-3 p-0">
         {tabs.map(({ href, icon, label }) => {
           const active = pathname === href || (href !== '/convert' && pathname.startsWith(href));
           return (
