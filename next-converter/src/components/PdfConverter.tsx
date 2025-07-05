@@ -150,7 +150,7 @@ export default function PdfConverter() {
         />
       )}
 
-      {files && !loading && !result && (
+      {files && !loading && !result && !error && (
         <ResultPlaceholder
           ready
           icon="📁"
