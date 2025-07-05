@@ -43,7 +43,10 @@ afterAll(() => {
 });
 
 test('GIF frame count matches input image count', async () => {
-  const buffers = [redDot, redDot, redDot].map(toArrayBuffer);
-  const result = await imagesToGifWithWasm(buffers, 5);
-  expect(countGifFrames(result.data)).toBe(buffers.length);
+  const inputs = [redDot, redDot, redDot].map((buf) => ({
+    buffer: toArrayBuffer(buf),
+    ext: 'png',
+  }));
+  const result = await imagesToGifWithWasm(inputs, 5);
+  expect(countGifFrames(result.data)).toBe(inputs.length);
 });

@@ -36,10 +36,13 @@ export default function GifMaker() {
     }
     setLoading(true);
     try {
-      const buffers = await Promise.all(
-        Array.from(files).map((f) => f.arrayBuffer())
+      const inputs = await Promise.all(
+        Array.from(files).map(async (f) => ({
+          buffer: await f.arrayBuffer(),
+          ext: f.name.split('.').pop()?.toLowerCase() || 'png',
+        }))
       );
-      const { data } = await imagesToGifWithWasm(buffers, fps);
+      const { data } = await imagesToGifWithWasm(inputs, fps);
       setResult(new Blob([data], { type: 'image/gif' }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GIF 생성 실패');
