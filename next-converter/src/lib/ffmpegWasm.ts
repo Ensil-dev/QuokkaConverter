@@ -117,15 +117,19 @@ export async function convertFileWithWasm(
 
 // 여러 이미지를 하나의 GIF로 합치는 함수
 export async function imagesToGifWithWasm(
-  buffers: ArrayBuffer[],
+  files: { buffer: ArrayBuffer; ext: string }[],
   fps = 10
 ): Promise<{ data: Uint8Array; size: number }> {
   try {
     const ffmpegInstance = await initFFmpeg();
 
-    for (let i = 0; i < buffers.length; i++) {
-      const name = `frame_${String(i).padStart(4, '0')}.png`;
-      await ffmpegInstance.writeFile(name, new Uint8Array(buffers[i]));
+    for (let i = 0; i < files.length; i++) {
+      const { buffer, ext } = files[i];
+      const input = `input_${i}.${ext}`;
+      const frame = `frame_${String(i).padStart(4, '0')}.png`;
+      await ffmpegInstance.writeFile(input, new Uint8Array(buffer));
+      await ffmpegInstance.exec(['-y', '-i', input, frame]);
+      await ffmpegInstance.deleteFile(input);
     }
 
     await ffmpegInstance.exec([
@@ -143,7 +147,7 @@ export async function imagesToGifWithWasm(
     const outputData = (await ffmpegInstance.readFile('output.gif')) as Uint8Array;
 
     try {
-      for (let i = 0; i < buffers.length; i++) {
+      for (let i = 0; i < files.length; i++) {
         await ffmpegInstance.deleteFile(`frame_${String(i).padStart(4, '0')}.png`);
       }
       await ffmpegInstance.deleteFile('output.gif');
