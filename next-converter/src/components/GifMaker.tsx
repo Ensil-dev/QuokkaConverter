@@ -61,7 +61,7 @@ export default function GifMaker() {
 
   return (
     <div className="container rounded-[15px]">
-      <Header subtitle="여러 이미지를 하나의 GIF로 변환" />
+      <Header subtitle="이미지를 이어붙여 하나의 GIF로 만들 수 있어요" />
       <form onSubmit={handleSubmit}>
         <div className="file-section">
           <label htmlFor="gifImages">이미지 선택:</label>
