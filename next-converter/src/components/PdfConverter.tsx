@@ -86,7 +86,7 @@ export default function PdfConverter() {
 
   return (
     <div className="container rounded-[15px]">
-      <Header subtitle="이미지 → PDF 변환과 병합 및 분할 기능을 제공합니다" />
+      <Header subtitle="이미지를 PDF로 바꾸고, 여러 파일을 쉽게 나눠보거나 합칠 수 있어요" />
       <form onSubmit={handleSubmit}>
         <div className="file-section">
           <label htmlFor="pdfFiles">파일 업로드:</label>

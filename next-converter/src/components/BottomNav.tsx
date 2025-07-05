@@ -14,9 +14,9 @@ const BottomNav = React.memo(function BottomNav() {
     return null;
   }
   const tabs = [
-    { href: '/convert/media', icon: <FaImage size={20} />, label: '미디어' },
-    { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF' },
-    { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF' },
+    { href: '/convert/media', icon: <FaImage size={20} />, label: '확장자 변환' },
+    { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF 생성' },
+    { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF 관리' },
   ];
 
   return (
@@ -35,7 +35,7 @@ const BottomNav = React.memo(function BottomNav() {
                 }`}
               >
                 {icon}
-                <span>{label}</span>
+                <span className='pt-[8px]'>{label}</span>
               </Link>
             </li>
           );

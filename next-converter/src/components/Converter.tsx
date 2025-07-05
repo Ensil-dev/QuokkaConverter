@@ -369,7 +369,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   return (
     <div className="container rounded-[15px]" suppressHydrationWarning={true}>
       {/* 헤더 */}
-      <Header subtitle="비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요" />
+      <Header subtitle="비디오, 오디오, 이미지 파일을 다양한 형식으로 바꿀 수 있어요" />
 
       {showModeSelector && (
         <div className="format-section">
