@@ -2,8 +2,8 @@ import path from 'path';
 import fs from 'fs/promises';
 import { imagesToGifWithWasm } from '../ffmpegWasm';
 
-const redDot = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=',
+const redWebp = Buffer.from(
+  'UklGRkAAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAIAAAAAAFZQOCAYAAAAMAEAnQEqAQABAAIANCWkAANwAP77/VAA',
   'base64'
 );
 
@@ -43,9 +43,9 @@ afterAll(() => {
 });
 
 test('GIF frame count matches input image count', async () => {
-  const inputs = [redDot, redDot, redDot].map((buf) => ({
+  const inputs = [redWebp, redWebp, redWebp].map((buf) => ({
     buffer: toArrayBuffer(buf),
-    ext: 'png',
+    ext: 'webp',
   }));
   const result = await imagesToGifWithWasm(inputs, 5);
   expect(countGifFrames(result.data)).toBe(inputs.length);

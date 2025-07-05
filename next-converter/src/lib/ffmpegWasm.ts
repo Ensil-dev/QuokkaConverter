@@ -118,7 +118,9 @@ export async function convertFileWithWasm(
 // 여러 이미지를 하나의 GIF로 합치는 함수
 export async function imagesToGifWithWasm(
   files: { buffer: ArrayBuffer; ext: string }[],
-  fps = 10
+  fps = 10,
+  quality = 75,
+  compressionLevel = 6
 ): Promise<{ data: Uint8Array; size: number }> {
   try {
     const ffmpegInstance = await initFFmpeg();
@@ -126,9 +128,18 @@ export async function imagesToGifWithWasm(
     for (let i = 0; i < files.length; i++) {
       const { buffer, ext } = files[i];
       const input = `input_${i}.${ext}`;
-      const frame = `frame_${String(i).padStart(4, '0')}.png`;
+      const frame = `frame_${String(i).padStart(4, '0')}.webp`;
       await ffmpegInstance.writeFile(input, new Uint8Array(buffer));
-      await ffmpegInstance.exec(['-y', '-i', input, frame]);
+      await ffmpegInstance.exec([
+        '-y',
+        '-i',
+        input,
+        '-qscale',
+        String(quality),
+        '-compression_level',
+        String(compressionLevel),
+        frame,
+      ]);
       await ffmpegInstance.deleteFile(input);
     }
 
@@ -138,7 +149,7 @@ export async function imagesToGifWithWasm(
       '-start_number',
       '0',
       '-i',
-      'frame_%04d.png',
+      'frame_%04d.webp',
       '-loop',
       '0',
       'output.gif',
@@ -148,7 +159,7 @@ export async function imagesToGifWithWasm(
 
     try {
       for (let i = 0; i < files.length; i++) {
-        await ffmpegInstance.deleteFile(`frame_${String(i).padStart(4, '0')}.png`);
+        await ffmpegInstance.deleteFile(`frame_${String(i).padStart(4, '0')}.webp`);
       }
       await ffmpegInstance.deleteFile('output.gif');
     } catch (cleanupError) {
