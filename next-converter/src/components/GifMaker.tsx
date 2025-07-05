@@ -10,7 +10,8 @@ import ErrorMessage from '@/components/ErrorMessage';
 export default function GifMaker() {
   const [files, setFiles] = useState<FileList | null>(null);
   const [fps, setFps] = useState(5);
-  const [result, setResult] = useState<Blob | null>(null);
+  const [quality, setQuality] = useState<'낮음' | '보통' | '높음'>('보통');
+  const [result, setResult] = useState<{ blob: Blob; size: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { isReady, loadFFmpeg, error: ffmpegError } = useFFmpeg();
@@ -42,8 +43,13 @@ export default function GifMaker() {
           ext: f.name.split('.').pop()?.toLowerCase() || 'png',
         }))
       );
-      const { data } = await imagesToGifWithWasm(inputs, fps);
-      setResult(new Blob([data], { type: 'image/gif' }));
+      const qualityMap = { 낮음: 30, 보통: 75, 높음: 95 } as const;
+      const { data, size } = await imagesToGifWithWasm(
+        inputs,
+        fps,
+        qualityMap[quality],
+      );
+      setResult({ blob: new Blob([data], { type: 'image/gif' }), size });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GIF 생성 실패');
     } finally {
@@ -52,13 +58,14 @@ export default function GifMaker() {
   };
 
   const download = () => {
-    if (result) downloadBlob(result, 'result.gif');
+    if (result) downloadBlob(result.blob, 'result.gif');
   };
 
   const loadingInfo = files
     ? [
         { label: '파일 수', value: files.length },
         { label: 'FPS', value: fps },
+        { label: '품질', value: quality },
       ]
     : [];
 
@@ -77,16 +84,28 @@ export default function GifMaker() {
             required
           />
         </div>
+      <div className="option-row">
+         <label htmlFor="fps">FPS:</label>
+         <input
+           id="fps"
+           type="number"
+           min={1}
+           max={30}
+           value={fps}
+           onChange={(e) => setFps(Number(e.target.value))}
+         />
+       </div>
         <div className="option-row">
-          <label htmlFor="fps">FPS:</label>
-          <input
-            id="fps"
-            type="number"
-            min={1}
-            max={30}
-            value={fps}
-            onChange={(e) => setFps(Number(e.target.value))}
-          />
+          <label htmlFor="quality">품질:</label>
+          <select
+            id="quality"
+            value={quality}
+            onChange={(e) => setQuality(e.target.value as '낮음' | '보통' | '높음')}
+          >
+            <option value="보통">보통</option>
+            <option value="낮음">낮음 (파일 크기 작음)</option>
+            <option value="높음">높음 (파일 크기 큼)</option>
+          </select>
         </div>
         <button type="submit" disabled={loading}>
           {loading ? '변환 중...' : 'GIF 만들기'}
@@ -103,6 +122,9 @@ export default function GifMaker() {
       {result && (
         <div className="result">
           <h2>완료</h2>
+          <div className="resultInfo">
+            <p>파일 크기: {(result.size / 1024 / 1024).toFixed(2)} MB</p>
+          </div>
           <button type="button" onClick={download} className="download-btn">
             파일 다운로드
           </button>
