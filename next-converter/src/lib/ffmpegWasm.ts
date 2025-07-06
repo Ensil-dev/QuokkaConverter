@@ -78,6 +78,12 @@ export async function convertFileWithWasm(
     if (options.quality) {
       const qualityMap = { '낮음': 28, '보통': 23, '높음': 18 };
       args.push('-crf', String(qualityMap[options.quality] || 23));
+      const presetMap: Record<'낮음' | '보통' | '높음', string> = {
+        낮음: 'veryslow',
+        보통: 'slow',
+        높음: 'medium',
+      };
+      args.push('-preset', presetMap[options.quality]);
     }
 
     // 재생속도 설정
