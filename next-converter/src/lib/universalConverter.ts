@@ -186,7 +186,13 @@ function convertVideo(
   // 최적화 옵션 (코덱별로 다르게 적용)
   switch (selectedVideoCodec) {
     case 'libx264':
-      args.push('-preset', 'ultrafast');
+      const presetMap: Record<'낮음' | '보통' | '높음', string> = {
+        낮음: 'veryslow',
+        보통: 'slow',
+        높음: 'medium',
+      };
+      const preset = quality ? presetMap[quality] : 'ultrafast';
+      args.push('-preset', preset);
       args.push('-tune', 'fastdecode');
       args.push('-movflags', '+faststart');
       break;

@@ -8,7 +8,7 @@ const redWebp = Buffer.from(
 );
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer {
-  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
 }
 
 function countGifFrames(buf: Uint8Array): number {
@@ -28,7 +28,12 @@ beforeAll(() => {
   process.env.NEXT_PUBLIC_FFMPEG_BASE_URL = `file://${ffmpegPath}`;
   originalFetch = global.fetch;
   global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-    const url = typeof input === 'string' ? input : input.url;
+    const url =
+      typeof input === 'string'
+        ? input
+        : input instanceof Request
+        ? input.url
+        : (input as URL).href;
     if (url.startsWith('file://')) {
       const filePath = url.slice('file://'.length);
       const data = await fs.readFile(filePath);
