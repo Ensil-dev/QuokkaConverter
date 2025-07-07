@@ -6,6 +6,7 @@ import { downloadBlob } from '@/lib/utils';
 import Header from '@/components/Header';
 import ResultPlaceholder from '@/components/ResultPlaceholder';
 import ErrorMessage from '@/components/ErrorMessage';
+import Image from 'next/image';
 
 export default function GifMaker() {
   const [files, setFiles] = useState<FileList | null>(null);
@@ -54,11 +55,7 @@ export default function GifMaker() {
         }))
       );
       const qualityMap = { 낮음: 30, 보통: 75, 높음: 95 } as const;
-      const { data, size } = await imagesToGifWithWasm(
-        inputs,
-        fps,
-        qualityMap[quality],
-      );
+      const { data, size } = await imagesToGifWithWasm(inputs, fps, qualityMap[quality]);
       const blob = new Blob([data], { type: 'image/gif' });
       setResult({ blob, size });
       setResultUrl(URL.createObjectURL(blob));
@@ -104,17 +101,17 @@ export default function GifMaker() {
             required
           />
         </div>
-      <div className="option-row">
-         <label htmlFor="fps">FPS:</label>
-         <input
-           id="fps"
-           type="number"
-           min={1}
-           max={30}
-           value={fps}
-           onChange={(e) => setFps(Number(e.target.value))}
-         />
-       </div>
+        <div className="option-row">
+          <label htmlFor="fps">FPS:</label>
+          <input
+            id="fps"
+            type="number"
+            min={1}
+            max={30}
+            value={fps}
+            onChange={(e) => setFps(Number(e.target.value))}
+          />
+        </div>
         <div className="option-row">
           <label htmlFor="quality">품질:</label>
           <select
@@ -150,28 +147,32 @@ export default function GifMaker() {
       )}
       {result && (
         <div className="result">
-          <h2>완료</h2>
+          <h2>미리보기</h2>
           {resultUrl && (
-            <img src={resultUrl} alt="미리보기" className="result-preview" />
+            <Image
+              src={resultUrl}
+              alt="미리보기"
+              width={250}
+              height={250}
+              className="result-preview"
+            />
           )}
           <div className="resultInfo">
             <p>파일 크기: {(result.size / 1024 / 1024).toFixed(2)} MB</p>
           </div>
-          <button
+          {/* <button
             type="button"
             onClick={() => resultUrl && window.open(resultUrl, '_blank')}
             className="open-btn"
           >
             새 탭에서 열기
-          </button>
+          </button> */}
           <button type="button" onClick={download} className="download-btn">
             파일 다운로드
           </button>
         </div>
       )}
-      {(error || ffmpegError) && (
-        <ErrorMessage message={error || ffmpegError || ''} />
-      )}
+      {(error || ffmpegError) && <ErrorMessage message={error || ffmpegError || ''} />}
     </div>
   );
 }
