@@ -1,12 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { imagesToGifWithWasm } from '@/lib/ffmpegWasm';
 import { downloadBlob } from '@/lib/utils';
 import Header from '@/components/Header';
 import ResultPlaceholder from '@/components/ResultPlaceholder';
 import ErrorMessage from '@/components/ErrorMessage';
-import Image from 'next/image';
+import PreviewImage from '@/components/PreviewImage';
 
 export default function GifMaker() {
   const [files, setFiles] = useState<FileList | null>(null);
@@ -18,13 +18,6 @@ export default function GifMaker() {
   const [error, setError] = useState('');
   const { isReady, loadFFmpeg, error: ffmpegError } = useFFmpeg();
 
-  useEffect(() => {
-    return () => {
-      if (resultUrl) {
-        URL.revokeObjectURL(resultUrl);
-      }
-    };
-  }, [resultUrl]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFiles(e.target.files);
@@ -148,15 +141,7 @@ export default function GifMaker() {
       {result && (
         <div className="result">
           <h2>미리보기</h2>
-          {resultUrl && (
-            <Image
-              src={resultUrl}
-              alt="미리보기"
-              width={250}
-              height={250}
-              className="result-preview"
-            />
-          )}
+          {resultUrl && <PreviewImage url={resultUrl} />}
           <div className="resultInfo">
             <p>파일 크기: {(result.size / 1024 / 1024).toFixed(2)} MB</p>
           </div>
