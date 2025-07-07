@@ -15,6 +15,7 @@ import ErrorMessage from '@/components/ErrorMessage';
 import { convertFileWithWasm } from '@/lib/ffmpegWasm';
 import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { detectFileType, isConversionSupported } from '@/lib/utils/fileFormats';
+import PreviewImage from '@/components/PreviewImage';
 
 interface ConversionResult {
   url: string;
@@ -75,6 +76,15 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       slider.style.setProperty('--slider-color', 'var(--primary-color)');
     }
   }, [outputFormat]);
+
+  // 결과 미리보기 URL 정리
+  useEffect(() => {
+    return () => {
+      if (result?.url) {
+        URL.revokeObjectURL(result.url);
+      }
+    };
+  }, [result]);
 
   // 출력 형식 필터링
   const filterOutputFormats = (inputType: string) => {
@@ -679,6 +689,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       {result && (
         <div className="result">
           <h2>변환 결과</h2>
+          {result.format === 'gif' && <PreviewImage url={result.url} />}
           <div className="resultInfo">
             <p>
               <strong>변환 완료!</strong>
