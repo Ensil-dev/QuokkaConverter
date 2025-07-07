@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { imagesToGifWithWasm } from '@/lib/ffmpegWasm';
 import { downloadBlob } from '@/lib/utils';
@@ -12,13 +12,23 @@ export default function GifMaker() {
   const [fps, setFps] = useState(5);
   const [quality, setQuality] = useState<'낮음' | '보통' | '높음'>('보통');
   const [result, setResult] = useState<{ blob: Blob; size: number } | null>(null);
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { isReady, loadFFmpeg, error: ffmpegError } = useFFmpeg();
 
+  useEffect(() => {
+    return () => {
+      if (resultUrl) {
+        URL.revokeObjectURL(resultUrl);
+      }
+    };
+  }, [resultUrl]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFiles(e.target.files);
     setResult(null);
+    setResultUrl(null);
     setError('');
   };
 
@@ -49,7 +59,9 @@ export default function GifMaker() {
         fps,
         qualityMap[quality],
       );
-      setResult({ blob: new Blob([data], { type: 'image/gif' }), size });
+      const blob = new Blob([data], { type: 'image/gif' });
+      setResult({ blob, size });
+      setResultUrl(URL.createObjectURL(blob));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GIF 생성 실패');
     } finally {
@@ -139,9 +151,19 @@ export default function GifMaker() {
       {result && (
         <div className="result">
           <h2>완료</h2>
+          {resultUrl && (
+            <img src={resultUrl} alt="미리보기" className="result-preview" />
+          )}
           <div className="resultInfo">
             <p>파일 크기: {(result.size / 1024 / 1024).toFixed(2)} MB</p>
           </div>
+          <button
+            type="button"
+            onClick={() => resultUrl && window.open(resultUrl, '_blank')}
+            className="open-btn"
+          >
+            새 탭에서 열기
+          </button>
           <button type="button" onClick={download} className="download-btn">
             파일 다운로드
           </button>
