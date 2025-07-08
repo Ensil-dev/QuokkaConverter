@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import Header from '@/components/Header';
-import { downloadBlob } from '@/lib/utils';
+import { downloadBlob, makeFilename } from '@/lib/utils';
 import ErrorMessage from '@/components/ErrorMessage';
 import ResultPlaceholder from '@/components/ResultPlaceholder';
 import usePdfEstimates from '@/lib/hooks/usePdfEstimates';
@@ -59,7 +59,12 @@ export default function PdfConverter() {
 
   const download = () => {
     if (!result) return;
-    downloadBlob(result, 'result.pdf');
+    const baseName = files?.[0]?.name || 'result';
+    const name =
+      operation === 'split'
+        ? makeFilename(`${baseName.replace(/\.[^.]+$/, '')}-page-${page}`, 'pdf')
+        : makeFilename(baseName, 'pdf');
+    downloadBlob(result, name);
   };
 
   const loadingInfo = useMemo(() => {
