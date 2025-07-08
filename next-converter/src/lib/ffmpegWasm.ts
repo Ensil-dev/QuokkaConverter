@@ -139,7 +139,9 @@ export async function imagesToGifWithWasm(
   files: { buffer: ArrayBuffer; ext: string }[],
   fps = 10,
   quality: '낮음' | '보통' | '높음' = '보통',
-  compressionLevel = 6
+  compressionLevel = 6,
+  width?: number,
+  height?: number
 ): Promise<{ data: Uint8Array; size: number }> {
   try {
     const ffmpegInstance = await initFFmpeg();
@@ -153,6 +155,42 @@ export async function imagesToGifWithWasm(
     const webpQ = webpQualityMap[quality];
     const { maxColors, dither } = paletteMap[quality];
 
+    if (width == null || height == null) {
+      const { buffer, ext } = files[0];
+      const blob = new Blob([buffer], { type: `image/${ext}` });
+      if (typeof createImageBitmap === 'function') {
+        const bmp = await createImageBitmap(blob);
+        width = bmp.width;
+        height = bmp.height;
+        bmp.close?.();
+      } else {
+        const arr = new Uint8Array(buffer);
+        if (
+          arr[0] === 0x52 &&
+          arr[1] === 0x49 &&
+          arr[2] === 0x46 &&
+          arr[3] === 0x46
+        ) {
+          const chunk = String.fromCharCode(...arr.slice(12, 16));
+          if (chunk === 'VP8X') {
+            width = 1 + (arr[24] | (arr[25] << 8) | (arr[26] << 16));
+            height = 1 + (arr[27] | (arr[28] << 8) | (arr[29] << 16));
+          } else if (chunk === 'VP8 ') {
+            width = arr[26] | (arr[27] << 8);
+            height = arr[28] | (arr[29] << 8);
+          } else if (chunk === 'VP8L') {
+            const bits =
+              arr[21] | (arr[22] << 8) | (arr[23] << 16) | (arr[24] << 24);
+            width = (bits & 0x3fff) + 1;
+            height = ((bits >> 14) & 0x3fff) + 1;
+          }
+        }
+      }
+    }
+
+    width = width || 0;
+    height = height || 0;
+
     for (let i = 0; i < files.length; i++) {
       const { buffer, ext } = files[i];
       const input = `input_${i}.${ext}`;
@@ -162,6 +200,8 @@ export async function imagesToGifWithWasm(
         '-y',
         '-i',
         input,
+        '-vf',
+        `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`,
         '-qscale',
         String(webpQ),
         '-compression_level',
@@ -200,6 +240,10 @@ export async function imagesToGifWithWasm(
     ]);
 
     const outputData = (await ffmpegInstance.readFile('output.gif')) as Uint8Array;
+
+    if (outputData.length === 0) {
+      throw new Error('GIF 생성 결과가 비어 있습니다.');
+    }
 
     try {
       for (let i = 0; i < files.length; i++) {
