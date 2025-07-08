@@ -6,6 +6,10 @@ const redWebp = Buffer.from(
   'UklGRkAAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAIAAAAAAFZQOCAYAAAAMAEAnQEqAQABAAIANCWkAANwAP77/VAA',
   'base64'
 );
+const redWebp2 = Buffer.from(
+  'UklGRkAAAABXRUJQVlA4WAoAAAAQAAAAAQAAAQAAQUxQSAIAAAAAAFZQOCAYAAAAMAEAnQEqAQABAAIANCWkAANwAP77/VAA',
+  'base64'
+);
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer {
   return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
@@ -79,4 +83,13 @@ test('single image to GIF works', async () => {
   }));
   const result = await imagesToGifWithWasm(inputs, 5);
   expect(countGifFrames(result.data)).toBe(1);
+});
+
+test('handles images with different resolutions', async () => {
+  const inputs = [redWebp, redWebp2].map((buf) => ({
+    buffer: toArrayBuffer(buf),
+    ext: 'webp',
+  }));
+  const result = await imagesToGifWithWasm(inputs, 5);
+  expect(result.size).toBeGreaterThan(0);
 });

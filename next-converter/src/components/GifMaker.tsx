@@ -16,14 +16,27 @@ export default function GifMaker() {
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [imgSize, setImgSize] = useState<{ width: number; height: number } | null>(null);
   const { isReady, loadFFmpeg, error: ffmpegError } = useFFmpeg();
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFiles(e.target.files);
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files;
+    setFiles(selected);
     setResult(null);
     setResultUrl(null);
     setError('');
+    if (selected && selected[0]) {
+      try {
+        const bmp = await createImageBitmap(selected[0]);
+        setImgSize({ width: bmp.width, height: bmp.height });
+        bmp.close?.();
+      } catch {
+        setImgSize(null);
+      }
+    } else {
+      setImgSize(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +60,14 @@ export default function GifMaker() {
           ext: f.name.split('.').pop()?.toLowerCase() || 'png',
         }))
       );
-      const { data, size } = await imagesToGifWithWasm(inputs, fps, quality);
+      const { data, size } = await imagesToGifWithWasm(
+        inputs,
+        fps,
+        quality,
+        6,
+        imgSize?.width,
+        imgSize?.height
+      );
       const blob = new Blob([data], { type: 'image/gif' });
       setResult({ blob, size });
       setResultUrl(URL.createObjectURL(blob));
