@@ -71,3 +71,12 @@ test('GIF palette size reflects quality setting', async () => {
   const result = await imagesToGifWithWasm(inputs, 5, '높음');
   expect(getColorTableSize(result.data)).toBe(128);
 });
+
+test('single image to GIF works', async () => {
+  const inputs = [redWebp].map((buf) => ({
+    buffer: toArrayBuffer(buf),
+    ext: 'webp',
+  }));
+  const result = await imagesToGifWithWasm(inputs, 5);
+  expect(countGifFrames(result.data)).toBe(1);
+});
