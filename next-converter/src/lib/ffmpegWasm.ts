@@ -125,11 +125,20 @@ export async function convertFileWithWasm(
 export async function imagesToGifWithWasm(
   files: { buffer: ArrayBuffer; ext: string }[],
   fps = 10,
-  quality = 75,
+  quality: '낮음' | '보통' | '높음' = '보통',
   compressionLevel = 6
 ): Promise<{ data: Uint8Array; size: number }> {
   try {
     const ffmpegInstance = await initFFmpeg();
+
+    const webpQualityMap = { 낮음: 30, 보통: 75, 높음: 95 } as const;
+    const paletteMap = {
+      낮음: { maxColors: 32, dither: 'none' },
+      보통: { maxColors: 64, dither: 'bayer:bayer_scale=3' },
+      높음: { maxColors: 128, dither: '' },
+    } as const;
+    const webpQ = webpQualityMap[quality];
+    const { maxColors, dither } = paletteMap[quality];
 
     for (let i = 0; i < files.length; i++) {
       const { buffer, ext } = files[i];
@@ -141,7 +150,7 @@ export async function imagesToGifWithWasm(
         '-i',
         input,
         '-qscale',
-        String(quality),
+        String(webpQ),
         '-compression_level',
         String(compressionLevel),
         frame,
@@ -150,12 +159,28 @@ export async function imagesToGifWithWasm(
     }
 
     await ffmpegInstance.exec([
+      '-start_number',
+      '0',
+      '-i',
+      'frame_%04d.webp',
+      '-vf',
+      `palettegen=max_colors=${maxColors}:reserve_transparent=0:stats_mode=single`,
+      'palette.png',
+    ]);
+
+    const paletteuse = dither ? `paletteuse=dither=${dither}` : 'paletteuse';
+
+    await ffmpegInstance.exec([
       '-r',
       String(fps),
       '-start_number',
       '0',
       '-i',
       'frame_%04d.webp',
+      '-i',
+      'palette.png',
+      '-filter_complex',
+      paletteuse,
       '-loop',
       '0',
       'output.gif',
@@ -167,6 +192,7 @@ export async function imagesToGifWithWasm(
       for (let i = 0; i < files.length; i++) {
         await ffmpegInstance.deleteFile(`frame_${String(i).padStart(4, '0')}.webp`);
       }
+      await ffmpegInstance.deleteFile('palette.png');
       await ffmpegInstance.deleteFile('output.gif');
     } catch (cleanupError) {
       console.warn('파일 정리 중 오류:', cleanupError);
