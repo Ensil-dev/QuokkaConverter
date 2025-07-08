@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { imagesToGifWithWasm } from '@/lib/ffmpegWasm';
-import { downloadBlob } from '@/lib/utils';
+import { downloadBlob, makeFilename } from '@/lib/utils';
 import Header from '@/components/Header';
 import ResultPlaceholder from '@/components/ResultPlaceholder';
 import ErrorMessage from '@/components/ErrorMessage';
@@ -59,7 +59,11 @@ export default function GifMaker() {
   };
 
   const download = () => {
-    if (result) downloadBlob(result.blob, 'result.gif');
+    if (result) {
+      const baseName = files?.[0]?.name || 'result';
+      const name = makeFilename(baseName, 'gif');
+      downloadBlob(result.blob, name);
+    }
   };
 
   const loadingInfo = files

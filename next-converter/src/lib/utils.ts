@@ -16,3 +16,12 @@ export function downloadBlob(blob: Blob, filename: string) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function makeFilename(original: string, ext: string): string {
+  const base = original
+    .split(/[/\\]/)
+    .pop()
+    ?.replace(/\.[^.]+$/, '') || 'result';
+  const cleanExt = ext.startsWith('.') ? ext : `.${ext}`;
+  return `${base}${cleanExt}`;
+}
