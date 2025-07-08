@@ -47,8 +47,7 @@ export default function GifMaker() {
           ext: f.name.split('.').pop()?.toLowerCase() || 'png',
         }))
       );
-      const qualityMap = { 낮음: 30, 보통: 75, 높음: 95 } as const;
-      const { data, size } = await imagesToGifWithWasm(inputs, fps, qualityMap[quality]);
+      const { data, size } = await imagesToGifWithWasm(inputs, fps, quality);
       const blob = new Blob([data], { type: 'image/gif' });
       setResult({ blob, size });
       setResultUrl(URL.createObjectURL(blob));

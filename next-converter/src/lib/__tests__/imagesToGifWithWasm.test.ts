@@ -21,6 +21,13 @@ function countGifFrames(buf: Uint8Array): number {
   return count;
 }
 
+function getColorTableSize(buf: Uint8Array): number {
+  const packed = buf[10];
+  if ((packed & 0x80) === 0) return 0;
+  const sizeCode = packed & 0x07;
+  return 2 ** (sizeCode + 1);
+}
+
 let originalFetch: typeof fetch;
 
 beforeAll(() => {
@@ -54,4 +61,13 @@ test('GIF frame count matches input image count', async () => {
   }));
   const result = await imagesToGifWithWasm(inputs, 5);
   expect(countGifFrames(result.data)).toBe(inputs.length);
+});
+
+test('GIF palette size reflects quality setting', async () => {
+  const inputs = [redWebp, redWebp, redWebp].map((buf) => ({
+    buffer: toArrayBuffer(buf),
+    ext: 'webp',
+  }));
+  const result = await imagesToGifWithWasm(inputs, 5, '높음');
+  expect(getColorTableSize(result.data)).toBe(128);
 });
