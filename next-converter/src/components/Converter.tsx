@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '@/lib/auth';
 import Loading from '@/components/Loading';
-import { loginWithGoogle, downloadBlob } from '@/lib/utils';
+import { loginWithGoogle, downloadBlob, makeFilename } from '@/lib/utils';
 import useConversionEstimates from '@/lib/hooks/useConversionEstimates';
 import { getAvailableOutputFormats } from '@/lib/utils/conversionHelper';
 
@@ -202,7 +202,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
       setResult({
         url: URL.createObjectURL(convertBlob),
-        filename: `converted.${outputFormat}`,
+        filename: makeFilename(file.name, outputFormat),
         size: (convertBlob.size / 1024 / 1024).toFixed(2),
         format: outputFormat,
       });
@@ -235,9 +235,10 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const handleDownload = useCallback(() => {
     if (convertedFile) {
       const format = result?.format || outputFormat;
-      downloadBlob(convertedFile, `converted.${format}`);
+      const name = file ? makeFilename(file.name, format) : `converted.${format}`;
+      downloadBlob(convertedFile, name);
     }
-  }, [convertedFile, result, outputFormat]);
+  }, [convertedFile, result, outputFormat, file]);
 
   // 재생속도 변경
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
