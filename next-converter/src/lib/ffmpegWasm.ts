@@ -1,5 +1,6 @@
 import type { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL } from '@ffmpeg/util';
+import { detectFileType } from './utils/fileFormats';
 
 
 export interface WasmConvertOptions {
@@ -51,6 +52,9 @@ export async function convertFileWithWasm(
   try {
     const ffmpegInstance = await initFFmpeg();
 
+    const outputType = detectFileType(outputFormat);
+    const isImage = outputType === 'image';
+
     // 입력 파일명 생성
     const inputFileName = `input.${inputFormat}`;
     const outputFileName = `output.${outputFormat}`;
@@ -61,33 +65,41 @@ export async function convertFileWithWasm(
     // 변환 명령어 생성
     const args = ['-i', inputFileName];
 
-    // 비디오 옵션 처리
+    // 공통 옵션
     if (options.resolution && options.resolution !== 'original') {
-      args.push('-vf', `scale=${options.resolution}:flags=fast_bilinear`);
+      const scale = isImage ? `scale=${options.resolution}` : `scale=${options.resolution}:flags=fast_bilinear`;
+      args.push('-vf', scale);
     }
 
-    if (options.fps) {
+    if (!isImage && options.fps) {
       args.push('-r', String(options.fps));
     }
 
-    if (options.bitrate) {
+    if (!isImage && options.bitrate) {
       args.push('-b:v', options.bitrate);
     }
 
-    // 품질 설정
     if (options.quality) {
-      const qualityMap = { '낮음': 28, '보통': 23, '높음': 18 };
-      args.push('-crf', String(qualityMap[options.quality] || 23));
-      const presetMap: Record<'낮음' | '보통' | '높음', string> = {
-        낮음: 'veryslow',
-        보통: 'slow',
-        높음: 'medium',
-      };
-      args.push('-preset', presetMap[options.quality]);
+      if (isImage) {
+        const qMap = { 낮음: 60, 보통: 80, 높음: 95 } as const;
+        args.push('-q:v', String(qMap[options.quality]));
+        const clMap = { 낮음: 2, 보통: 4, 높음: 6 } as const;
+        if (outputFormat === 'webp' || outputFormat === 'png') {
+          args.push('-compression_level', String(clMap[options.quality]));
+        }
+      } else {
+        const qualityMap = { '낮음': 28, '보통': 23, '높음': 18 };
+        args.push('-crf', String(qualityMap[options.quality] || 23));
+        const presetMap: Record<'낮음' | '보통' | '높음', string> = {
+          낮음: 'veryslow',
+          보통: 'slow',
+          높음: 'medium',
+        };
+        args.push('-preset', presetMap[options.quality]);
+      }
     }
 
-    // 재생속도 설정
-    if (options.playbackSpeed && options.playbackSpeed !== 1) {
+    if (options.playbackSpeed && options.playbackSpeed !== 1 && outputFormat === 'gif') {
       args.push('-filter:v', `setpts=${1 / options.playbackSpeed}*PTS`);
     }
 
