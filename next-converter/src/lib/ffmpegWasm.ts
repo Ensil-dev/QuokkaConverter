@@ -53,7 +53,8 @@ export async function convertFileWithWasm(
     const ffmpegInstance = await initFFmpeg();
 
     const outputType = detectFileType(outputFormat);
-    const isImage = outputType === 'image';
+    // GIF는 영상 처리를 위해 이미지 범주에서 제외
+    const isImage = outputType === 'image' && outputFormat !== 'gif';
 
     // 입력 파일명 생성
     const inputFileName = `input.${inputFormat}`;
