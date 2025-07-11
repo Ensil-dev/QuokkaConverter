@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/auth';
 import InAppRedirectGuard from '@/components/InAppRedirectGuard';
 import { Analytics } from '@vercel/analytics/next';
+import BackExitHandler from '@/components/BackExitHandler';
 
 export const metadata: Metadata = {
   title: 'QuokkaConverter',
@@ -62,6 +63,7 @@ export default function RootLayout({
         )}
       </head>
       <body suppressHydrationWarning={true}>
+        <BackExitHandler />
         <InAppRedirectGuard />
         <AuthProvider>{children}</AuthProvider>
         <Analytics />
