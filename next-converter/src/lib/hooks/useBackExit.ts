@@ -16,6 +16,9 @@ export default function useBackExit(allowCount: number = tabs.length + 1) {
   const popCountRef = useRef(0);
 
   useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return;
+
     const showToast = () => {
       if (toastIdRef.current && toast.isActive(toastIdRef.current)) return;
       toastIdRef.current = toast.info('앱을 종료하려면 뒤로가기를 한 번 더 누르세요.');
