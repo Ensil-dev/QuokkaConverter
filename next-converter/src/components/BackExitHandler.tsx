@@ -1,8 +1,9 @@
 'use client';
 
 import useBackExit from '@/lib/hooks/useBackExit';
+import { tabs } from './BottomNav';
 
 export default function BackExitHandler() {
-  useBackExit();
+  useBackExit(tabs.length);
   return null;
 }
