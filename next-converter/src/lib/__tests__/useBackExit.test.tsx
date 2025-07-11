@@ -1,5 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import useBackExit from '../hooks/useBackExit';
+import { toast } from 'react-toastify';
+
+jest.mock('react-toastify', () => ({
+  toast: { info: jest.fn(), isActive: jest.fn(() => false) }
+}));
 
 const firePop = () => {
   const event = new PopStateEvent('popstate');
@@ -41,7 +46,7 @@ describe('useBackExit', () => {
       firePop();
     });
 
-    expect(document.body.textContent).toContain('앱을 종료하려면 뒤로가기를 한 번 더 누르세요.');
+    expect(toast.info).toHaveBeenCalledWith('앱을 종료하려면 뒤로가기를 한 번 더 누르세요.');
     expect(pushSpy).toHaveBeenCalled();
 
     act(() => {
