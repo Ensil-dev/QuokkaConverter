@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth';
 import InAppRedirectGuard from '@/components/InAppRedirectGuard';
+import ToastProvider from '@/components/ToastProvider';
 import { Analytics } from '@vercel/analytics/next';
 import BackExitHandler from '@/components/BackExitHandler';
 
@@ -65,6 +66,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={true}>
         <BackExitHandler />
         <InAppRedirectGuard />
+        <ToastProvider />
         <AuthProvider>{children}</AuthProvider>
         <Analytics />
       </body>
