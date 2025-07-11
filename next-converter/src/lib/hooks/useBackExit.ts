@@ -3,13 +3,13 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * 브라우저 뒤로가기 누적 횟수를 카운트하여 앱 종료를 돕는 훅
+ * 모바일 브라우저에서 뒤로가기 두 번으로 앱을 종료하도록 돕는 훅
  *
- * 뒤로가기를 4회 누르면 토스트 메시지를 표시하고, 토스트가 사라지기 전에
- * 다시 뒤로가기가 발생하면 window.close()를 호출해 앱을 종료합니다.
+ * 최초 뒤로가기가 발생하면 토스트를 띄우고 히스토리를 유지합니다.
+ * 토스트가 노출된 상태에서 다시 뒤로가기가 발생하면 히스토리를 모두
+ * 뒤로 이동시켜 앱을 종료합니다.
  */
 export default function useBackExit() {
-  const countRef = useRef(0);
   const toastVisibleRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -34,23 +34,19 @@ export default function useBackExit() {
       timeoutRef.current = setTimeout(() => {
         toast.remove();
         toastVisibleRef.current = false;
-        countRef.current = 0;
         timeoutRef.current = null;
       }, 2000);
     };
 
     const handlePopState = () => {
-      countRef.current += 1;
-
-      if (countRef.current >= 4) {
-        if (toastVisibleRef.current) {
-          window.close();
-        } else {
-          showToast();
-        }
+      if (!toastVisibleRef.current) {
+        showToast();
+        history.pushState(null, '', location.href);
+      } else {
+        history.go(-history.length);
       }
     };
-
+    history.pushState(null, '', location.href);
     window.addEventListener('popstate', handlePopState);
     return () => {
       window.removeEventListener('popstate', handlePopState);
