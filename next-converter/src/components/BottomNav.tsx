@@ -4,6 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaImage, FaFilePdf, FaImages } from 'react-icons/fa';
 
+export const tabs = [
+  { href: '/convert/media', icon: <FaImage size={20} />, label: '확장자 변환' },
+  { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF 생성' },
+  { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF 관리' },
+];
+
 
 const BottomNav = React.memo(function BottomNav() {
   const pathname = usePathname();
@@ -13,11 +19,6 @@ const BottomNav = React.memo(function BottomNav() {
     // convert 자체 페이지(예: 리디렉트 대상)일 경우만 숨김
     return null;
   }
-  const tabs = [
-    { href: '/convert/media', icon: <FaImage size={20} />, label: '확장자 변환' },
-    { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF 생성' },
-    { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF 관리' },
-  ];
 
   return (
     <nav className="bottom-nav z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
