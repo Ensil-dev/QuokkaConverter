@@ -7,7 +7,6 @@ export default function ToastProvider() {
     <ToastContainer
       position="bottom-center"
       autoClose={2000}
-      hideProgressBar
       newestOnTop={false}
       closeOnClick
       rtl={false}
