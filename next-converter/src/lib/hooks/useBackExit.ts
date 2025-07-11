@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { tabs } from '@/components/BottomNav';
 
 /**
  * 모바일 브라우저에서 뒤로가기 두 번으로 앱을 종료하도록 돕는 훅
@@ -9,9 +10,10 @@ import { useEffect, useRef } from 'react';
  * 토스트가 노출된 상태에서 다시 뒤로가기가 발생하면 히스토리를 모두
  * 뒤로 이동시켜 앱을 종료합니다.
  */
-export default function useBackExit() {
+export default function useBackExit(allowCount: number = tabs.length + 1) {
   const toastVisibleRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const popCountRef = useRef(0);
 
   useEffect(() => {
     const showToast = () => {
@@ -39,14 +41,17 @@ export default function useBackExit() {
     };
 
     const handlePopState = () => {
-      if (!toastVisibleRef.current) {
+      popCountRef.current += 1;
+      if (toastVisibleRef.current) {
+        history.go(-history.length);
+        return;
+      }
+      const shouldToast = history.length <= 1 || popCountRef.current >= allowCount;
+      if (shouldToast) {
         showToast();
         history.pushState(null, '', location.href);
-      } else {
-        history.go(-history.length);
       }
     };
-    history.pushState(null, '', location.href);
     window.addEventListener('popstate', handlePopState);
     return () => {
       window.removeEventListener('popstate', handlePopState);
@@ -55,5 +60,5 @@ export default function useBackExit() {
         timeoutRef.current = null;
       }
     };
-  }, []);
+  }, [allowCount]);
 }
