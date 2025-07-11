@@ -13,6 +13,7 @@ export default function ToastProvider() {
       pauseOnFocusLoss={false}
       draggable={false}
       pauseOnHover={false}
+      className="pb-[80px]"
     />
   );
 }
