@@ -12,7 +12,7 @@ import { tabs } from '@/components/BottomNav';
  * 뒤로 이동시켜 앱을 종료합니다.
  */
 export default function useBackExit(allowCount: number = tabs.length + 1) {
-  const toastIdRef = useRef<React.ReactText | null>(null);
+  const toastIdRef = useRef<string | number | null>(null);
   const popCountRef = useRef(0);
 
   useEffect(() => {
