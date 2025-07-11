@@ -17,11 +17,17 @@ describe('useBackExit', () => {
     history.replaceState(null, '', '/');
     history.pushState(null, '', '/page1');
     document.body.innerHTML = '';
+    Object.defineProperty(window.navigator, 'userAgent', {
+      value: 'Android',
+      configurable: true,
+    });
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    const nav = window.navigator as { userAgent?: string };
+    delete nav.userAgent;
   });
 
   test('허용 횟수 이하에서는 뒤로가기만 동작', () => {
