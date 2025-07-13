@@ -21,7 +21,10 @@ const BottomNav = React.memo(function BottomNav() {
   }
 
   return (
-    <nav className="bottom-nav z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
+    <nav
+      className="bottom-nav z-10 w-full border-t bg-[var(--background)] shadow-md"
+      style={{ height: 'calc(80px + env(safe-area-inset-bottom))' }}
+    >
       <ul className="m-0 grid w-full list-none grid-cols-3 p-0">
         {tabs.map(({ href, icon, label }) => {
           const active = pathname === href || (href !== '/convert' && pathname.startsWith(href));

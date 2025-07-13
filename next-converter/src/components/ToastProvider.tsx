@@ -13,7 +13,7 @@ export default function ToastProvider() {
       pauseOnFocusLoss={false}
       draggable={false}
       pauseOnHover={false}
-      className="pb-[80px]"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 80px)' }}
     />
   );
 }
