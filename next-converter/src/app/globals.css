@@ -43,6 +43,7 @@ body {
   /* Firefox */
   -ms-overflow-style: none;
   /* IE 10+ */
+  overscroll-behavior-y: contain;
 }
 
 * {
