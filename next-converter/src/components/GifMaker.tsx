@@ -88,18 +88,18 @@ export default function GifMaker() {
 
   const loadingInfo = files
     ? [
-        { label: '파일 수', value: files.length },
-        { label: 'FPS', value: fps },
-        { label: '품질', value: quality },
-      ]
+      { label: '파일 수', value: files.length },
+      { label: 'FPS', value: fps },
+      { label: '품질', value: quality },
+    ]
     : [];
 
   const preparedInfo = files
     ? [
-        { label: '파일 수', value: files.length },
-        { label: 'FPS', value: fps },
-        { label: '품질', value: quality },
-      ]
+      { label: '파일 수', value: files.length },
+      { label: 'FPS', value: fps },
+      { label: '품질', value: quality },
+    ]
     : [];
 
   return (
@@ -118,7 +118,9 @@ export default function GifMaker() {
           />
         </div>
         <div className="option-row">
-          <label htmlFor="fps">FPS:</label>
+          <label htmlFor="fps">
+            <span>FPS:</span>
+            <span className='text-[gray]'> 초당 프레임 수</span></label>
           <input
             id="fps"
             type="number"
