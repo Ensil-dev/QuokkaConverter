@@ -25,3 +25,8 @@ export function makeFilename(original: string, ext: string): string {
   const cleanExt = ext.startsWith('.') ? ext : `.${ext}`;
   return `${base}${cleanExt}`;
 }
+
+export function updateAppHeight(): void {
+  const height = window.visualViewport?.height || window.innerHeight;
+  document.documentElement.style.setProperty('--app-height', `${height}px`)
+}
