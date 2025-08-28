@@ -35,7 +35,10 @@ npm run dev
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 NEXTAUTH_URL=http://localhost:3000
-ALLOWED_EMAILS=your@email.com,another@email.com
+ALLOWED_EMAILS=admin1@gmail.com
+EDGE_CONFIG=https://edge-config.vercel.com/your-id?token=your-read-token
+EDGE_CONFIG_ID=your-edge-config-id
+EDGE_CONFIG_TOKEN=your-edge-config-token
 ```
 
 ## 개발자 가이드

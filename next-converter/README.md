@@ -81,11 +81,13 @@ NEXTAUTH_SECRET=your-secret-key-here
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-# 허용된 사용자 이메일 목록 (쉼표로 구분)
-ALLOWED_EMAILS=user1@gmail.com,user2@gmail.com
+  # 관리자 이메일 목록 (쉼표로 구분)
+  ALLOWED_EMAILS=admin1@gmail.com,admin2@gmail.com
 
-# 개발 모드에서는 모든 사용자 허용 (빈 값으로 설정)
-# ALLOWED_EMAILS=
+  # Vercel Edge Config 설정
+  EDGE_CONFIG=https://edge-config.vercel.com/your-id?token=your-read-token
+  EDGE_CONFIG_ID=your-edge-config-id
+  EDGE_CONFIG_TOKEN=your-edge-config-token
 ```
 
 ### 4. Google OAuth 설정
@@ -115,11 +117,13 @@ vercel
 Vercel 대시보드에서 다음 환경변수를 설정하세요:
 
 - `NEXTAUTH_URL`: 배포된 URL
-- `NEXTAUTH_SECRET`: 랜덤 시크릿 키
-- `GOOGLE_CLIENT_ID`: Google OAuth 클라이언트 ID
-- `GOOGLE_CLIENT_SECRET`: Google OAuth 클라이언트 시크릿
-- `VERCEL_TOKEN`: Vercel API 토큰 (허용된 사용자 관리용)
-- `ALLOWED_EMAILS`: 허용된 사용자 이메일 (쉼표로 구분)
+  - `NEXTAUTH_SECRET`: 랜덤 시크릿 키
+  - `GOOGLE_CLIENT_ID`: Google OAuth 클라이언트 ID
+  - `GOOGLE_CLIENT_SECRET`: Google OAuth 클라이언트 시크릿
+  - `ALLOWED_EMAILS`: 관리자 이메일 목록
+  - `EDGE_CONFIG`: Edge Config 연결 URL
+  - `EDGE_CONFIG_ID`: Edge Config ID
+  - `EDGE_CONFIG_TOKEN`: Edge Config 토큰
 
 ### 3. Google OAuth 리디렉션 URI 업데이트
 
@@ -130,11 +134,11 @@ Vercel 대시보드에서 다음 환경변수를 설정하세요:
 
 ### 허용된 사용자 관리
 
-- `ALLOWED_EMAILS` 환경변수에 쉼표로 구분된 이메일 목록 설정
-- Admin 페이지에서 이메일을 추가/삭제하면 Vercel의 `ALLOWED_EMAILS` 환경변수가 자동으로 갱신됩니다.
-- 이 기능을 사용하려면 `VERCEL_PROJECT_ID`, `VERCEL_TOKEN` 환경변수를 설정해야 합니다.
-- 빈 값으로 설정하면 모든 사용자 허용 (개발용)
-- 프로덕션에서는 반드시 허용된 이메일만 설정
+  - 허용된 이메일 목록은 Vercel Edge Config의 `allowedEmails` 키에 저장됩니다.
+  - Admin 페이지에서 이메일을 추가/삭제하면 Edge Config가 즉시 갱신됩니다.
+  - 이 기능을 사용하려면 `EDGE_CONFIG_ID`, `EDGE_CONFIG_TOKEN` 환경변수를 설정해야 합니다.
+  - Edge Config 항목이 비어 있으면 모든 사용자 허용 (개발용)
+  - `ALLOWED_EMAILS` 환경변수로 관리자 이메일을 지정합니다.
 
 ### 파일 크기 제한
 
@@ -173,9 +177,7 @@ Vercel 대시보드에서 다음 환경변수를 설정하세요:
 
 ### 개발 모드에서 모든 사용자 허용
 
-```env
-ALLOWED_EMAILS=
-```
+Edge Config에서 `allowedEmails` 항목을 비워두면 모든 사용자를 허용합니다.
 
 ## 📝 라이선스
 
