@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-export default function AdminEmailForm({ initialEmails }: { initialEmails: string[] }) {
+export default function AdminEmailForm({ initialEmails, adminEmail }: { initialEmails: string[]; adminEmail: string }) {
   const [emails, setEmails] = useState(initialEmails);
   const [email, setEmail] = useState('');
 
@@ -24,6 +24,21 @@ export default function AdminEmailForm({ initialEmails }: { initialEmails: strin
     }
   };
 
+  const handleDelete = async (target: string) => {
+    const res = await fetch('/api/admin/allow', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: target }),
+    });
+    if (res.ok) {
+      setEmails(emails.filter(e => e !== target));
+      toast.success('삭제되었습니다');
+    } else {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || '삭제 실패');
+    }
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex gap-2">
@@ -41,7 +56,18 @@ export default function AdminEmailForm({ initialEmails }: { initialEmails: strin
       </form>
       <ul className="mt-4 list-disc pl-4">
         {emails.map((e) => (
-          <li key={e}>{e}</li>
+          <li key={e} className="flex items-center gap-2">
+            <span>{e}</span>
+            {e !== adminEmail && (
+              <button
+                type="button"
+                onClick={() => handleDelete(e)}
+                className="text-sm text-red-500 hover:underline"
+              >
+                삭제
+              </button>
+            )}
+          </li>
         ))}
       </ul>
     </div>
