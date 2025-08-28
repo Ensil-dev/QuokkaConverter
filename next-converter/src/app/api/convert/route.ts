@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { convertFileWithWasm } from '@/lib/ffmpegWasm';
 import { SUPPORTED_FORMATS } from '@/lib/utils/fileFormats';
+import { getAllowedEmails } from '@/lib/allowedEmails';
 
 // 비용 제어를 위한 제한 설정 (Vercel 배포용)
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB (Vercel 제한)
@@ -45,8 +46,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 환경 변수에서 허용된 이메일 목록 추출
-    const allowedEmails: string[] = process.env.ALLOWED_EMAILS?.split(",").map(email => email.trim()) || [];
+    const allowedEmails: string[] = await getAllowedEmails();
 
     // 이메일 마스킹 함수
     function maskEmail(email: string): string {
