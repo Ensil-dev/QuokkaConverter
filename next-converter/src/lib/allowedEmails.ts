@@ -17,14 +17,14 @@ export async function addAllowedEmail(email: string): Promise<void> {
   const emails = await getAllowedEmails();
   if (!emails.includes(email)) {
     emails.push(email);
-    const toUpdate = emails.filter(e => !ADMIN_EMAILS.includes(e));
+    const toUpdate = emails.filter((e) => !ADMIN_EMAILS.includes(e));
     await updateEdgeConfigAllowedEmails(toUpdate);
   }
 }
 
 export async function removeAllowedEmail(email: string): Promise<void> {
-  const emails = (await getAllowedEmails()).filter(e => e !== email);
-  const toUpdate = emails.filter(e => !ADMIN_EMAILS.includes(e));
+  const emails = (await getAllowedEmails()).filter((e) => e !== email);
+  const toUpdate = emails.filter((e) => !ADMIN_EMAILS.includes(e));
   await updateEdgeConfigAllowedEmails(toUpdate);
 }
 
@@ -32,7 +32,9 @@ async function fetchAllowedEmails(): Promise<string[]> {
   if (!EDGE_CONFIG_URL) {
     return [];
   }
-  const res = await fetch(`${EDGE_CONFIG_URL}/item/${EDGE_KEY}`);
+  const res = await fetch(`${EDGE_CONFIG_URL}/item/${EDGE_KEY}`, {
+    cache: 'no-store',
+  });
   if (!res.ok) {
     throw new Error('Failed to read Edge Config');
   }
@@ -71,4 +73,3 @@ async function updateEdgeConfigAllowedEmails(emails: string[]): Promise<void> {
     throw err;
   }
 }
-
