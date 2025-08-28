@@ -118,6 +118,7 @@ Vercel 대시보드에서 다음 환경변수를 설정하세요:
 - `NEXTAUTH_SECRET`: 랜덤 시크릿 키
 - `GOOGLE_CLIENT_ID`: Google OAuth 클라이언트 ID
 - `GOOGLE_CLIENT_SECRET`: Google OAuth 클라이언트 시크릿
+- `VERCEL_TOKEN`: Vercel API 토큰 (허용된 사용자 관리용)
 - `ALLOWED_EMAILS`: 허용된 사용자 이메일 (쉼표로 구분)
 
 ### 3. Google OAuth 리디렉션 URI 업데이트
@@ -130,6 +131,8 @@ Vercel 대시보드에서 다음 환경변수를 설정하세요:
 ### 허용된 사용자 관리
 
 - `ALLOWED_EMAILS` 환경변수에 쉼표로 구분된 이메일 목록 설정
+- Admin 페이지에서 이메일을 추가/삭제하면 Vercel의 `ALLOWED_EMAILS` 환경변수가 자동으로 갱신됩니다.
+- 이 기능을 사용하려면 `VERCEL_PROJECT_ID`, `VERCEL_TOKEN` 환경변수를 설정해야 합니다.
 - 빈 값으로 설정하면 모든 사용자 허용 (개발용)
 - 프로덕션에서는 반드시 허용된 이메일만 설정
 
