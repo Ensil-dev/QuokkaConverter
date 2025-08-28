@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-export default function AdminEmailForm({ initialEmails, adminEmail }: { initialEmails: string[]; adminEmail: string }) {
+export default function AdminEmailForm({ initialEmails, adminEmails }: { initialEmails: string[]; adminEmails: string[] }) {
   const [emails, setEmails] = useState(initialEmails);
   const [email, setEmail] = useState('');
 
@@ -55,20 +55,20 @@ export default function AdminEmailForm({ initialEmails, adminEmail }: { initialE
         </button>
       </form>
       <ul className="mt-4 list-disc pl-4">
-        {emails.map((e) => (
-          <li key={e} className="flex items-center gap-2">
-            <span>{e}</span>
-            {e !== adminEmail && (
-              <button
-                type="button"
-                onClick={() => handleDelete(e)}
-                className="text-sm text-red-500 hover:underline"
-              >
-                삭제
-              </button>
-            )}
-          </li>
-        ))}
+          {emails.map((e) => (
+            <li key={e} className="flex items-center gap-2">
+              <span>{e}</span>
+              {!adminEmails.includes(e) && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(e)}
+                  className="text-sm text-red-500 hover:underline"
+                >
+                  삭제
+                </button>
+              )}
+            </li>
+          ))}
       </ul>
     </div>
   );
