@@ -1,8 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-
-// 허용된 사용자 이메일 목록 (환경변수에서 가져옴)
-const ALLOWED_EMAILS = process.env.ALLOWED_EMAILS?.split(",").map(email => email.trim()) || [];
+import { getAllowedEmails } from '@/lib/allowedEmails';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -13,18 +11,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      // 허용된 이메일인지 확인
-      if (ALLOWED_EMAILS.length === 0) {
-        // 허용된 이메일이 설정되지 않은 경우 모든 사용자 허용 (개발용)
+      const allowedEmails = await getAllowedEmails();
+      if (allowedEmails.length === 0) {
         return true;
       }
-      
-      const isAllowed = ALLOWED_EMAILS.includes(user.email!);
+      const isAllowed = allowedEmails.includes(user.email!);
       if (!isAllowed) {
         console.log(`접근 거부: ${user.email}`);
         return false;
       }
-      
       console.log(`접근 허용: ${user.email}`);
       return true;
     },
