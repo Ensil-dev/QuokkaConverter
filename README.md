@@ -80,6 +80,7 @@ npm run dev
 ## 환경변수 설정
 
 ```env
+// .env.local
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-secret-key
 GOOGLE_CLIENT_ID=your-google-client-id
