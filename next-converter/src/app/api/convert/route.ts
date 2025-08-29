@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { convertFileWithWasm } from '@/lib/ffmpegWasm';
 import { SUPPORTED_FORMATS } from '@/lib/utils/fileFormats';
-import { getAllowedEmails } from '@/lib/allowedEmails';
 
 // 비용 제어를 위한 제한 설정 (Vercel 배포용)
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB (Vercel 제한)
@@ -46,8 +45,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const allowedEmails: string[] = await getAllowedEmails();
-
     // 이메일 마스킹 함수
     function maskEmail(email: string): string {
       if (!email.includes("@")) return "[Invalid Email]";
@@ -57,27 +54,6 @@ export async function POST(request: NextRequest) {
           ? name[0] + "*"
           : name[0] + "*".repeat(name.length - 2) + name.slice(-1);
       return `${maskedName}@${domain}`;
-    }
-
-
-    // NextResponse 타입 import (Next.js API 환경 기준)
-    // import { NextResponse } from "next/server";
-
-    if (
-      allowedEmails.length > 0 &&
-      session.user?.email &&
-      !allowedEmails.includes(session.user.email)
-    ) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(`접근 거부: ${maskEmail(session.user.email)}`);
-      } else {
-        console.warn("접근 거부: 허용되지 않은 사용자");
-      }
-
-      return NextResponse.json(
-        { error: "접근 권한이 없습니다." },
-        { status: 403 }
-      );
     }
 
 
