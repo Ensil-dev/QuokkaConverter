@@ -1,6 +1,6 @@
 # QuokkaConverter 🐻
 
-**Next.js 15 기반 서버리스 파일 변환 SaaS**  
+**원하는대로 파일 포맷을 변환할 수 있는 서버리스 웹 애플리케이션**  
 브라우저에서 **비디오·오디오·이미지·PDF·GIF**를 직접 변환하여 서버 비용 없이 안정적이고 빠른 서비스를 제공합니다.
 
 👉 [Live Demo 바로가기](https://quokkaconverter.vercel.app/)
