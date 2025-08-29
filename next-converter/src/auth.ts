@@ -1,6 +1,10 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+if (process.env.NODE_ENV === "development") {
+  process.env.NEXTAUTH_URL = "http://localhost:3000";
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     GoogleProvider({
@@ -28,4 +32,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-}); 
+  trustHost: true,
+});
