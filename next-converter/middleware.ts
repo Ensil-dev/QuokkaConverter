@@ -1,7 +1,6 @@
 import { auth } from './src/auth';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getAllowedEmails } from './src/lib/allowedEmails';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,24 +22,15 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-    if (pathname.startsWith('/convert/')) {
-      const session = await auth();
-      if (!session) {
-        const url = new URL('/', request.url);
-        return NextResponse.redirect(url);
-      }
-      const allowed = await getAllowedEmails();
-      if (
-        allowed.length > 0 &&
-        session.user?.email &&
-        !allowed.includes(session.user.email)
-      ) {
-        const url = new URL('/', request.url);
-        return NextResponse.redirect(url);
-      }
+  if (pathname.startsWith('/convert/')) {
+    const session = await auth();
+    if (!session) {
+      const url = new URL('/', request.url);
+      return NextResponse.redirect(url);
     }
-    return NextResponse.next();
   }
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ['/ffmpeg/:path*', '/convert/:path*'],

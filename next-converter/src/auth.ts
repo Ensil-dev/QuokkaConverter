@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { getAllowedEmails } from '@/lib/allowedEmails';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -10,17 +9,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      const allowedEmails = await getAllowedEmails();
-      if (allowedEmails.length === 0) {
-        return true;
-      }
-      const isAllowed = allowedEmails.includes(user.email!);
-      if (!isAllowed) {
-        console.log(`접근 거부: ${user.email}`);
-        return false;
-      }
-      console.log(`접근 허용: ${user.email}`);
+    async signIn() {
       return true;
     },
     async session({ session, token }) {
