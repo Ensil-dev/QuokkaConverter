@@ -36,9 +36,9 @@
 ## 주요 기능
 
 ### 🔐 보안 및 접근 제어
-- Google OAuth 로그인  
-- 허용된 이메일만 접근 가능 (**Vercel Edge Config** 관리)  
-- 인증 미들웨어로 API 보호, 무단 접근 차단  
+- Google OAuth 로그인
+- 허용된 이메일만 접근 가능 (환경 변수로 관리)
+- 인증 미들웨어로 API 보호, 무단 접근 차단
 
 ### 🎥 비디오 변환
 - **지원 형식**: MP4, AVI, MOV, MKV, WebM, GIF 등  
@@ -86,9 +86,6 @@ NEXTAUTH_SECRET=your-secret-key
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 ALLOWED_EMAILS=admin1@gmail.com
-EDGE_CONFIG=https://edge-config.vercel.com/your-id?token=your-token
-EDGE_CONFIG_ID=your-edge-config-id
-EDGE_CONFIG_TOKEN=your-edge-config-token
 ```
 
 ---
@@ -111,7 +108,7 @@ EDGE_CONFIG_TOKEN=your-edge-config-token
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Auth**: NextAuth.js v5, Google OAuth
 - **Multimedia**: ffmpeg.wasm, pdf-lib
-- **Infra**: Vercel Edge Config (이메일 제어), Vercel 배포
+- **Infra**: Vercel 배포
 - **Test**: Jest
 
 ---
@@ -121,7 +118,7 @@ EDGE_CONFIG_TOKEN=your-edge-config-token
 *(아래 항목별로 GIF/이미지 삽입)*
 
 - Google OAuth 로그인 & 접근 제한 흐름
-- 관리자 페이지 – 이메일 관리(추가/삭제/조회)
+- 관리자 페이지
 - 비디오 변환 – 해상도/FPS 옵션 적용 예시
 - 오디오 변환 – 샘플레이트 & 품질 설정
 - 이미지 변환 – JPG ↔ PNG 변환
@@ -147,7 +144,7 @@ EDGE_CONFIG_TOKEN=your-edge-config-token
 
 - **서버리스 아키텍처**로 비용 절감 + 확장성 확보
 - **클라이언트 사이드 변환**으로 무제한 사용성 보장
-- **OAuth + Edge Config**으로 보안성과 운영 편의성 강화
+- **OAuth 기반 인증**으로 보안성과 운영 편의성 강화
 - **Jest 기반 테스트**로 안정적 유지보수성 확보
 - **직관적인 UI/UX**로 누구나 쉽게 다양한 포맷 변환 가능
 

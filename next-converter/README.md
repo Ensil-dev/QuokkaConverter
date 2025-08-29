@@ -83,11 +83,6 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
   # 관리자 이메일 목록 (쉼표로 구분)
   ALLOWED_EMAILS=admin1@gmail.com,admin2@gmail.com
-
-  # Vercel Edge Config 설정
-  EDGE_CONFIG=https://edge-config.vercel.com/your-id?token=your-read-token
-  EDGE_CONFIG_ID=your-edge-config-id
-  EDGE_CONFIG_TOKEN=your-edge-config-token
 ```
 
 ### 4. Google OAuth 설정
@@ -121,9 +116,6 @@ Vercel 대시보드에서 다음 환경변수를 설정하세요:
   - `GOOGLE_CLIENT_ID`: Google OAuth 클라이언트 ID
   - `GOOGLE_CLIENT_SECRET`: Google OAuth 클라이언트 시크릿
   - `ALLOWED_EMAILS`: 관리자 이메일 목록
-  - `EDGE_CONFIG`: Edge Config 연결 URL
-  - `EDGE_CONFIG_ID`: Edge Config ID
-  - `EDGE_CONFIG_TOKEN`: Edge Config 토큰
 
 ### 3. Google OAuth 리디렉션 URI 업데이트
 
