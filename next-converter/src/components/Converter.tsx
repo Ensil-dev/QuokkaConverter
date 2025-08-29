@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useAtom } from 'jotai';
 import { useAuth } from '@/lib/auth';
 import Loading from '@/components/Loading';
 import { loginWithGoogle, downloadBlob, makeFilename } from '@/lib/utils';
@@ -16,6 +17,7 @@ import { convertFileWithWasm } from '@/lib/ffmpegWasm';
 import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { detectFileType, isConversionSupported } from '@/lib/utils/fileFormats';
 import PreviewImage from '@/components/PreviewImage';
+import { maxUploadSizeAtom } from '@/lib/atoms';
 
 interface ConversionResult {
   url: string;
@@ -30,6 +32,7 @@ interface ConverterProps {
 
 export default function Converter({ showModeSelector = true }: ConverterProps) {
   const { session, status } = useAuth();
+  const [maxUploadSize] = useAtom(maxUploadSizeAtom);
   const [mode, setMode] = useState<'media' | 'pdf'>('media');
   const [file, setFile] = useState<File | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
@@ -96,10 +99,10 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      // 파일 크기 제한 검증 (100MB)
-      const maxSize = 100 * 1024 * 1024; // 100MB
+      // 파일 크기 제한 검증
+      const maxSize = maxUploadSize * 1024 * 1024;
       if (selectedFile.size > maxSize) {
-        setError('파일 크기가 너무 큽니다. 100MB 이하의 파일을 선택해주세요.');
+        setError(`파일 크기가 너무 큽니다. ${maxUploadSize}MB 이하의 파일을 선택해주세요.`);
         setFile(null);
         setFileType(null);
         setOutputFormat('');
@@ -134,7 +137,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       setConvertedFile(null);
       setResult(null);
     }
-  }, []);
+  }, [maxUploadSize]);
 
   // 변환 실행
   const handleConvert = useCallback(async () => {
@@ -413,7 +416,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
               onChange={handleFileUpload}
               required
             />
-            <p className="file-limit-note">최대 파일 크기: 100MB (로컬 실행 제한)</p>
+            <p className="file-limit-note">최대 파일 크기: {maxUploadSize}MB (로컬 실행 제한)</p>
             {file && (
               <div className="file-info">
                 <p>

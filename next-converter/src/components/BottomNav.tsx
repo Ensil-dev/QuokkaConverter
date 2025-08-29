@@ -10,7 +10,7 @@ export const tabs = [
   { href: '/convert/media', icon: <FaImage size={20} />, label: '확장자 변환' },
   { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF 생성' },
   { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF 관리' },
-  { href: '/admin', icon: <FaUserShield size={20} />, label: 'Admin 대시보드', adminOnly: true },
+  { href: '/admin', icon: <FaUserShield size={20} />, label: '관리자 페이지', adminOnly: true },
 ];
 
 
