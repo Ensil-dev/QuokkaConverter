@@ -3,12 +3,11 @@
 > **서버리스 기반의 고성능 파일 변환 플랫폼**  
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-green?style=for-the-badge)](https://quokkaconverter.vercel.app/)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=for-the-badge&logo=webassembly&logoColor=white)](https://webassembly.org/)
 [![Jotai](https://img.shields.io/badge/Jotai-2.8-000000?style=for-the-badge)](https://jotai.org/)
-[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 
 ---
 
@@ -283,7 +282,3 @@ npm run build             # 프로덕션 빌드 검증
 **Portfolio Repository**: [GitHub](https://github.com/Ensil-dev/QuokkaConverter)  
 **Live Demo**: [quokkaconverter.vercel.app](https://quokkaconverter.vercel.app/)  
 **Contact**: dlwjd164@gmail.com
-
----
-
-> *"기술적 도전을 비즈니스 성과로 연결하는 개발자"*
