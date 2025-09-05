@@ -1,6 +1,6 @@
 # QuokkaConverter 🚀
 
-> **서버리스 기반의 고성능 파일 변환 플랫폼**
+> **서버리스 기반의 클라이언트 사이드 파일 변환 플랫폼**
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-green?style=for-the-badge)](https://quokkaconverter.vercel.app/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
