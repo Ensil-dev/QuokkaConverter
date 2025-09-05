@@ -15,13 +15,11 @@ export async function middleware(request) {
     try {
       console.log('🔍 Checking JWT token for convert page...');
       
-      // NextAuth v5에서 더 안정적인 토큰 검증 방법
-      const token = await getToken({ 
+      // NextAuth v5(Auth.js)에서는 기본 쿠키명이 authjs.session-token으로 변경됨
+      // cookieName을 명시하지 않고 getToken 기본 동작에 맡겨 환경에 맞게 자동 판단되도록 함
+      const token = await getToken({
         req: request,
         secret: process.env.NEXTAUTH_SECRET,
-        cookieName: process.env.NODE_ENV === 'production' 
-          ? '__Secure-next-auth.session-token' 
-          : 'next-auth.session-token'
       });
       
       console.log('📋 Token check result:', {
