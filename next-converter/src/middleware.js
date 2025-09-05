@@ -2,20 +2,50 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function middleware(request) {
-  console.log('🚀 MIDDLEWARE EXECUTED:', request.nextUrl.pathname);
+  const pathname = request.nextUrl.pathname;
+  const host = request.headers.get('host');
   
-  if (request.nextUrl.pathname.startsWith('/convert')) {
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
-    });
-    
-    if (!token) {
-      console.log('🔒 BLOCKING ACCESS - NOT LOGGED IN:', request.nextUrl.pathname);
+  console.log('🚀 MIDDLEWARE EXECUTED:', {
+    pathname,
+    host,
+    userAgent: request.headers.get('user-agent')?.slice(0, 50)
+  });
+  
+  if (pathname.startsWith('/convert')) {
+    try {
+      console.log('🔍 Checking JWT token for convert page...');
+      
+      // NextAuth v5에서 더 안정적인 토큰 검증 방법
+      const token = await getToken({ 
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+        cookieName: process.env.NODE_ENV === 'production' 
+          ? '__Secure-next-auth.session-token' 
+          : 'next-auth.session-token'
+      });
+      
+      console.log('📋 Token check result:', {
+        hasToken: !!token,
+        tokenEmail: token?.email || 'no-email',
+        tokenSub: token?.sub || 'no-sub',
+        environment: process.env.NODE_ENV
+      });
+      
+      if (!token) {
+        console.log('🔒 BLOCKING ACCESS - NO VALID TOKEN:', pathname);
+        const redirectUrl = new URL('/', request.url);
+        console.log('↩️ Redirecting to:', redirectUrl.toString());
+        return NextResponse.redirect(redirectUrl);
+      }
+      
+      console.log('✅ ALLOWING ACCESS - VALID TOKEN:', token.email, pathname);
+    } catch (error) {
+      console.log('❌ TOKEN ERROR:', {
+        message: error.message,
+        stack: error.stack?.slice(0, 200)
+      });
       return NextResponse.redirect(new URL('/', request.url));
     }
-    
-    console.log('✅ ALLOWING ACCESS - LOGGED IN USER:', token.email, request.nextUrl.pathname);
   }
   
   return NextResponse.next();
