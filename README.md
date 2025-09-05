@@ -23,13 +23,13 @@
 
 ## 소개
 
-**QuokkaConverter**는 다양한 파일을 쉽고 빠르게 변환할 수 있는 **범용 SaaS 서비스**입니다.
+**QuokkaConverter**는 다양한 파일을 쉽고 빠르게 변환할 수 있는 **파일 변환 플랫폼**입니다.
 
-- Google OAuth 기반 인증 및 이메일 화이트리스트 관리  
-- ffmpeg.wasm 기반 클라이언트 사이드 변환 (서버리스 환경 최적화)  
-- 직관적 UI/UX와 다양한 변환 옵션  
-- 예상 크기/시간 미리보기, 사용량 기록, 보안 강화  
-- 서버 비용 절감을 위한 최적화된 아키텍처  
+- Google OAuth 기반 인증 및 이메일 화이트리스트 관리
+- ffmpeg.wasm 기반 클라이언트 사이드 변환 (서버리스 환경 최적화)
+- 직관적 UI/UX와 다양한 변환 옵션
+- 예상 크기/시간 미리보기, 사용량 기록, 보안 강화
+- 서버 비용 절감을 위한 최적화된 아키텍처
 
 ---
 
@@ -105,11 +105,15 @@ ALLOWED_EMAILS=admin1@gmail.com
 
 ## 기술 스택
 
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **Auth**: NextAuth.js v5, Google OAuth
-- **Multimedia**: ffmpeg.wasm, pdf-lib
-- **Infra**: Vercel 배포
-- **Test**: Jest
+- **Frontend**: Next.js, React, TypeScript  
+- **Auth**: NextAuth.js (Google OAuth)  
+- **File Processing**: @ffmpeg/ffmpeg, pdf-lib, formidable  
+- **UI & Styling**: Tailwind CSS, React Icons, React Toastify  
+- **State Management**: Jotai  
+- **Testing**: Jest, Testing Library  
+- **Dev Tools**: ESLint, Prettier, PostCSS  
+- **Analytics**: @vercel/analytics  
+- **Infrastructure**: Vercel
 
 ---
 
