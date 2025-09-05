@@ -1,9 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-if (process.env.NODE_ENV === "development") {
-  process.env.NEXTAUTH_URL = "http://localhost:3000";
-}
+// NEXTAUTH_URL은 .env.local에서 관리 (포트 자동 감지)
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -33,4 +31,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true,
+  // 개발환경에서는 자동으로 localhost URL 사용
+  ...(process.env.NODE_ENV === "development" && {
+    url: process.env.NEXTAUTH_URL || "http://localhost:3001" || "http://localhost:3000",
+  }),
 });
