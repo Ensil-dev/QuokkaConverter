@@ -30,7 +30,8 @@ export async function middleware(request: NextRequest) {
       
       if (!session || !session.user) {
         console.log('No session found, redirecting to login');
-        const loginUrl = new URL('/', request.url);
+        // 현재 요청의 origin을 사용하여 로컬 환경 유지
+        const loginUrl = new URL('/', request.nextUrl.origin);
         return NextResponse.redirect(loginUrl);
       }
 
@@ -39,13 +40,13 @@ export async function middleware(request: NextRequest) {
         const allowedEmails = process.env.ALLOWED_EMAILS?.split(',').map(email => email.trim()) || [];
         if (!allowedEmails.includes(session.user.email || '')) {
           console.log('Admin access denied for:', session.user.email);
-          const unauthorizedUrl = new URL('/', request.url);
+          const unauthorizedUrl = new URL('/', request.nextUrl.origin);
           return NextResponse.redirect(unauthorizedUrl);
         }
       }
     } catch (error) {
       console.error('Middleware auth error:', error);
-      const loginUrl = new URL('/', request.url);
+      const loginUrl = new URL('/', request.nextUrl.origin);
       return NextResponse.redirect(loginUrl);
     }
   }
