@@ -33,6 +33,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   // 개발환경에서는 자동으로 localhost URL 사용
   ...(process.env.NODE_ENV === "development" && {
-    url: process.env.NEXTAUTH_URL || "http://localhost:3001" || "http://localhost:3000",
+    url: process.env.NEXTAUTH_URL || "http://localhost:3000",
   }),
 });
