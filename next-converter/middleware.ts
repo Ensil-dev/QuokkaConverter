@@ -5,6 +5,7 @@ import type { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // FFmpeg 관련 처리
   if (pathname.startsWith('/ffmpeg/')) {
     const accept = request.headers.get('accept-encoding') || '';
     if (accept.includes('br')) {
@@ -22,16 +23,42 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  if (pathname.startsWith('/convert/')) {
-    const session = await auth();
-    if (!session) {
-      const url = new URL('/', request.url);
-      return NextResponse.redirect(url);
+  // 인증이 필요한 경로들
+  if (pathname.startsWith('/convert/') || pathname.startsWith('/admin/')) {
+    try {
+      const session = await auth();
+      
+      if (!session || !session.user) {
+        console.log('No session found, redirecting to login');
+        const loginUrl = new URL('/', request.url);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      // 관리자 페이지 접근 시 추가 검증
+      if (pathname.startsWith('/admin/')) {
+        const allowedEmails = process.env.ALLOWED_EMAILS?.split(',').map(email => email.trim()) || [];
+        if (!allowedEmails.includes(session.user.email || '')) {
+          console.log('Admin access denied for:', session.user.email);
+          const unauthorizedUrl = new URL('/', request.url);
+          return NextResponse.redirect(unauthorizedUrl);
+        }
+      }
+    } catch (error) {
+      console.error('Middleware auth error:', error);
+      const loginUrl = new URL('/', request.url);
+      return NextResponse.redirect(loginUrl);
     }
   }
+  
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/ffmpeg/:path*', '/convert/:path*'],
+  matcher: [
+    '/ffmpeg/:path*', 
+    '/convert/:path*',
+    '/convert',
+    '/admin/:path*',
+    '/admin'
+  ],
 };
