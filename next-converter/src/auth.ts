@@ -11,6 +11,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isProtected = nextUrl.pathname.startsWith('/convert');
+      // /convert 이하만 보호, 그 외는 통과
+      return isProtected ? isLoggedIn : true;
+    },
     async signIn() {
       return true;
     },
