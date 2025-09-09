@@ -31,14 +31,15 @@
     "@vercel/analytics": "^1.5.0",
     "ffmpeg-static": "^5.2.0",
     "formidable": "^3.5.4",
+    "jotai": "^2.8.3",
     "next": "15.3.4",
     "next-auth": "^5.0.0-beta.29",
+    "next-intl": "^4.3.7",
     "pdf-lib": "^1.17.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
-    "react-toastify": "^11.0.5",
-    "jotai": "^2.8.3"
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

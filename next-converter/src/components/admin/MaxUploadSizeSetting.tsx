@@ -3,8 +3,10 @@
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { maxUploadSizeAtom } from '@/lib/atoms';
+import { useTranslations } from 'next-intl';
 
 export default function MaxUploadSizeSetting() {
+  const t = useTranslations('Admin');
   const [maxUploadSize, setMaxUploadSize] = useAtom(maxUploadSizeAtom);
   const [value, setValue] = useState(maxUploadSize.toString());
 
@@ -18,7 +20,7 @@ export default function MaxUploadSizeSetting() {
   return (
     <div className="max-w-md">
       <label htmlFor="max-upload" className="block pb-[12px] font-medium">
-        최대 업로드 크기 (MB)
+        {t('maxUploadSize')}
       </label>
       <div className="flex">
         <input
@@ -30,10 +32,12 @@ export default function MaxUploadSizeSetting() {
           className="flex w-1/3 rounded border px-3 py-2"
         />
         <button type="button" onClick={save} className="w-[50px] rounded bg-blue ml-[12px] px-4 py-4 text-white">
-          저장
+          {t('save')}
         </button>
       </div>
-      <p className="pt-[12px] text-sm text-gray-500">현재 설정: {maxUploadSize}MB</p>
+      <p className="pt-[12px] text-sm text-gray-500">
+        {t('currentSetting', { size: maxUploadSize })}
+      </p>
     </div>
   );
 }

@@ -2,12 +2,15 @@
 import React from 'react';
 import Image from 'next/image';
 import { FcGoogle } from 'react-icons/fc';
+import { useTranslations } from 'next-intl';
 
 interface LoginCardProps {
   onLogin: () => void;
 }
 
 const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
+  const t = useTranslations('HomePage');
+
   return (
     <div className="flex justify-center">
       <div className="flex min-h-screen min-w-[340px] max-w-[400px] flex-col items-center justify-center bg-gray-100 font-sans">
@@ -18,14 +21,14 @@ const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
         >
           <Image
             src="/apple-touch-icon.png"
-            alt="QuokkaConverter"
+            alt={t('title')}
             priority
             width={64}
             height={64}
             className="mr-[8px] select-none"
           />
           <span className="select-none text-2xl font-bold text-black dark:text-white z-50">
-            QuokkaConverter
+            {t('title')}
           </span>
         </div>
         <div
@@ -43,7 +46,7 @@ const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
             className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white p-4 py-3 text-lg font-semibold text-gray-800 shadow transition hover:shadow-md"
           >
             <FcGoogle size={48} />
-            <span className="select-none text-2xl">Google로 로그인</span>
+            <span className="select-none text-2xl">{t('googleLogin')}</span>
           </button>
         </div>
       </div>
