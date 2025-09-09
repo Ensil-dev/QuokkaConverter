@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { getMessages } from 'next-intl/server';
+import OrganizationSchema from './organization-schema';
 
 export const metadata: Metadata = {
   title: {
@@ -46,6 +47,12 @@ export const metadata: Metadata = {
         height: 630,
         alt: 'QuokkaConverter - 무료 온라인 파일 변환기',
       },
+      {
+        url: '/apple-touch-icon.png',
+        width: 512,
+        height: 512,
+        alt: 'QuokkaConverter Logo',
+      },
     ],
     locale: 'ko_KR',
     type: 'website',
@@ -73,6 +80,9 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
+  other: {
+    'google-site-verification': process.env.GOOGLE_SITE_VERIFICATION || '',
+  },
 };
 
 export const viewport = {
@@ -111,6 +121,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         )}
       </head>
       <body suppressHydrationWarning={true}>
+        <OrganizationSchema />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <BackExitHandler />
           <InAppRedirectGuard />
