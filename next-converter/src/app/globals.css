@@ -1,7 +1,8 @@
 @tailwind utilities;
 
 /* Global minimum width constraint */
-html, body {
+html,
+body {
   min-width: 345px !important;
   overflow-x: auto;
 }
@@ -172,18 +173,29 @@ a {
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  flex-wrap: nowrap;
   gap: 20px;
+  min-height: 80px;
 }
 
-
-.header-actions {
+.header-right {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
   margin-left: auto;
+  flex-shrink: 0;
+}
+
+.header-top-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.header-bottom-right {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .header-content h1 {
@@ -192,6 +204,7 @@ a {
   font-weight: 700;
   letter-spacing: -0.02em;
   user-select: none;
+  align-self: center;
 }
 
 .user-info {
@@ -981,51 +994,103 @@ button[type='submit']:disabled {
 
 @media (max-width: 768px) {
   .header-content h1 {
-    font-size: 1.8em;
+    font-size: 1.7em;
   }
 }
 
 @media (max-width: 550px) {
+  .header-content h1 {
+    font-size: 1.3em;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
   .header-content {
     gap: 10px;
+    flex-wrap: nowrap;
+    min-height: 70px;
   }
-  
-  .header-content h1 {
-    font-size: 1.6em;
-  }
-}
 
-@media (max-width: 480px) {
-  .header-content h1 {
-    font-size: 1.4em;
+  .header-right {
+    gap: 8px;
   }
-}
 
-@media (max-width: 368px) {
-  .user-info {
-    padding: 8px 12px;
-    gap: 10px;
-    border-radius: 20px;
-  }
-  
   .user-email {
-    font-size: 0.8em;
+    font-size: 0.7em;
     max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  
+
+  .user-email {
+    font-size: 0.7em;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .logout-btn {
-    padding: 6px 12px;
-    font-size: 0.8em;
+    padding: 5px 10px;
+    font-size: 0.85em;
     border-radius: 16px;
   }
-  
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 1.1em;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .user-email {
+    font-size: 0.7em;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .user-info {
+    padding: 5px 10px;
+    gap: 5px;
+    border-radius: 20px;
+  }
+
+  .logout-btn {
+    padding: 5px 10px;
+    font-size: 0.7em;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 368px) {
+  .user-email {
+    font-size: 0.5em;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .user-info {
+    padding: 5px 10px;
+    gap: 5px;
+    border-radius: 20px;
+  }
+
+  .logout-btn {
+    padding: 5px 10px;
+    font-size: 0.4em;
+    border-radius: 16px;
+  }
+
   .header-content h1 {
     font-size: 1.2em;
   }
-  
+
   .language-segment-control {
     min-width: 90px;
     scale: 0.8;
@@ -1199,7 +1264,7 @@ body::-webkit-scrollbar {
   .language-preview {
     display: none;
   }
-  
+
   .language-toggle-btn:hover .language-display {
     transform: none;
   }
@@ -1233,7 +1298,7 @@ body::-webkit-scrollbar {
   height: 100%;
   background: white;
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1301,11 +1366,11 @@ body::-webkit-scrollbar {
 @media (prefers-color-scheme: dark) {
   .segment-slider {
     background: var(--gray-alpha-200);
-    box-shadow: 
+    box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.3),
       0 1px 2px rgba(0, 0, 0, 0.2);
   }
-  
+
   .segment-option:hover {
     background: rgba(255, 255, 255, 0.05);
   }
@@ -1317,11 +1382,11 @@ body::-webkit-scrollbar {
     min-width: 120px;
     scale: 0.9;
   }
-  
+
   .segment-text {
     font-size: 11px;
   }
-  
+
   .segment-flag {
     font-size: 12px;
   }
@@ -1332,7 +1397,7 @@ body::-webkit-scrollbar {
     min-width: 100px;
     scale: 0.85;
   }
-  
+
   .segment-option {
     padding: 6px 8px;
   }

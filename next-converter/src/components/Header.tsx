@@ -18,16 +18,20 @@ const Header = React.memo(function Header({ subtitle }: HeaderProps) {
       <div className="header">
         <div className="header-content">
           <h1 className="text-[40px] select-none">QuokkaConverter</h1>
-          <LanguageSegmentControl />
-          <div className="header-actions">
-            {session && (
-              <div className="user-info">
-                <span className="user-email">{session.user?.email}</span>
-                <button onClick={() => signOut({ callbackUrl: '/' })} className="logout-btn">
-                  {t('signOut')}
-                </button>
-              </div>
-            )}
+          <div className="header-right">
+            <div className="header-top-right">
+              <LanguageSegmentControl />
+            </div>
+            <div className="header-bottom-right">
+              {session && (
+                <div className="user-info">
+                  <span className="user-email">{session.user?.email}</span>
+                  <button onClick={() => signOut({ callbackUrl: '/' })} className="logout-btn">
+                    {t('signOut')}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
