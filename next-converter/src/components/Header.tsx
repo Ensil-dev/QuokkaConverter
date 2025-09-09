@@ -17,7 +17,7 @@ const Header = React.memo(function Header({ subtitle }: HeaderProps) {
     <>
       <div className="header">
         <div className="header-content">
-          <div className="text-[24px] select-none">QuokkaConverter</div>
+          <h1 className="text-[40px] select-none">QuokkaConverter</h1>
           <LanguageSegmentControl />
           <div className="header-actions">
             {session && (

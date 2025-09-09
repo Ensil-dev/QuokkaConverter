@@ -11,7 +11,7 @@
     "pdf": "PDF 관리",
     "gif": "GIF 생성",
     "media": "확장자 변환",
-    "admin": "관리자 대시보드"
+    "admin": "관리자 설정"
   },
   "Convert": {
     "title": "파일 변환",
@@ -131,8 +131,8 @@
     "googleLogin": "Google로 로그인"
   },
   "Admin": {
-    "dashboard": "관리자 대시보드",
-    "title": "관리자 대시보드",
+    "dashboard": "관리자 설정",
+    "title": "관리자 설정",
     "description": "시스템 설정을 관리할 수 있는 대시보드입니다",
     "welcomeMessage": "시스템 상태를 모니터링하고 설정을 관리하세요",
     "allSystemsOperational": "모든 시스템 정상",
