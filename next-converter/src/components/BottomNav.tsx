@@ -43,7 +43,7 @@ const BottomNav = React.memo(function BottomNav() {
                 }`}
               >
                 {icon}
-                <span className='pt-[8px]'>{label}</span>
+                <span className='pt-[8px] text-center'>{label}</span>
               </Link>
             </li>
           );
