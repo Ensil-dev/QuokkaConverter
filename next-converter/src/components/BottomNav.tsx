@@ -55,7 +55,7 @@ const BottomNav = React.memo(function BottomNav() {
 
 // BackExitHandler에서 사용하기 위해 export (임시 호환성)
 export const tabs = [
-  { href: '/convert/media', label: 'Format Converter', adminOnly: false },
+  { href: '/convert/media', label: 'File Converter', adminOnly: false },
   { href: '/convert/gif', label: 'GIF Creator', adminOnly: false },
   { href: '/convert/pdf', label: 'PDF Manager', adminOnly: false },
   { href: '/admin', label: 'Admin Panel', adminOnly: true },
