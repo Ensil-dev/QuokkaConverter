@@ -1,14 +1,33 @@
 @tailwind utilities;
 
-/* Global minimum width constraint */
+/* Global font settings for Korean and English consistency */
 html,
 body {
   min-width: 345px !important;
   overflow-x: auto;
+  font-family: 
+    -apple-system,
+    BlinkMacSystemFont, 
+    "Apple SD Gothic Neo",
+    "Pretendard Variable",
+    Pretendard,
+    "Noto Sans KR",
+    "Malgun Gothic",
+    "맑은 고딕",
+    system-ui,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-feature-settings: "kern";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   min-width: 0;
+  font-family: inherit;
 }
 
 ::-webkit-scrollbar {
