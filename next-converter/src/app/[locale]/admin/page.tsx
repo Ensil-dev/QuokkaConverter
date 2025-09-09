@@ -1,15 +1,19 @@
 import requireAdmin from '@/lib/requireAdmin';
 import MaxUploadSizeSetting from '@/components/admin/MaxUploadSizeSetting';
 import { getTranslations } from 'next-intl/server';
+import Header from '@/components/Header';
 
 export default async function AdminPage() {
   await requireAdmin();
   const t = await getTranslations('Admin');
 
   return (
-    <>
-      <h1 className="mb-4 text-xl font-bold pb-[10px]">{t('dashboard')}</h1>
-      <MaxUploadSizeSetting />
-    </>
+    <div className="container rounded-[15px]">
+      <Header subtitle={t('title')} />
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border-gray-200 dark:border-gray-700 p-6">
+        <MaxUploadSizeSetting />
+      </div>
+    </div>
   );
 }
