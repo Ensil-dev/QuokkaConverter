@@ -1,24 +1,6 @@
-'use client';
-import { useEffect } from 'react';
-import { useAuth } from '@/lib/auth';
-import { useRouter } from 'next/navigation';
-import Loading from '@/components/Loading';
-import LoginCard from '@/components/LoginCard';
-import { loginWithGoogle } from '@/lib/utils';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-  const { session, status } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (session) {
-      router.replace('/convert');
-    }
-  }, [session, router]);
-
-  if (status === 'loading') {
-    return <Loading />;
-  }
-
-  return <LoginCard onLogin={loginWithGoogle} />;
+// 루트 경로를 기본 로케일로 리다이렉트
+export default function RootPage() {
+  redirect('/ko');
 }

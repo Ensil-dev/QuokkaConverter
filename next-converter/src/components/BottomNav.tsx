@@ -1,26 +1,25 @@
 'use client';
 import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { FaImage, FaFilePdf, FaImages, FaUserShield } from 'react-icons/fa';
 import { useAuth } from '@/lib/auth';
 import { isAdmin } from '@/lib/admin';
-
-export const tabs = [
-  { href: '/convert/media', icon: <FaImage size={20} />, label: '확장자 변환' },
-  { href: '/convert/gif', icon: <FaImages size={20} />, label: 'GIF 생성' },
-  { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: 'PDF 관리' },
-  { href: '/admin', icon: <FaUserShield size={20} />, label: '관리자 페이지', adminOnly: true },
-];
-
+import { useTranslations } from 'next-intl';
 
 const BottomNav = React.memo(function BottomNav() {
   const pathname = usePathname();
   const { user } = useAuth();
-  const availableTabs = React.useMemo(
-    () => tabs.filter(tab => !tab.adminOnly || isAdmin(user?.email)),
-    [user]
-  );
+  const t = useTranslations('Navigation');
+
+  const availableTabs = React.useMemo(() => {
+    const tabs = [
+      { href: '/convert/media', icon: <FaImage size={20} />, label: t('media') },
+      { href: '/convert/gif', icon: <FaImages size={20} />, label: t('gif') },
+      { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: t('pdf') },
+      { href: '/admin', icon: <FaUserShield size={20} />, label: t('admin'), adminOnly: true },
+    ];
+    return tabs.filter(tab => !tab.adminOnly || isAdmin(user?.email));
+  }, [t, user]);
 
   if (pathname === '/convert') {
     // convert 자체 페이지(예: 리디렉트 대상)일 경우만 숨김
@@ -36,7 +35,7 @@ const BottomNav = React.memo(function BottomNav() {
           return (
             <li key={href} className="m-0 p-0">
               <Link
-                href={href}
+                href={href as '/convert/media' | '/convert/gif' | '/convert/pdf' | '/admin'}
                 className={`flex h-[80px] w-full flex-col items-center justify-center gap-y-1 text-sm transition-all duration-300 ease-in-out ${
                   active
                     ? 'scale-95 bg-zinc-800 text-[skyblue] ring-2 ring-purple-500 ring-offset-2'
@@ -53,5 +52,13 @@ const BottomNav = React.memo(function BottomNav() {
     </nav>
   );
 });
+
+// BackExitHandler에서 사용하기 위해 export (임시 호환성)
+export const tabs = [
+  { href: '/convert/media', label: 'Format Converter', adminOnly: false },
+  { href: '/convert/gif', label: 'GIF Creator', adminOnly: false },
+  { href: '/convert/pdf', label: 'PDF Manager', adminOnly: false },
+  { href: '/admin', label: 'Admin Panel', adminOnly: true },
+];
 
 export default BottomNav;

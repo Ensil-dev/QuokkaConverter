@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface PreviewImageProps {
   url: string;
@@ -9,7 +10,9 @@ interface PreviewImageProps {
   height?: number;
 }
 
-export default function PreviewImage({ url, alt = '미리보기', width = 250, height = 250 }: PreviewImageProps) {
+export default function PreviewImage({ url, alt, width = 250, height = 250 }: PreviewImageProps) {
+  const t = useTranslations('Common');
+  
   useEffect(() => {
     return () => {
       URL.revokeObjectURL(url);
@@ -17,6 +20,12 @@ export default function PreviewImage({ url, alt = '미리보기', width = 250, h
   }, [url]);
 
   return (
-    <Image src={url} alt={alt} width={width} height={height} className="result-preview" />
+    <Image 
+      src={url} 
+      alt={alt || t('preview')} 
+      width={width} 
+      height={height} 
+      className="result-preview" 
+    />
   );
 }
