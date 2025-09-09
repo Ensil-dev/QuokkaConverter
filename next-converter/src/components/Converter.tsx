@@ -99,13 +99,20 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
 
   // 파일 업로드 처리
+  const formatSize = (sizeInMB: number) => {
+    if (sizeInMB >= 1000) {
+      return `${(sizeInMB / 1000).toFixed(1)}GB`;
+    }
+    return `${sizeInMB}MB`;
+  };
+
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       // 파일 크기 제한 검증
       const maxSize = maxUploadSize * 1024 * 1024;
       if (selectedFile.size > maxSize) {
-        setError(t('fileSizeError', { maxSize: maxUploadSize }));
+        setError(t('fileSizeError', { maxSize: formatSize(maxUploadSize) }));
         setFile(null);
         setFileType(null);
         setOutputFormat('');
@@ -140,7 +147,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       setConvertedFile(null);
       setResult(null);
     }
-  }, [maxUploadSize, t]);
+  }, [maxUploadSize, t, formatSize]);
 
   // 변환 실행
   const handleConvert = useCallback(async () => {
@@ -426,7 +433,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
               })() : null}
               required
             />
-            <p className="file-limit-note">{t('maxFileSize', { maxSize: maxUploadSize })}</p>
+            <p className="file-limit-note">{t('maxFileSize', { maxSize: formatSize(maxUploadSize) })}</p>
             {file && (
               <div className="file-info">
                 <p>
