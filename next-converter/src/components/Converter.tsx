@@ -98,13 +98,13 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   };
 
 
-  // 파일 업로드 처리
-  const formatSize = (sizeInMB: number) => {
+  // 파일 크기 포맷팅
+  const formatSize = useCallback((sizeInMB: number) => {
     if (sizeInMB >= 1000) {
       return `${(sizeInMB / 1000).toFixed(1)}GB`;
     }
     return `${sizeInMB}MB`;
-  };
+  }, []);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
