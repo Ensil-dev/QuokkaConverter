@@ -3,10 +3,8 @@
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { maxUploadSizeAtom } from '@/lib/atoms';
-import { useTranslations } from 'next-intl';
 
 export default function MaxUploadSizeSetting() {
-  const t = useTranslations('Admin');
   const [maxUploadSize, setMaxUploadSize] = useAtom(maxUploadSizeAtom);
   const [value, setValue] = useState(maxUploadSize.toString());
 
@@ -17,27 +15,31 @@ export default function MaxUploadSizeSetting() {
     }
   };
 
+  const formatSize = (sizeInMB: number) => {
+    if (sizeInMB >= 1000) {
+      return `${(sizeInMB / 1000).toFixed(1)}GB`;
+    }
+    return `${sizeInMB}MB`;
+  };
+
   return (
-    <div className="max-w-md">
-      <label htmlFor="max-upload" className="block pb-[12px] font-medium">
-        {t('maxUploadSize')}
-      </label>
-      <div className="flex">
+    <div>
+      <h3 className='pb-[8px]'>파일 업로드 제한 설정</h3>
+      <p className='pb-[8px]'>최대 업로드 파일 크기: {formatSize(maxUploadSize)}</p>
+      <div className='flex'>
         <input
-          id="max-upload"
           type="number"
           min={1}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="flex w-1/3 rounded border px-3 py-2"
         />
-        <button type="button" onClick={save} className="w-[50px] rounded bg-blue ml-[12px] px-4 py-4 text-white">
-          {t('save')}
+        <button
+          className='bg-red-600 text-white border-none p-[8px] rounded-[12px] ml-[8px] w-[50px] text-sm font-medium cursor-pointer transition-all duration-300 hover:bg-red-700 hover:-translate-y-px'
+          onClick={save}
+        >
+          저장
         </button>
       </div>
-      <p className="pt-[12px] text-sm text-gray-500">
-        {t('currentSetting', { size: maxUploadSize })}
-      </p>
     </div>
   );
 }
