@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useAtom } from 'jotai';
 import { useAuth } from '@/lib/auth';
+import { useTranslations } from 'next-intl';
 import Loading from '@/components/Loading';
 import { loginWithGoogle, downloadBlob, makeFilename } from '@/lib/utils';
 import useConversionEstimates from '@/lib/hooks/useConversionEstimates';
@@ -18,6 +19,7 @@ import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { detectFileType, isConversionSupported } from '@/lib/utils/fileFormats';
 import PreviewImage from '@/components/PreviewImage';
 import { maxUploadSizeAtom } from '@/lib/atoms';
+import CustomFileInput from '@/components/CustomFileInput';
 
 interface ConversionResult {
   url: string;
@@ -33,6 +35,7 @@ interface ConverterProps {
 export default function Converter({ showModeSelector = true }: ConverterProps) {
   const { session, status } = useAuth();
   const [maxUploadSize] = useAtom(maxUploadSizeAtom);
+  const t = useTranslations('Convert');
   const [mode, setMode] = useState<'media' | 'pdf'>('media');
   const [file, setFile] = useState<File | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
@@ -52,16 +55,16 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const [resolution, setResolution] = useState('original');
   const [fps, setFps] = useState(10);
   const [bitrate, setBitrate] = useState('');
-  const [videoQuality, setVideoQuality] = useState('보통');
+  const [videoQuality, setVideoQuality] = useState('medium');
 
   // 오디오 설정 옵션들 상태 관리
   const [sampleRate, setSampleRate] = useState('');
   const [channels, setChannels] = useState('');
-  const [audioQuality, setAudioQuality] = useState('보통');
+  const [audioQuality, setAudioQuality] = useState('medium');
 
   // 이미지 설정 옵션들 상태 관리
   const [imageResolution, setImageResolution] = useState('original');
-  const [imageQuality, setImageQuality] = useState('보통');
+  const [imageQuality, setImageQuality] = useState('medium');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -102,7 +105,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       // 파일 크기 제한 검증
       const maxSize = maxUploadSize * 1024 * 1024;
       if (selectedFile.size > maxSize) {
-        setError(`파일 크기가 너무 큽니다. ${maxUploadSize}MB 이하의 파일을 선택해주세요.`);
+        setError(t('fileSizeError', { maxSize: maxUploadSize }));
         setFile(null);
         setFileType(null);
         setOutputFormat('');
@@ -113,7 +116,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       const detectedType = detectFileType(selectedFile.name);
 
       if (!detectedType) {
-        setError('지원하지 않는 파일 형식입니다. 다른 파일을 선택해주세요.');
+        setError(t('unsupportedFileType'));
         setFile(null);
         setFileType(null);
         setOutputFormat('');
@@ -137,12 +140,12 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       setConvertedFile(null);
       setResult(null);
     }
-  }, [maxUploadSize]);
+  }, [maxUploadSize, t]);
 
   // 변환 실행
   const handleConvert = useCallback(async () => {
     if (!file || !outputFormat) {
-      setError('파일과 출력 형식을 선택해주세요.');
+      setError(t('selectFileAndFormat'));
       return;
     }
 
@@ -210,8 +213,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         format: outputFormat,
       });
     } catch (error) {
-      console.error('변환 오류:', error);
-      setError(error instanceof Error ? error.message : '변환에 실패했습니다.');
+      console.error('Conversion error:', error);
+      setError(error instanceof Error ? error.message : t('error'));
     } finally {
       setIsConverting(false);
       setProgress(0);
@@ -231,7 +234,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     imageResolution,
     imageQuality,
     isFFmpegLoaded,
-    loadFFmpeg
+    loadFFmpeg,
+    t
   ]);
 
   // 변환된 파일 다운로드
@@ -259,9 +263,9 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const convertingInfo = useMemo(() => {
     if (!file) return [] as { label: string; value: React.ReactNode }[];
     return [
-      { label: '출력 형식', value: outputFormat.toUpperCase() },
+      { label: t('outputFormat'), value: outputFormat.toUpperCase() },
       {
-        label: '예상 크기',
+        label: t('estimatedSize'),
         value: getEstimatedFileSize(
           file.size,
           fileType,
@@ -276,7 +280,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         ),
       },
       {
-        label: '예상 시간',
+        label: t('estimatedTime'),
         value: getEstimatedTime(
           file.size,
           fileType,
@@ -290,6 +294,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       },
     ];
   }, [
+    t,
     file,
     fileType,
     outputFormat,
@@ -307,11 +312,11 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   const readyInfo = useMemo(() => {
     if (!file) return [] as { label: string; value: React.ReactNode }[];
     const base = [
-      { label: '입력 파일', value: file.name },
-      { label: '출력 형식', value: outputFormat.toUpperCase() },
-      { label: '파일 크기', value: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
+      { label: t('inputFile'), value: file.name },
+      { label: t('outputFormat'), value: outputFormat.toUpperCase() },
+      { label: t('fileSize'), value: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
       {
-        label: '예상 크기',
+        label: t('estimatedSize'),
         value: getEstimatedFileSize(
           file.size,
           fileType,
@@ -327,19 +332,19 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       },
     ];
     if (fileType === 'video' && outputFormat === 'gif') {
-      base.push({ label: '재생속도', value: `${playbackSpeed}x` });
+      base.push({ label: t('playbackSpeed'), value: `${playbackSpeed}x` });
     }
     if (fileType === 'video' && resolution !== 'original') {
-      base.push({ label: '해상도', value: resolution });
+      base.push({ label: t('resolution'), value: resolution });
     }
     if (fileType === 'video' && fps !== 10) {
-      base.push({ label: '프레임레이트', value: `${fps} FPS` });
+      base.push({ label: t('frameRate'), value: `${fps} FPS` });
     }
     if (fileType === 'video' && bitrate && outputFormat !== 'gif') {
-      base.push({ label: '비트레이트', value: bitrate });
+      base.push({ label: t('bitrate'), value: bitrate });
     }
-    if (fileType === 'video' && videoQuality !== '보통') {
-      base.push({ label: '품질', value: videoQuality });
+    if (fileType === 'video' && videoQuality !== 'medium') {
+      base.push({ label: t('quality'), value: t(`quality_${videoQuality}`) });
     }
     base.push({
       label: '예상 시간',
@@ -356,6 +361,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     });
     return base;
   }, [
+    t,
     file,
     fileType,
     outputFormat,
@@ -383,18 +389,18 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
   return (
     <div className="container rounded-[15px]" suppressHydrationWarning={true}>
       {/* 헤더 */}
-      <Header subtitle="비디오, 오디오, 이미지 파일을 다양한 형식으로 바꿀 수 있어요" />
+      <Header subtitle={t('subtitle')} />
 
       {showModeSelector && (
         <div className="format-section">
-          <label htmlFor="mode">메뉴 선택:</label>
+          <label htmlFor="mode">{t('menuSelect')}</label>
           <select
             id="mode"
             value={mode}
             onChange={(e) => setMode(e.target.value as 'media' | 'pdf')}
           >
-            <option value="media">미디어 변환</option>
-            <option value="pdf">PDF 변환</option>
+            <option value="media">{t('mediaConvert')}</option>
+            <option value="pdf">{t('pdfConvert')}</option>
           </select>
         </div>
       )}
@@ -408,42 +414,46 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
           }}
         >
           <div className="file-section">
-            <label htmlFor="fileInput">파일 업로드:</label>
-            <input
+            <label>{t('fileUpload')}</label>
+            <CustomFileInput
               ref={fileInputRef}
-              type="file"
               id="fileInput"
               onChange={handleFileUpload}
+              selectedFiles={file ? (() => { 
+                const dt = new DataTransfer(); 
+                dt.items.add(file); 
+                return dt.files; 
+              })() : null}
               required
             />
-            <p className="file-limit-note">최대 파일 크기: {maxUploadSize}MB (로컬 실행 제한)</p>
+            <p className="file-limit-note">{t('maxFileSize', { maxSize: maxUploadSize })}</p>
             {file && (
               <div className="file-info">
                 <p>
-                  <strong>파일명:</strong> {file.name}
+                  <strong>{t('fileName')}</strong> {file.name}
                 </p>
                 <p>
-                  <strong>크기:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
+                  <strong>{t('size')}</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
                 <p>
-                  <strong>타입:</strong>{' '}
+                  <strong>{t('type')}</strong>{' '}
                   {fileType
                     ? fileType.charAt(0).toUpperCase() + fileType.slice(1)
-                    : '지원하지 않는 형식'}
+                    : t('unsupportedFormat')}
                 </p>
               </div>
             )}
           </div>
 
           <div className="format-section">
-            <label htmlFor="outputFormat">출력 형식:</label>
+            <label htmlFor="outputFormat">{t('outputFormat')}:</label>
             <select
               id="outputFormat"
               value={outputFormat}
               onChange={(e) => setOutputFormat(e.target.value)}
               required
             >
-              <option value="">변환할 형식을 선택하세요</option>
+              <option value="">{t('selectFormat')}</option>
               {availableFormats.map((format, index) => (
                 <option key={`${format}-${index}`} value={format}>
                   {format.toUpperCase()}
@@ -457,7 +467,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
             <div className="speed-control-section">
               <div className="speed-header">
                 <label htmlFor="playbackSpeed" className="speed-title">
-                  재생속도 조절
+                  {t('playbackSpeedControl')}
                 </label>
                 <div className="speed-display">{playbackSpeed}x</div>
               </div>
@@ -465,11 +475,11 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
                 <div className="speed-labels">
                   <span className="speed-indicator slow">
                     <span className="speed-icon">🐌</span>
-                    <span className="speed-text">느림</span>
+                    <span className="speed-text">{t('slow')}</span>
                   </span>
                   <span className="speed-indicator fast">
                     <span className="speed-icon">⚡</span>
-                    <span className="speed-text">빠름</span>
+                    <span className="speed-text">{t('fast')}</span>
                   </span>
                 </div>
                 <div className="slider-track">
@@ -501,22 +511,22 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
           {/* 비디오 옵션 */}
           {fileType === 'video' && (
             <div className="options-section">
-              <h3>비디오 설정</h3>
+              <h3>{t('videoSettings')}</h3>
               <div className="option-row">
-                <label htmlFor="resolution">해상도:</label>
+                <label htmlFor="resolution">{t('resolution')}:</label>
                 <select
                   id="resolution"
                   value={resolution}
                   onChange={(e) => setResolution(e.target.value)}
                 >
-                  <option value="original">원본</option>
+                  <option value="original">{t('original')}</option>
                   <option value="640x360">640x360</option>
                   <option value="1280x720">1280x720</option>
                   <option value="1920x1080">1920x1080</option>
                 </select>
               </div>
               <div className="option-row">
-                <label htmlFor="fps">프레임레이트:</label>
+                <label htmlFor="fps">{t('frameRate')}:</label>
                 <input
                   type="number"
                   id="fps"
@@ -529,9 +539,9 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
               {/* GIF 변환 시에는 비트레이트 옵션 숨김 */}
               {outputFormat !== 'gif' && (
                 <div className="option-row">
-                  <label htmlFor="bitrate">비트레이트:</label>
+                  <label htmlFor="bitrate">{t('bitrate')}:</label>
                   <select id="bitrate" value={bitrate} onChange={(e) => setBitrate(e.target.value)}>
-                    <option value="">자동</option>
+                    <option value="">{t('auto')}</option>
                     <option value="1000k">1000k</option>
                     <option value="2000k">2000k</option>
                     <option value="5000k">5000k</option>
@@ -539,18 +549,18 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
                 </div>
               )}
               <div className="option-row">
-                <label htmlFor="videoQuality">품질:</label>
+                <label htmlFor="videoQuality">{t('quality')}:</label>
                 <select
                   id="videoQuality"
                   value={videoQuality}
                   onChange={(e) => setVideoQuality(e.target.value)}
                 >
-                  <option value="보통">보통</option>
-                  <option value="낮음">낮음 (파일 크기 작음)</option>
-                  <option value="높음">높음 (파일 크기 큼)</option>
+                  <option value="medium">{t('quality_medium')}</option>
+                  <option value="low">{t('quality_low')}</option>
+                  <option value="high">{t('quality_high')}</option>
                 </select>
                 {outputFormat === 'gif' && (
-                  <span className="option-note">GIF는 품질 설정으로 크기를 조절합니다</span>
+                  <span className="option-note">{t('gifQualityNote')}</span>
                 )}
               </div>
             </div>
@@ -559,38 +569,38 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
           {/* 오디오 옵션 */}
           {fileType === 'audio' && (
             <div className="options-section">
-              <h3>오디오 설정</h3>
+              <h3>{t('audioSettings')}</h3>
               <div className="option-row">
-                <label htmlFor="sampleRate">샘플레이트:</label>
+                <label htmlFor="sampleRate">{t('sampleRate')}</label>
                 <select
                   id="sampleRate"
                   value={sampleRate}
                   onChange={(e) => setSampleRate(e.target.value)}
                 >
-                  <option value="">원본</option>
+                  <option value="">{t('original')}</option>
                   <option value="22050">22050 Hz</option>
                   <option value="44100">44100 Hz</option>
                   <option value="48000">48000 Hz</option>
                 </select>
               </div>
               <div className="option-row">
-                <label htmlFor="channels">채널:</label>
+                <label htmlFor="channels">{t('channels')}</label>
                 <select id="channels" value={channels} onChange={(e) => setChannels(e.target.value)}>
-                  <option value="">원본</option>
-                  <option value="1">모노</option>
-                  <option value="2">스테레오</option>
+                  <option value="">{t('original')}</option>
+                  <option value="1">{t('mono')}</option>
+                  <option value="2">{t('stereo')}</option>
                 </select>
               </div>
               <div className="option-row">
-                <label htmlFor="audioQuality">품질:</label>
+                <label htmlFor="audioQuality">{t('quality')}:</label>
                 <select
                   id="audioQuality"
                   value={audioQuality}
                   onChange={(e) => setAudioQuality(e.target.value)}
                 >
-                  <option value="보통">보통</option>
-                  <option value="낮음">낮음 (파일 크기 작음)</option>
-                  <option value="높음">높음 (파일 크기 큼)</option>
+                  <option value="medium">{t('quality_medium')}</option>
+                  <option value="low">{t('quality_low')}</option>
+                  <option value="high">{t('quality_high')}</option>
                 </select>
               </div>
             </div>
@@ -599,30 +609,30 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
           {/* 이미지 옵션 */}
           {fileType === 'image' && (
             <div className="options-section">
-              <h3>이미지 설정</h3>
+              <h3>{t('imageSettings')}</h3>
               <div className="option-row">
-                <label htmlFor="imageResolution">해상도:</label>
+                <label htmlFor="imageResolution">{t('resolution')}:</label>
                 <select
                   id="imageResolution"
                   value={imageResolution}
                   onChange={(e) => setImageResolution(e.target.value)}
                 >
-                  <option value="original">원본</option>
+                  <option value="original">{t('original')}</option>
                   <option value="800x600">800x600</option>
                   <option value="1024x768">1024x768</option>
                   <option value="1920x1080">1920x1080</option>
                 </select>
               </div>
               <div className="option-row">
-                <label htmlFor="imageQuality">품질:</label>
+                <label htmlFor="imageQuality">{t('quality')}:</label>
                 <select
                   id="imageQuality"
                   value={imageQuality}
                   onChange={(e) => setImageQuality(e.target.value)}
                 >
-                  <option value="보통">보통</option>
-                  <option value="낮음">낮음 (파일 크기 작음)</option>
-                  <option value="높음">높음 (파일 크기 큼)</option>
+                  <option value="medium">{t('quality_medium')}</option>
+                  <option value="low">{t('quality_low')}</option>
+                  <option value="high">{t('quality_high')}</option>
                 </select>
               </div>
             </div>
@@ -636,13 +646,13 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
               !isConversionSupported(file.name, outputFormat)
             }
           >
-            {isConverting ? '변환 중...' : '변환하기'}
+            {isConverting ? t('converting') : t('convertButton')}
           </button>
 
           {/* 지원하지 않는 변환 조합 안내 */}
           {outputFormat && file && !isConversionSupported(file.name, outputFormat) && (
             <div className="warning-message">
-              <p>⚠️ 이 변환 조합은 현재 지원되지 않습니다. 다른 출력 형식을 선택해주세요.</p>
+              <p>{t('unsupportedConversion')}</p>
             </div>
           )}
         </form>
@@ -654,8 +664,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       {isConverting && (
         <div className="conversion-progress">
           <div className="progress-spinner"></div>
-          <p>변환 중... {progress}%</p>
-          <p className="progress-note">변환 시간은 파일 크기와 형식에 따라 달라질 수 있습니다.</p>
+          <p>{t('conversionProgress', { progress })}</p>
+          <p className="progress-note">{t('conversionNote')}</p>
         </div>
       )}
 
@@ -663,8 +673,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       {isConverting && (
         <ResultPlaceholder
           icon="⏳"
-          title="변환 결과 준비 중..."
-          message="변환이 완료되면 여기에 결과가 표시됩니다"
+          title={t('resultReady')}
+          message={t('resultMessage')}
           info={convertingInfo}
         />
       )}
@@ -674,8 +684,8 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         <ResultPlaceholder
           ready
           icon="📁"
-          title="변환 준비 완료"
-          message="변환 버튼을 클릭하면 여기에 결과가 표시됩니다"
+          title={t('readyToConvert')}
+          message={t('clickToConvert')}
           info={readyInfo}
         />
       )}
@@ -685,29 +695,29 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
         <div className="info-message">
           <p>
             💡 <strong>GIF → WebP 변환 팁:</strong> WebP는 GIF보다 훨씬 효율적인 압축을 사용하여
-            파일 크기가 90% 이상 감소할 수 있습니다!
+            {t('gifToWebpTip')}
           </p>
         </div>
       )}
 
       {result && (
         <div className="result">
-          <h2>변환 결과</h2>
+          <h2>{t('conversionResult')}</h2>
           {result.format === 'gif' && <PreviewImage url={result.url} />}
           <div className="resultInfo">
             <p>
-              <strong>변환 완료!</strong>
+              <strong>{t('conversionComplete')}</strong>
             </p>
-            <p>파일 크기: {result.size} MB</p>
-            <p>출력 형식: {result.format.toUpperCase()}</p>
+            <p>{t('fileSize')}: {result.size} MB</p>
+            <p>{t('outputFormat')}: {result.format.toUpperCase()}</p>
           </div>
           <button onClick={handleDownload} className="download-btn">
-            파일 다운로드
+            {t('downloadFile')}
           </button>
         </div>
       )}
 
-      {error && <ErrorMessage title="오류 발생" message={error} />}
+      {error && <ErrorMessage title={t('errorOccurred')} message={error} />}
     </div>
   );
 }
