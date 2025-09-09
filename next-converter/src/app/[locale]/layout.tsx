@@ -12,12 +12,31 @@ import { routing } from '@/i18n/routing';
 import { getMessages } from 'next-intl/server';
 
 export const metadata: Metadata = {
-  title: 'QuokkaConverter',
-  description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
+  title: {
+    default: 'QuokkaConverter - 무료 온라인 파일 변환기',
+    template: '%s | QuokkaConverter'
+  },
+  description: '무료 온라인 파일 변환기 QuokkaConverter로 비디오, 오디오, 이미지를 다양한 형식으로 변환하세요. 확장자 변환, GIF 생성, PDF 관리 기능을 제공합니다.',
+  keywords: [
+    '파일 변환기', '온라인 변환', '무료 변환기', 'QuokkaConverter',
+    '비디오 변환', '오디오 변환', '이미지 변환', 'PDF 변환',
+    'MP4 변환', 'WebP 변환', 'GIF 생성', 'PDF 관리',
+    '확장자 변환', '미디어 변환기', '파일 컨버터'
+  ],
+  authors: [{ name: 'QuokkaConverter Team' }],
+  creator: 'QuokkaConverter',
+  publisher: 'QuokkaConverter',
   metadataBase: new URL('https://quokkaconverter.vercel.app'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'ko': '/ko',
+      'en': '/en'
+    }
+  },
   openGraph: {
-    title: 'QuokkaConverter',
-    description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
+    title: 'QuokkaConverter - 무료 온라인 파일 변환기',
+    description: '무료 온라인 파일 변환기로 비디오, 오디오, 이미지를 다양한 형식으로 변환하세요. 확장자 변환, GIF 생성, PDF 관리 기능 제공',
     url: 'https://quokkaconverter.vercel.app',
     siteName: 'QuokkaConverter',
     images: [
@@ -25,7 +44,7 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'QuokkaConverter - 범용 파일 변환 SaaS',
+        alt: 'QuokkaConverter - 무료 온라인 파일 변환기',
       },
     ],
     locale: 'ko_KR',
@@ -33,10 +52,20 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'QuokkaConverter',
-    description: '비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter',
+    title: 'QuokkaConverter - 무료 온라인 파일 변환기',
+    description: '무료 온라인 파일 변환기로 비디오, 오디오, 이미지를 다양한 형식으로 변환하세요',
     images: ['/og-image.png'],
-    site: '@your_twitter',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/apple-touch-icon.png',
