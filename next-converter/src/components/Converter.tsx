@@ -19,7 +19,7 @@ import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { detectFileType, isConversionSupported } from '@/lib/utils/fileFormats';
 import PreviewImage from '@/components/PreviewImage';
 import { maxUploadSizeAtom } from '@/lib/atoms';
-import CustomFileInput from '@/components/CustomFileInput';
+import { CustomFileInput, PlaybackSpeedControl, VideoSettings, AudioSettings, ImageSettings, ModeSelector } from '@/components/ui';
 
 interface ConversionResult {
   url: string;
@@ -254,18 +254,6 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
     }
   }, [convertedFile, result, outputFormat, file]);
 
-  // 재생속도 변경
-  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSpeed = parseFloat(e.target.value);
-    setPlaybackSpeed(newSpeed);
-
-    // 슬라이더 색상 변경
-    const slider = e.target;
-    slider.style.setProperty(
-      '--slider-color',
-      newSpeed < 1 ? '#28a745' : newSpeed > 1 ? '#dc3545' : 'var(--primary-color)'
-    );
-  };
 
   const convertingInfo = useMemo(() => {
     if (!file) return [] as { label: string; value: React.ReactNode }[];
@@ -399,17 +387,15 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       <Header subtitle={t('subtitle')} />
 
       {showModeSelector && (
-        <div className="format-section">
-          <label htmlFor="mode">{t('menuSelect')}</label>
-          <select
-            id="mode"
-            value={mode}
-            onChange={(e) => setMode(e.target.value as 'media' | 'pdf')}
-          >
-            <option value="media">{t('mediaConvert')}</option>
-            <option value="pdf">{t('pdfConvert')}</option>
-          </select>
-        </div>
+        <ModeSelector
+          options={[
+            { value: 'media', label: t('mediaConvert'), icon: '🎬' },
+            { value: 'pdf', label: t('pdfConvert'), icon: '📄' }
+          ]}
+          selectedMode={mode}
+          onModeChange={(value) => setMode(value as 'media' | 'pdf')}
+          label={t('menuSelect')}
+        />
       )}
 
       {mode === 'media' && (
@@ -471,178 +457,51 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
 
           {/* GIF 변환 시에만 재생속도 옵션을 컨테이너 상단에 표시 */}
           {fileType === 'video' && outputFormat === 'gif' && (
-            <div className="speed-control-section">
-              <div className="speed-header">
-                <label htmlFor="playbackSpeed" className="speed-title">
-                  {t('playbackSpeedControl')}
-                </label>
-                <div className="speed-display">{playbackSpeed}x</div>
-              </div>
-              <div className="speed-slider-container">
-                <div className="speed-labels">
-                  <span className="speed-indicator slow">
-                    <span className="speed-icon">🐌</span>
-                    <span className="speed-text">{t('slow')}</span>
-                  </span>
-                  <span className="speed-indicator fast">
-                    <span className="speed-icon">⚡</span>
-                    <span className="speed-text">{t('fast')}</span>
-                  </span>
-                </div>
-                <div className="slider-track">
-                  <input
-                    type="range"
-                    id="playbackSpeed"
-                    min="0.25"
-                    max="2.0"
-                    step="0.25"
-                    value={playbackSpeed}
-                    className="speed-slider"
-                    onChange={handleSpeedChange}
-                  />
-                  <div className="slider-markers">
-                    <span className="marker">0.25x</span>
-                    <span className="marker">0.5x</span>
-                    <span className="marker">0.75x</span>
-                    <span className="marker">1.0x</span>
-                    <span className="marker">1.25x</span>
-                    <span className="marker">1.5x</span>
-                    <span className="marker">1.75x</span>
-                    <span className="marker">2.0x</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <PlaybackSpeedControl
+              speed={playbackSpeed}
+              onSpeedChange={setPlaybackSpeed}
+              title={t('playbackSpeedControl')}
+              slowLabel={t('slow')}
+              fastLabel={t('fast')}
+            />
           )}
 
           {/* 비디오 옵션 */}
           {fileType === 'video' && (
-            <div className="options-section">
-              <h3>{t('videoSettings')}</h3>
-              <div className="option-row">
-                <label htmlFor="resolution">{t('resolution')}:</label>
-                <select
-                  id="resolution"
-                  value={resolution}
-                  onChange={(e) => setResolution(e.target.value)}
-                >
-                  <option value="original">{t('original')}</option>
-                  <option value="640x360">640x360</option>
-                  <option value="1280x720">1280x720</option>
-                  <option value="1920x1080">1920x1080</option>
-                </select>
-              </div>
-              <div className="option-row">
-                <label htmlFor="fps">{t('frameRate')}:</label>
-                <input
-                  type="number"
-                  id="fps"
-                  value={fps}
-                  onChange={(e) => setFps(Number(e.target.value))}
-                  min="1"
-                  max="60"
-                />
-              </div>
-              {/* GIF 변환 시에는 비트레이트 옵션 숨김 */}
-              {outputFormat !== 'gif' && (
-                <div className="option-row">
-                  <label htmlFor="bitrate">{t('bitrate')}:</label>
-                  <select id="bitrate" value={bitrate} onChange={(e) => setBitrate(e.target.value)}>
-                    <option value="">{t('auto')}</option>
-                    <option value="1000k">1000k</option>
-                    <option value="2000k">2000k</option>
-                    <option value="5000k">5000k</option>
-                  </select>
-                </div>
-              )}
-              <div className="option-row">
-                <label htmlFor="videoQuality">{t('quality')}:</label>
-                <select
-                  id="videoQuality"
-                  value={videoQuality}
-                  onChange={(e) => setVideoQuality(e.target.value)}
-                >
-                  <option value="medium">{t('quality_medium')}</option>
-                  <option value="low">{t('quality_low')}</option>
-                  <option value="high">{t('quality_high')}</option>
-                </select>
-                {outputFormat === 'gif' && (
-                  <span className="option-note">{t('gifQualityNote')}</span>
-                )}
-              </div>
-            </div>
+            <VideoSettings
+              resolution={resolution}
+              onResolutionChange={setResolution}
+              fps={fps}
+              onFpsChange={setFps}
+              bitrate={bitrate}
+              onBitrateChange={setBitrate}
+              quality={videoQuality}
+              onQualityChange={setVideoQuality}
+              showBitrate={outputFormat !== 'gif'}
+              showGifNote={outputFormat === 'gif'}
+            />
           )}
 
           {/* 오디오 옵션 */}
           {fileType === 'audio' && (
-            <div className="options-section">
-              <h3>{t('audioSettings')}</h3>
-              <div className="option-row">
-                <label htmlFor="sampleRate">{t('sampleRate')}</label>
-                <select
-                  id="sampleRate"
-                  value={sampleRate}
-                  onChange={(e) => setSampleRate(e.target.value)}
-                >
-                  <option value="">{t('original')}</option>
-                  <option value="22050">22050 Hz</option>
-                  <option value="44100">44100 Hz</option>
-                  <option value="48000">48000 Hz</option>
-                </select>
-              </div>
-              <div className="option-row">
-                <label htmlFor="channels">{t('channels')}</label>
-                <select id="channels" value={channels} onChange={(e) => setChannels(e.target.value)}>
-                  <option value="">{t('original')}</option>
-                  <option value="1">{t('mono')}</option>
-                  <option value="2">{t('stereo')}</option>
-                </select>
-              </div>
-              <div className="option-row">
-                <label htmlFor="audioQuality">{t('quality')}:</label>
-                <select
-                  id="audioQuality"
-                  value={audioQuality}
-                  onChange={(e) => setAudioQuality(e.target.value)}
-                >
-                  <option value="medium">{t('quality_medium')}</option>
-                  <option value="low">{t('quality_low')}</option>
-                  <option value="high">{t('quality_high')}</option>
-                </select>
-              </div>
-            </div>
+            <AudioSettings
+              sampleRate={sampleRate}
+              onSampleRateChange={setSampleRate}
+              channels={channels}
+              onChannelsChange={setChannels}
+              quality={audioQuality}
+              onQualityChange={setAudioQuality}
+            />
           )}
 
           {/* 이미지 옵션 */}
           {fileType === 'image' && (
-            <div className="options-section">
-              <h3>{t('imageSettings')}</h3>
-              <div className="option-row">
-                <label htmlFor="imageResolution">{t('resolution')}:</label>
-                <select
-                  id="imageResolution"
-                  value={imageResolution}
-                  onChange={(e) => setImageResolution(e.target.value)}
-                >
-                  <option value="original">{t('original')}</option>
-                  <option value="800x600">800x600</option>
-                  <option value="1024x768">1024x768</option>
-                  <option value="1920x1080">1920x1080</option>
-                </select>
-              </div>
-              <div className="option-row">
-                <label htmlFor="imageQuality">{t('quality')}:</label>
-                <select
-                  id="imageQuality"
-                  value={imageQuality}
-                  onChange={(e) => setImageQuality(e.target.value)}
-                >
-                  <option value="medium">{t('quality_medium')}</option>
-                  <option value="low">{t('quality_low')}</option>
-                  <option value="high">{t('quality_high')}</option>
-                </select>
-              </div>
-            </div>
+            <ImageSettings
+              resolution={imageResolution}
+              onResolutionChange={setImageResolution}
+              quality={imageQuality}
+              onQualityChange={setImageQuality}
+            />
           )}
 
           <button

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { theme } from '@/lib/theme';
-import Button from './Button';
 
 export interface NavItem {
   id: string;
@@ -72,10 +71,7 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: `0 ${theme.spacing.xl}`,
-      '@media (max-width: 768px)': {
-        padding: `0 ${theme.spacing.lg}`,
-      },
+      padding: `0 ${theme.spacing.lg}`,
     };
 
     const logoStyle: React.CSSProperties = {
@@ -95,9 +91,6 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
       listStyle: 'none',
       margin: 0,
       padding: 0,
-      '@media (max-width: 768px)': {
-        display: 'none',
-      },
     };
 
     const mobileNavStyle: React.CSSProperties = {
@@ -137,9 +130,6 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
 
     const mobileMenuButtonStyle: React.CSSProperties = {
       display: 'none',
-      '@media (max-width: 768px)': {
-        display: 'block',
-      },
       background: 'none',
       border: 'none',
       color: theme.colors.text.primary,
@@ -209,10 +199,7 @@ const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
             
             {/* Mobile Menu Button */}
             <button
-              style={{
-                ...mobileMenuButtonStyle,
-                display: window?.innerWidth <= 768 ? 'block' : 'none'
-              }}
+              style={mobileMenuButtonStyle}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
