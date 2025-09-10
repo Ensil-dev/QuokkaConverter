@@ -73,8 +73,6 @@ export default function LanguageSelector({
   }
 
   if (variant === 'dropdown') {
-    const currentLanguage = LANGUAGE_CONFIG[currentLocale as keyof typeof LANGUAGE_CONFIG];
-    
     return (
       <div className={`relative inline-block ${className}`}>
         <select

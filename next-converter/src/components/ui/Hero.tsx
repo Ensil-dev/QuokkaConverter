@@ -167,15 +167,18 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 <source src={backgroundVideo} type="video/mp4" />
               </video>
             ) : backgroundImage ? (
-              <img
-                src={backgroundImage}
-                alt="Hero background"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={backgroundImage}
+                  alt="Hero background"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+              </>
             ) : null}
           </div>
         )}

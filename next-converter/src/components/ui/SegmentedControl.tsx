@@ -3,18 +3,18 @@
 import React from 'react';
 import { theme } from '@/lib/theme';
 
-export interface SegmentOption {
+export interface SegmentOption<T = unknown> {
   id: string;
   label: string;
-  value: any;
+  value: T;
   icon?: React.ReactNode;
   disabled?: boolean;
 }
 
-export interface SegmentedControlProps<T = any> {
-  options: SegmentOption[];
+export interface SegmentedControlProps<T = unknown> {
+  options: SegmentOption<T>[];
   value?: T;
-  onChange?: (value: T, option: SegmentOption) => void;
+  onChange?: (value: T, option: SegmentOption<T>) => void;
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   disabled?: boolean;
@@ -124,7 +124,7 @@ const SegmentedControl = React.forwardRef<HTMLDivElement, SegmentedControlProps>
         {activeIndex >= 0 && <div style={sliderStyle} />}
         
         {/* Options */}
-        {options.map((option, index) => {
+        {options.map((option) => {
           const isActive = option.value === value;
           const isDisabled = option.disabled || disabled;
           

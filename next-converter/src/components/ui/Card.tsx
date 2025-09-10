@@ -71,11 +71,14 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const renderImage = () => {
       if (!image) return null;
       return (
-        <img
-          src={image}
-          alt={imageAlt}
-          style={imageStyles}
-        />
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image}
+            alt={imageAlt}
+            style={imageStyles}
+          />
+        </>
       );
     };
 
@@ -106,6 +109,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           return (
             <div ref={ref} className={className} style={{...cardStyles, ...flexStyles}} {...props}>
               <div style={{...imageStyles, height: 'auto', minHeight: '100%', width: imageHeight}}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={image} alt={imageAlt} style={{...imageStyles, height: '100%'}} />
               </div>
               {renderContent()}
@@ -116,6 +120,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
             <div ref={ref} className={className} style={{...cardStyles, ...flexStyles}} {...props}>
               {renderContent()}
               <div style={{...imageStyles, height: 'auto', minHeight: '100%', width: imageHeight}}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={image} alt={imageAlt} style={{...imageStyles, height: '100%'}} />
               </div>
             </div>

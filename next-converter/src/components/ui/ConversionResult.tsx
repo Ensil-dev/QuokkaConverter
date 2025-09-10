@@ -124,6 +124,7 @@ const ConversionResult = React.forwardRef<HTMLDivElement, ConversionResultProps>
         case 'gif':
           return (
             <div style={previewContainerStyle}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
                 alt="Converted file preview"

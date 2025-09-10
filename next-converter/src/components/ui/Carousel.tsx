@@ -170,7 +170,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         {...props}
       >
         <div style={sliderStyle}>
-          {items.map((item, index) => (
+          {items.map((item) => (
             <div key={item.id} style={slideStyle}>
               {item.content}
             </div>

@@ -60,7 +60,7 @@ const ConversionInfo = React.forwardRef<HTMLDivElement, ConversionInfoProps>(
       borderRadius: theme.borderRadius.full,
       overflow: 'hidden',
       opacity: status === 'converting' ? 1 : 0,
-      transition: theme.transitions.medium,
+      transition: theme.transitions.base,
     };
 
     const progressFillStyle: React.CSSProperties = {
