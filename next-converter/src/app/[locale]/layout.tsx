@@ -11,6 +11,8 @@ import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { getMessages } from 'next-intl/server';
 import OrganizationSchema from './organization-schema';
+import FAQSchema from './faq-schema';
+import BreadcrumbSchema from './breadcrumb-schema';
 
 export const metadata: Metadata = {
   title: {
@@ -20,9 +22,7 @@ export const metadata: Metadata = {
   description: '무료 온라인 파일 변환기 QuokkaConverter로 비디오, 오디오, 이미지를 다양한 형식으로 변환하세요. 확장자 변환, GIF 생성, PDF 관리 기능을 제공합니다.',
   keywords: [
     '파일 변환기', '온라인 변환', '무료 변환기', 'QuokkaConverter',
-    '비디오 변환', '오디오 변환', '이미지 변환', 'PDF 변환',
-    'MP4 변환', 'WebP 변환', 'GIF 생성', 'PDF 관리',
-    '확장자 변환', '미디어 변환기', '파일 컨버터'
+    '비디오 변환', '오디오 변환', '이미지 변환', 'PDF 변환'
   ],
   authors: [{ name: 'QuokkaConverter Team' }],
   creator: 'QuokkaConverter',
@@ -88,6 +88,12 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   other: {
     'google-site-verification': process.env.GOOGLE_SITE_VERIFICATION || '',
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'format-detection': 'telephone=no',
+    'msapplication-TileColor': '#F5D6B4',
+    'msapplication-TileImage': '/apple-touch-icon.png',
   },
 };
 
@@ -95,6 +101,9 @@ export const viewport = {
   themeColor: '#F5D6B4',
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
 };
 
 const ffmpegBase = process.env.NEXT_PUBLIC_FFMPEG_BASE_URL;
@@ -135,6 +144,8 @@ export default async function LocaleLayout({ children, params }: Props) {
       </head>
       <body suppressHydrationWarning={true}>
         <OrganizationSchema />
+        <FAQSchema />
+        <BreadcrumbSchema />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <BackExitHandler />
           <InAppRedirectGuard />
