@@ -21,6 +21,9 @@ export { default as CustomFileInput } from './CustomFileInput';
 export { default as ConverterLayout } from './ConverterLayout';
 export { default as ConverterResult } from './ConverterResult';
 export { default as ConverterForm } from './ConverterForm';
+export { default as LanguageSelector } from './LanguageSelector';
+export { default as AuthButton } from './AuthButton';
+export { default as UserAuth } from './UserAuth';
 
 export type { ButtonProps } from './Button';
 export type { CardProps } from './Card';
@@ -42,3 +45,6 @@ export type { ConversionInfoProps, ConversionInfoItem } from './ConversionInfo';
 export type { ConversionResultProps } from './ConversionResult';
 export type { ModeSelectorProps, ModeSelectorOption } from './ModeSelector';
 export type { CustomFileInputProps } from './CustomFileInput';
+export type { LanguageSelectorProps } from './LanguageSelector';
+export type { AuthButtonProps } from './AuthButton';
+export type { UserAuthProps } from './UserAuth';
