@@ -42,3 +42,6 @@ vercel.json
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# Claude Code instructions (로컬 전용)
+CLAUDE.md
