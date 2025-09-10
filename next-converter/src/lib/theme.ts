@@ -28,6 +28,18 @@ export const theme = {
       primary: '#5E6AD2',
       hover: '#4C59BD'
     },
+    success: {
+      primary: '#28A745',
+      hover: '#218838'
+    },
+    error: {
+      primary: '#DC3545',
+      hover: '#C82333'
+    },
+    warning: {
+      primary: '#FFC107',
+      hover: '#E0A800'
+    },
     button: {
       primaryBg: 'rgb(230, 230, 230)',
       primaryText: 'rgb(8, 9, 10)',

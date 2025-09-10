@@ -57,17 +57,12 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
 
     const mainContentStyle: React.CSSProperties = {
       display: minimal ? 'flex' : 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-      gap: minimal ? theme.spacing.xl : theme.spacing['4xl'],
+      gridTemplateColumns: minimal ? undefined : 'repeat(auto-fit, minmax(250px, 1fr))',
+      gap: minimal ? theme.spacing.xl : theme.spacing['2xl'],
       marginBottom: minimal ? 0 : theme.spacing['3xl'],
       alignItems: minimal ? 'center' : 'flex-start',
       flexDirection: minimal ? 'row' : undefined,
-      '@media (max-width: 768px)': {
-        gridTemplateColumns: '1fr',
-        gap: theme.spacing['2xl'],
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-      },
+      flexWrap: 'wrap',
     };
 
     const brandSectionStyle: React.CSSProperties = {
@@ -141,12 +136,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
       justifyContent: 'space-between',
       alignItems: 'center',
       flexWrap: 'wrap' as const,
-      gap: theme.spacing.lg,
-      '@media (max-width: 768px)': {
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: theme.spacing.md,
-      },
+      gap: theme.spacing.md,
     };
 
     const copyrightStyle: React.CSSProperties = {

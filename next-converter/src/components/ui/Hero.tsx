@@ -132,10 +132,6 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
       gap: theme.spacing.lg,
       flexWrap: 'wrap' as const,
       justifyContent: centerContent ? 'center' : 'flex-start',
-      '@media (max-width: 768px)': {
-        flexDirection: 'column',
-        alignItems: centerContent ? 'center' : 'flex-start',
-      },
     };
 
     const handleActionClick = (action: HeroAction) => {
@@ -245,9 +241,6 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
             borderRadius: '50%',
             filter: 'blur(60px)',
             zIndex: -1,
-            '@media (max-width: 768px)': {
-              display: 'none',
-            },
           }}
         />
         <div
@@ -261,9 +254,6 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
             borderRadius: '50%',
             filter: 'blur(40px)',
             zIndex: -1,
-            '@media (max-width: 768px)': {
-              display: 'none',
-            },
           }}
         />
       </section>

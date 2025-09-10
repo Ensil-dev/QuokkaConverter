@@ -15,7 +15,20 @@ import {
   Carousel, 
   Navbar, 
   Footer, 
-  Hero 
+  Hero,
+  FileUpload,
+  LoadingSpinner,
+  Alert,
+  TabNavigation,
+  SegmentedControl,
+  FormatSelector,
+  PlaybackSpeedControl,
+  VideoSettings,
+  AudioSettings,
+  ImageSettings,
+  ConversionInfo,
+  ConversionResult,
+  ModeSelector
 } from '@/components/ui';
 
 function MyComponent() {
@@ -218,6 +231,102 @@ function MyComponent() {
 />
 ```
 
+### FileUpload
+
+- `accept`: string - 허용할 파일 형식 (예: ".jpg,.png,.pdf")
+- `multiple`: boolean - 여러 파일 선택 허용 여부 (기본값: false)
+- `maxSize`: number - 최대 파일 크기 (bytes)
+- `maxFiles`: number - 최대 파일 개수 (기본값: 10)
+- `variant`: 'dropzone' | 'button' - UI 변형 (기본값: 'dropzone')
+- `showPreview`: boolean - 파일 미리보기 표시 여부 (기본값: true)
+- `onFilesSelect`: (files: File[]) => void - 파일 선택 시 콜백
+- `onError`: (error: string) => void - 에러 발생 시 콜백
+
+```tsx
+<FileUpload
+  accept=".jpg,.png,.gif"
+  multiple={true}
+  maxSize={5 * 1024 * 1024}
+  variant="dropzone"
+  onFilesSelect={handleFiles}
+  onError={handleError}
+/>
+```
+
+### LoadingSpinner
+
+- `size`: 'sm' | 'md' | 'lg' | 'xl' - 스피너 크기 (기본값: 'md')
+- `color`: 'primary' | 'secondary' | 'accent' - 색상 (기본값: 'accent')
+- `text`: string - 표시할 텍스트
+- `fullScreen`: boolean - 전체 화면 모드 (기본값: false)
+- `overlay`: boolean - 오버레이 배경 표시 (기본값: false)
+
+```tsx
+<LoadingSpinner size="lg" text="로딩 중..." />
+<LoadingSpinner fullScreen overlay text="처리 중..." />
+```
+
+### Alert
+
+- `variant`: 'info' | 'success' | 'warning' | 'error' - 알림 유형 (기본값: 'info')
+- `title`: string - 알림 제목
+- `message`: string - 알림 메시지 (필수)
+- `dismissible`: boolean - 닫기 버튼 표시 여부 (기본값: false)
+- `onDismiss`: () => void - 닫기 시 콜백
+- `icon`: React.ReactNode - 커스텀 아이콘
+
+```tsx
+<Alert
+  variant="success"
+  title="성공"
+  message="작업이 완료되었습니다."
+  dismissible
+  onDismiss={handleDismiss}
+/>
+```
+
+### TabNavigation
+
+- `items`: TabItem[] - 탭 아이템 배열
+- `activeTab`: string - 현재 활성 탭 ID
+- `onTabChange`: (tabId: string) => void - 탭 변경 시 콜백
+- `variant`: 'default' | 'pills' | 'underline' | 'bottom' - 탭 스타일 (기본값: 'default')
+- `size`: 'sm' | 'md' | 'lg' - 탭 크기 (기본값: 'md')
+- `fullWidth`: boolean - 전체 너비 사용 여부 (기본값: false)
+
+```tsx
+<TabNavigation
+  items={[
+    { id: 'tab1', label: '홈', icon: '🏠' },
+    { id: 'tab2', label: '설정', badge: '3' }
+  ]}
+  activeTab={activeTab}
+  onTabChange={setActiveTab}
+  variant="underline"
+/>
+```
+
+### SegmentedControl
+
+- `options`: SegmentOption[] - 선택 옵션 배열
+- `value`: any - 현재 선택된 값
+- `onChange`: (value: any, option: SegmentOption) => void - 값 변경 시 콜백
+- `size`: 'sm' | 'md' | 'lg' - 크기 (기본값: 'md')
+- `fullWidth`: boolean - 전체 너비 사용 여부 (기본값: false)
+- `disabled`: boolean - 비활성화 여부 (기본값: false)
+
+```tsx
+<SegmentedControl
+  options={[
+    { id: 'option1', label: '옵션 1', value: 'option1' },
+    { id: 'option2', label: '옵션 2', value: 'option2', icon: '⚙️' }
+  ]}
+  value={selectedValue}
+  onChange={(value) => setSelectedValue(value)}
+  fullWidth
+/>
+```
+
 ## 테마 시스템
 
 테마 설정은 `@/lib/theme`에서 관리됩니다.
@@ -254,6 +363,174 @@ const responsiveStyle = {
 ## 데모 페이지
 
 모든 컴포넌트의 사용 예제는 `/components` 페이지에서 확인할 수 있습니다.
+
+### ModeSelector
+
+- `options`: ModeSelectorOption[] - 선택 가능한 모드 배열
+- `selectedMode`: string - 현재 선택된 모드
+- `onModeChange`: (mode: string) => void - 모드 변경 시 콜백
+- `label`: string - 라벨 텍스트 (기본값: 'Mode Selection')
+- `disabled`: boolean - 비활성화 여부
+
+```tsx
+<ModeSelector
+  options={[
+    { value: 'media', label: '미디어 변환', icon: '🎬' },
+    { value: 'pdf', label: 'PDF 변환', icon: '📄' }
+  ]}
+  selectedMode={selectedMode}
+  onModeChange={setSelectedMode}
+  label="변환 모드"
+/>
+```
+
+### FormatSelector
+
+- `availableFormats`: string[] - 선택 가능한 형식 배열
+- `selectedFormat`: string - 현재 선택된 형식
+- `onFormatChange`: (format: string) => void - 형식 변경 시 콜백
+- `label`: string - 라벨 텍스트 (기본값: 'Output Format')
+- `placeholder`: string - placeholder 텍스트
+- `required`: boolean - 필수 입력 여부
+
+```tsx
+<FormatSelector
+  availableFormats={['mp4', 'webm', 'avi', 'mov', 'gif']}
+  selectedFormat={selectedFormat}
+  onFormatChange={setSelectedFormat}
+  label="출력 형식"
+  placeholder="형식을 선택하세요"
+  required
+/>
+```
+
+### PlaybackSpeedControl
+
+- `speed`: number - 현재 재생 속도
+- `onSpeedChange`: (speed: number) => void - 속도 변경 시 콜백
+- `min`: number - 최소값 (기본값: 0.25)
+- `max`: number - 최대값 (기본값: 2.0)
+- `step`: number - 단계값 (기본값: 0.25)
+- `title`: string - 제목 텍스트
+- `slowLabel`: string - 느림 라벨
+- `fastLabel`: string - 빠름 라벨
+
+```tsx
+<PlaybackSpeedControl
+  speed={playbackSpeed}
+  onSpeedChange={setPlaybackSpeed}
+  title="재생 속도 조절"
+  slowLabel="느림"
+  fastLabel="빠름"
+/>
+```
+
+### VideoSettings
+
+- `resolution`: string - 해상도 설정
+- `onResolutionChange`: (resolution: string) => void - 해상도 변경 콜백
+- `fps`: number - FPS 설정
+- `onFpsChange`: (fps: number) => void - FPS 변경 콜백
+- `bitrate`: string - 비트레이트 설정
+- `onBitrateChange`: (bitrate: string) => void - 비트레이트 변경 콜백
+- `quality`: string - 품질 설정
+- `onQualityChange`: (quality: string) => void - 품질 변경 콜백
+- `showBitrate`: boolean - 비트레이트 옵션 표시 여부
+- `showGifNote`: boolean - GIF 관련 노트 표시 여부
+
+```tsx
+<VideoSettings
+  resolution={resolution}
+  onResolutionChange={setResolution}
+  fps={fps}
+  onFpsChange={setFps}
+  bitrate={bitrate}
+  onBitrateChange={setBitrate}
+  quality={quality}
+  onQualityChange={setQuality}
+  showBitrate={true}
+  showGifNote={false}
+/>
+```
+
+### AudioSettings
+
+- `sampleRate`: string - 샘플레이트 설정
+- `onSampleRateChange`: (sampleRate: string) => void - 샘플레이트 변경 콜백
+- `channels`: string - 채널 설정
+- `onChannelsChange`: (channels: string) => void - 채널 변경 콜백
+- `quality`: string - 품질 설정
+- `onQualityChange`: (quality: string) => void - 품질 변경 콜백
+
+```tsx
+<AudioSettings
+  sampleRate={sampleRate}
+  onSampleRateChange={setSampleRate}
+  channels={channels}
+  onChannelsChange={setChannels}
+  quality={quality}
+  onQualityChange={setQuality}
+/>
+```
+
+### ImageSettings
+
+- `resolution`: string - 해상도 설정
+- `onResolutionChange`: (resolution: string) => void - 해상도 변경 콜백
+- `quality`: string - 품질 설정
+- `onQualityChange`: (quality: string) => void - 품질 변경 콜백
+
+```tsx
+<ImageSettings
+  resolution={resolution}
+  onResolutionChange={setResolution}
+  quality={quality}
+  onQualityChange={setQuality}
+/>
+```
+
+### ConversionInfo
+
+- `title`: string - 제목 텍스트
+- `items`: ConversionInfoItem[] - 표시할 정보 아이템 배열
+- `status`: 'ready' | 'converting' | 'completed' - 변환 상태
+- `progress`: number - 진행 상황 (0-100)
+
+```tsx
+<ConversionInfo
+  title="변환 준비 완료"
+  status="ready"
+  items={[
+    { label: '입력 파일', value: 'video.mp4' },
+    { label: '출력 형식', value: 'GIF' },
+    { label: '파일 크기', value: '15.2 MB' }
+  ]}
+/>
+```
+
+### ConversionResult
+
+- `filename`: string - 파일명 (필수)
+- `fileSize`: string - 파일 크기 (필수)
+- `format`: string - 파일 형식 (필수)
+- `onDownload`: () => void - 다운로드 콜백 (필수)
+- `previewUrl`: string - 미리보기 URL
+- `previewType`: 'image' | 'video' | 'audio' | 'gif' - 미리보기 타입
+- `onReset`: () => void - 초기화 콜백
+- `showPreview`: boolean - 미리보기 표시 여부
+
+```tsx
+<ConversionResult
+  filename="converted_video.gif"
+  fileSize="8.2"
+  format="gif"
+  onDownload={() => downloadFile()}
+  onReset={() => resetConverter()}
+  downloadLabel="파일 다운로드"
+  resetLabel="다른 파일 변환"
+  showPreview={true}
+/>
+```
 
 ## 디자인 원칙
 
