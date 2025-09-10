@@ -1,18 +1,12 @@
 'use client';
 import React from 'react';
-import { signOut } from 'next-auth/react';
-import { useAuth } from '@/lib/auth';
-import { useTranslations } from 'next-intl';
-import LanguageSegmentControl from '@/components/LanguageSegmentControl';
+import { LanguageSelector, UserAuth } from '@/components/ui';
 
 interface HeaderProps {
   subtitle: string;
 }
 
 const Header = React.memo(function Header({ subtitle }: HeaderProps) {
-  const { session } = useAuth();
-  const t = useTranslations('Auth');
-
   return (
     <>
       <div className="header">
@@ -20,17 +14,10 @@ const Header = React.memo(function Header({ subtitle }: HeaderProps) {
           <h1 className="text-[40px] select-none">QuokkaConverter</h1>
           <div className="header-right">
             <div className="header-top-right">
-              <LanguageSegmentControl />
+              <LanguageSelector variant="segment" />
             </div>
             <div className="header-bottom-right">
-              {session && (
-                <div className="user-info">
-                  <span className="user-email">{session.user?.email}</span>
-                  <button onClick={() => signOut({ callbackUrl: '/' })} className="logout-btn">
-                    {t('signOut')}
-                  </button>
-                </div>
-              )}
+              <UserAuth />
             </div>
           </div>
         </div>

@@ -14,7 +14,10 @@ import {
   CustomFileInput,
   ConverterLayout,
   ConverterForm,
-  ConverterResult
+  ConverterResult,
+  LanguageSelector,
+  AuthButton,
+  UserAuth
 } from '@/components/ui';
 import { theme } from '@/lib/theme';
 
@@ -471,6 +474,104 @@ export default function ComponentsDemo() {
   quality={quality}
   onQualityChange={setQuality}
 />`}
+          </pre>
+        </div>
+
+        {/* Header Components Section */}
+        <div style={sectionStyle}>
+          <Typography variant="h2" color="primary">
+            헤더 컴포넌트들
+          </Typography>
+          <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.xl }}>
+            헤더에서 사용되는 언어 선택기와 인증 버튼 컴포넌트들입니다.
+          </Typography>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing.xl }}>
+            <Card style={demoCardStyle}>
+              <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                LanguageSelector - Segment
+              </Typography>
+              <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
+                세그먼트 스타일의 언어 선택기입니다. 현재 헤더에서 사용하는 스타일입니다.
+              </Typography>
+              <LanguageSelector variant="segment" />
+            </Card>
+
+            <div style={gridStyle}>
+              <Card style={demoCardStyle}>
+                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                  LanguageSelector - Dropdown
+                </Typography>
+                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
+                  드롭다운 스타일의 언어 선택기입니다.
+                </Typography>
+                <LanguageSelector variant="dropdown" size="md" />
+              </Card>
+
+              <Card style={demoCardStyle}>
+                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                  LanguageSelector - Toggle
+                </Typography>
+                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
+                  토글 버튼 스타일의 언어 선택기입니다.
+                </Typography>
+                <LanguageSelector variant="toggle" size="md" />
+              </Card>
+            </div>
+
+            <div style={gridStyle}>
+              <Card style={demoCardStyle}>
+                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                  AuthButton - Default
+                </Typography>
+                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
+                  기본 인증 버튼입니다. 로그인 상태에 따라 다른 UI를 보여줍니다.
+                </Typography>
+                <AuthButton variant="default" showEmail={true} />
+              </Card>
+
+              <Card style={demoCardStyle}>
+                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                  AuthButton - Compact
+                </Typography>
+                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
+                  컴팩트한 인증 버튼입니다.
+                </Typography>
+                <AuthButton variant="compact" size="sm" />
+              </Card>
+            </div>
+
+            <Card style={demoCardStyle}>
+              <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                UserAuth - Header Style
+              </Typography>
+              <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
+                헤더에서 사용되는 원본 스타일의 사용자 인증 컴포넌트입니다.
+              </Typography>
+              <UserAuth />
+            </Card>
+
+            <Card style={demoCardStyle}>
+              <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
+                AuthButton 다양한 크기
+              </Typography>
+              <div style={{ display: 'flex', gap: theme.spacing.md, alignItems: 'center', flexWrap: 'wrap' }}>
+                <AuthButton variant="compact" size="sm" />
+                <AuthButton variant="compact" size="md" />
+                <AuthButton variant="compact" size="lg" />
+                <AuthButton variant="icon-only" size="md" />
+              </div>
+            </Card>
+          </div>
+          
+          <pre style={codeBlockStyle}>
+{`<LanguageSelector variant="segment" />
+<LanguageSelector variant="dropdown" size="md" />
+<LanguageSelector variant="toggle" showFlags={true} showNames={true} />
+
+<AuthButton variant="default" showEmail={true} />
+<AuthButton variant="compact" size="sm" />
+<AuthButton variant="icon-only" />`}
           </pre>
         </div>
 
