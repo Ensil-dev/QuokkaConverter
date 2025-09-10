@@ -1,5 +1,5 @@
 {
-  "name": "QuokkaConverter",
+  "name": "QuokkaConverter - 무료 온라인 파일 변환기",
   "short_name": "QuokkaConverter",
   "description": "비디오, 오디오, 이미지 파일을 다양한 형식으로 변환하세요 - QuokkaConverter",
   "start_url": "/",
@@ -8,14 +8,20 @@
   "theme_color": "#F5D6B4",
   "icons": [
     {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/svg+xml"
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
     },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/favicon.ico",
