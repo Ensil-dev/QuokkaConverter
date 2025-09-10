@@ -122,7 +122,7 @@ export default function GifMaker() {
       loadingInfo={loadingInfo}
       loadingTitle={t('conversionTitle')}
       loadingMessage={t('readyMessage')}
-      ready={files && files.length >= 2}
+      ready={(files?.length ?? 0) >= 2}
       readyInfo={readyInfo}
       readyTitle={t('readyToCreate')}
       readyMessage={t('readyMessage')}

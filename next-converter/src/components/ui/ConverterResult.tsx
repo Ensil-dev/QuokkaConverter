@@ -28,9 +28,8 @@ export default function ConverterResult({
     downloadBlob(blob, name);
   };
 
-  const fileSize = 'size' in result 
-    ? (result.size / 1024 / 1024).toFixed(2) 
-    : (result.size / 1024 / 1024).toFixed(2);
+  const sizeBytes = 'blob' in result ? result.size : (result as Blob).size;
+  const fileSize = (sizeBytes / 1024 / 1024).toFixed(2);
 
   return (
     <div className="result">

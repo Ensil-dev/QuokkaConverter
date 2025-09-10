@@ -8,7 +8,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'caption' | 'small';
   color?: 'primary' | 'secondary' | 'tertiary' | 'quaternary';
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }
 
 const Typography = React.forwardRef<HTMLElement, TypographyProps>(
@@ -82,7 +82,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       small: 'small',
     } as const;
 
-    const Element = (as || defaultElements[variant]) as keyof JSX.IntrinsicElements;
+    const Element: React.ElementType = as || defaultElements[variant];
 
     const combinedStyles = {
       ...variantStyles[variant],

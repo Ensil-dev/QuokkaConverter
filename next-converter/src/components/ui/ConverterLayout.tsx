@@ -49,7 +49,7 @@ export default function ConverterLayout({
           icon={loadingIcon}
           title={loadingTitle}
           message={loadingMessage}
-          info={loadingInfo}
+          info={loadingInfo ?? []}
         />
       )}
       
@@ -59,7 +59,7 @@ export default function ConverterLayout({
           icon={readyIcon}
           title={readyTitle}
           message={readyMessage}
-          info={readyInfo}
+          info={readyInfo ?? []}
         />
       )}
       

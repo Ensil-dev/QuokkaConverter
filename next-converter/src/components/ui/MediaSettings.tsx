@@ -41,12 +41,14 @@ export interface ImageSettingsProps {
   disabled?: boolean;
 }
 
-const SettingsSection: React.FC<{ title: string; children: React.ReactNode; className?: string; disabled?: boolean }> = ({
+type SettingsSectionProps = { title: string; children: React.ReactNode; className?: string; disabled?: boolean };
+
+const SettingsSection = React.forwardRef<HTMLDivElement, SettingsSectionProps>(({
   title,
   children,
   className = '',
   disabled = false
-}) => {
+}, ref) => {
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -67,12 +69,14 @@ const SettingsSection: React.FC<{ title: string; children: React.ReactNode; clas
   };
 
   return (
-    <div className={className} style={containerStyle}>
+    <div ref={ref} className={className} style={containerStyle}>
       <h3 style={titleStyle}>{title}</h3>
       {children}
     </div>
   );
-};
+});
+
+SettingsSection.displayName = 'SettingsSection';
 
 const OptionRow: React.FC<{ 
   label: string; 

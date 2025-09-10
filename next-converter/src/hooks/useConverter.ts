@@ -1,20 +1,20 @@
 import { useState, useCallback } from 'react';
 
-export interface UseConverterState<T = any> {
+export interface UseConverterState<T = unknown> {
   loading: boolean;
   error: string;
   result: T | null;
 }
 
-export interface UseConverterActions {
+export interface UseConverterActions<T> {
   setLoading: (loading: boolean) => void;
   setError: (error: string) => void;
-  setResult: <T>(result: T | null) => void;
+  setResult: (result: T | null) => void;
   clearError: () => void;
   reset: () => void;
 }
 
-export function useConverter<T = any>(initialResult: T | null = null): [UseConverterState<T>, UseConverterActions] {
+export function useConverter<T = unknown>(initialResult: T | null = null): [UseConverterState<T>, UseConverterActions<T>] {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<T | null>(initialResult);
@@ -35,7 +35,7 @@ export function useConverter<T = any>(initialResult: T | null = null): [UseConve
     result
   };
 
-  const actions: UseConverterActions = {
+  const actions: UseConverterActions<T> = {
     setLoading,
     setError,
     setResult,
