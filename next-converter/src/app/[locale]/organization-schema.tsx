@@ -25,7 +25,6 @@ export default function OrganizationSchema() {
     "sameAs": [
       "https://quokkaconverter.vercel.app"
     ],
-    "foundingDate": "2024",
     "knowsAbout": [
       "파일 변환",
       "비디오 변환",
