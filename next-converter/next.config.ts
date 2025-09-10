@@ -6,9 +6,12 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
-    optimizePackageImports: ['@ffmpeg/ffmpeg']
+    optimizePackageImports: ['@ffmpeg/ffmpeg'],
   },
   serverExternalPackages: ['ffmpeg-static'],
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -22,7 +25,7 @@ const nextConfig: NextConfig = {
   env: {
     PORT: process.env.PORT || '3001'
   },
-  // FFmpeg WebAssembly 파일을 정적 파일로 제공
+  // FFmpeg WebAssembly 파일을 정적 파일로 제공 및 성능 최적화
   async headers() {
     return [
       {
@@ -38,6 +41,32 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          },
+        ],
+      },
+      {
+        source: '/(.*)\\.(ico|png|jpg|jpeg|gif|webp|svg)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ],
+      }
     ];
   },
 };

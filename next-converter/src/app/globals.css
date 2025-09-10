@@ -1,5 +1,36 @@
 @tailwind utilities;
 
+/* Mobile performance optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input, textarea, button, select {
+  -webkit-user-select: auto;
+  -khtml-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}
+
+/* Critical rendering path optimization */
+@media (max-width: 768px) {
+  * {
+    will-change: auto;
+  }
+  
+  html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
 /* Global font settings for Korean and English consistency */
 html,
 body {
