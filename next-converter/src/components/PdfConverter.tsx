@@ -1,22 +1,22 @@
 'use client';
+
 import React, { useState, useMemo } from 'react';
-import Header from '@/components/Header';
 import { useTranslations } from 'next-intl';
-import { downloadBlob, makeFilename } from '@/lib/utils';
-import ErrorMessage from '@/components/ErrorMessage';
-import ResultPlaceholder from '@/components/ResultPlaceholder';
 import usePdfEstimates from '@/lib/hooks/usePdfEstimates';
-import CustomFileInput from '@/components/CustomFileInput';
+import { CustomFileInput, ConverterLayout, ConverterForm, ConverterResult } from '@/components/ui';
+import { useConverter } from '@/hooks/useConverter';
 
 export default function PdfConverter() {
   const t = useTranslations('Pdf');
   const [operation, setOperation] = useState<'images' | 'merge' | 'split'>('images');
   const [files, setFiles] = useState<FileList | null>(null);
   const [page, setPage] = useState(1);
-  const [result, setResult] = useState<Blob | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const { getEstimatedFileSize, getEstimatedTime } = usePdfEstimates();
+  
+  const [state, actions] = useConverter<Blob>();
+  const { loading, error, result } = state;
+  const { setLoading, setError, setResult } = actions;
+
   const operationLabel = {
     images: t('imagesToPdf'),
     merge: t('mergePdf'),
@@ -35,6 +35,7 @@ export default function PdfConverter() {
       setError(t('selectFile'));
       return;
     }
+    
     const formData = new FormData();
     formData.append('operation', operation);
     if (operation === 'split') {
@@ -60,16 +61,6 @@ export default function PdfConverter() {
     }
   };
 
-  const download = () => {
-    if (!result) return;
-    const baseName = files?.[0]?.name || 'result';
-    const name =
-      operation === 'split'
-        ? makeFilename(`${baseName.replace(/\.[^.]+$/, '')}-page-${page}`, 'pdf')
-        : makeFilename(baseName, 'pdf');
-    downloadBlob(result, name);
-  };
-
   const loadingInfo = useMemo(() => {
     return [
       { label: t('operation'), value: operationLabel },
@@ -78,9 +69,9 @@ export default function PdfConverter() {
     ];
   }, [t, operationLabel, files, operation, getEstimatedFileSize, getEstimatedTime]);
 
-  const preparedInfo = useMemo(() => {
+  const readyInfo = useMemo(() => {
     if (!files) return [] as { label: string; value: React.ReactNode }[];
-    const base = [
+    return [
       files.length === 1
         ? { label: t('inputFile'), value: files[0].name }
         : { label: t('fileCount'), value: files.length },
@@ -89,13 +80,47 @@ export default function PdfConverter() {
       { label: t('estimatedSize'), value: getEstimatedFileSize(files, operation) },
       { label: t('estimatedTime'), value: getEstimatedTime(files) },
     ];
-    return base;
   }, [t, files, operation, page, operationLabel, getEstimatedFileSize, getEstimatedTime]);
 
+  const getDownloadFilename = () => {
+    const baseName = files?.[0]?.name || 'result';
+    if (operation === 'split') {
+      return `${baseName.replace(/\.[^.]+$/, '')}-page-${page}`;
+    }
+    return baseName;
+  };
+
+  const resultComponent = result ? (
+    <ConverterResult
+      result={result}
+      filename={getDownloadFilename()}
+      format="pdf"
+      downloadLabel={t('downloadFile')}
+    >
+      <h2>{t('complete')}</h2>
+    </ConverterResult>
+  ) : null;
+
   return (
-    <div className="container rounded-[15px]">
-      <Header subtitle={t('subtitle')} />
-      <form onSubmit={handleSubmit}>
+    <ConverterLayout
+      subtitle={t('subtitle')}
+      error={error}
+      loading={loading}
+      loadingInfo={loadingInfo}
+      loadingTitle={t('resultReady')}
+      loadingMessage={t('readyMessage')}
+      ready={!!files}
+      readyInfo={readyInfo}
+      readyTitle={t('readyToProcess')}
+      readyMessage={t('readyMessage')}
+      result={resultComponent}
+    >
+      <ConverterForm
+        onSubmit={handleSubmit}
+        submitLabel={t('process')}
+        loading={loading}
+        loadingLabel={t('processing')}
+      >
         <div className="file-section">
           <label>{t('uploadFiles')}</label>
           <CustomFileInput
@@ -111,6 +136,7 @@ export default function PdfConverter() {
             required
           />
         </div>
+        
         <div className="format-section">
           <label htmlFor="operation">{t('operation')}</label>
           <select
@@ -123,6 +149,7 @@ export default function PdfConverter() {
             <option value="split">{t('splitPdf')}</option>
           </select>
         </div>
+        
         {operation === 'split' && (
           <div className="option-row">
             <label htmlFor="page">{t('pageNumber')}</label>
@@ -135,38 +162,7 @@ export default function PdfConverter() {
             />
           </div>
         )}
-        {error && <ErrorMessage message={error} />}
-        {result && (
-          <div className="result">
-            <h2>{t('complete')}</h2>
-            <button type="button" onClick={download} className="download-btn">
-              {t('downloadFile')}
-            </button>
-          </div>
-        )}
-        <button type="submit" disabled={loading}>
-          {loading ? t('processing') : t('process')}
-        </button>
-      </form>
-
-      {loading && (
-        <ResultPlaceholder
-          icon="⏳"
-          title={t('resultReady')}
-          message={t('readyMessage')}
-          info={loadingInfo}
-        />
-      )}
-
-      {files && !loading && !result && !error && (
-        <ResultPlaceholder
-          ready
-          icon="📁"
-          title={t('readyToProcess')}
-          message={t('readyMessage')}
-          info={preparedInfo}
-        />
-      )}
-    </div>
+      </ConverterForm>
+    </ConverterLayout>
   );
 }

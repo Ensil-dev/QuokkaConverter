@@ -1,27 +1,29 @@
 'use client';
+
 import { useState } from 'react';
 import useFFmpeg from '@/lib/hooks/useFFmpeg';
 import { useTranslations } from 'next-intl';
 import { imagesToGifWithWasm } from '@/lib/ffmpegWasm';
-import { downloadBlob, makeFilename } from '@/lib/utils';
-import Header from '@/components/Header';
-import ResultPlaceholder from '@/components/ResultPlaceholder';
-import ErrorMessage from '@/components/ErrorMessage';
-import PreviewImage from '@/components/PreviewImage';
-import CustomFileInput from '@/components/CustomFileInput';
+import { CustomFileInput, ConverterLayout, ConverterForm, ConverterResult } from '@/components/ui';
+import { useConverter } from '@/hooks/useConverter';
+
+interface GifResult {
+  blob: Blob;
+  size: number;
+}
 
 export default function GifMaker() {
   const t = useTranslations('Gif');
   const [files, setFiles] = useState<FileList | null>(null);
   const [fps, setFps] = useState(5);
   const [quality, setQuality] = useState<'낮음' | '보통' | '높음' | 'low' | 'medium' | 'high'>('medium');
-  const [result, setResult] = useState<{ blob: Blob; size: number } | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [imgSize, setImgSize] = useState<{ width: number; height: number } | null>(null);
   const { isReady, loadFFmpeg, error: ffmpegError } = useFFmpeg();
-
+  
+  const [state, actions] = useConverter<GifResult>();
+  const { loading, error, result } = state;
+  const { setLoading, setError, setResult } = actions;
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files;
@@ -29,6 +31,7 @@ export default function GifMaker() {
     setResult(null);
     setResultUrl(null);
     setError('');
+    
     if (selected && selected[0]) {
       try {
         const bmp = await createImageBitmap(selected[0]);
@@ -55,6 +58,7 @@ export default function GifMaker() {
         return;
       }
     }
+    
     setLoading(true);
     try {
       const inputs = await Promise.all(
@@ -63,6 +67,7 @@ export default function GifMaker() {
           ext: f.name.split('.').pop()?.toLowerCase() || 'png',
         }))
       );
+      
       const { data, size } = await imagesToGifWithWasm(
         inputs,
         fps,
@@ -71,8 +76,10 @@ export default function GifMaker() {
         imgSize?.width,
         imgSize?.height
       );
+      
       const blob = new Blob([data], { type: 'image/gif' });
-      setResult({ blob, size });
+      const gifResult = { blob, size };
+      setResult(gifResult);
       setResultUrl(URL.createObjectURL(blob));
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errorCreationFailed'));
@@ -81,34 +88,52 @@ export default function GifMaker() {
     }
   };
 
-  const download = () => {
-    if (result) {
-      const baseName = files?.[0]?.name || 'result';
-      const name = makeFilename(baseName, 'gif');
-      downloadBlob(result.blob, name);
-    }
-  };
-
   const loadingInfo = files
     ? [
-      { label: t('fileCount'), value: files.length },
-      { label: 'FPS', value: fps },
-      { label: t('quality'), value: t(`quality${quality.charAt(0).toUpperCase() + quality.slice(1)}`) },
-    ]
+        { label: t('fileCount'), value: files.length },
+        { label: 'FPS', value: fps },
+        { label: t('quality'), value: t(`quality${quality.charAt(0).toUpperCase() + quality.slice(1)}`) },
+      ]
     : [];
 
-  const preparedInfo = files
+  const readyInfo = files
     ? [
-      { label: t('fileCount'), value: files.length },
-      { label: 'FPS', value: fps },
-      { label: t('quality'), value: t(`quality${quality.charAt(0).toUpperCase() + quality.slice(1)}`) },
-    ]
+        { label: t('fileCount'), value: files.length },
+        { label: 'FPS', value: fps },
+        { label: t('quality'), value: t(`quality${quality.charAt(0).toUpperCase() + quality.slice(1)}`) },
+      ]
     : [];
+
+  const resultComponent = result && resultUrl ? (
+    <ConverterResult
+      result={result}
+      filename={files?.[0]?.name || 'result'}
+      format="gif"
+      previewUrl={resultUrl}
+      downloadLabel={t('downloadGif')}
+    />
+  ) : null;
 
   return (
-    <div className="container rounded-[15px]">
-      <Header subtitle={t('title')} />
-      <form onSubmit={handleSubmit}>
+    <ConverterLayout
+      subtitle={t('title')}
+      error={error || ffmpegError || ''}
+      loading={loading}
+      loadingInfo={loadingInfo}
+      loadingTitle={t('conversionTitle')}
+      loadingMessage={t('readyMessage')}
+      ready={files && files.length >= 2}
+      readyInfo={readyInfo}
+      readyTitle={t('readyToCreate')}
+      readyMessage={t('readyMessage')}
+      result={resultComponent}
+    >
+      <ConverterForm
+        onSubmit={handleSubmit}
+        submitLabel={t('createGif')}
+        loading={loading}
+        loadingLabel={t('creating')}
+      >
         <div className="file-section">
           <label>{t('selectImages')}</label>
           <CustomFileInput
@@ -120,6 +145,7 @@ export default function GifMaker() {
             required
           />
         </div>
+        
         <div className="option-row">
           <label htmlFor="fps">{t('fps')}</label>
           <input
@@ -131,6 +157,7 @@ export default function GifMaker() {
             onChange={(e) => setFps(Number(e.target.value))}
           />
         </div>
+        
         <div className="option-row">
           <label htmlFor="quality">{t('quality')}</label>
           <select
@@ -143,47 +170,7 @@ export default function GifMaker() {
             <option value="높음">{t('qualityHigh')}</option>
           </select>
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? t('creating') : t('createGif')}
-        </button>
-      </form>
-      {loading && (
-        <ResultPlaceholder
-          icon="⏳"
-          title={t('conversionTitle')}
-          message={t('readyMessage')}
-          info={loadingInfo}
-        />
-      )}
-      {files && files.length >= 2 && !loading && !result && !error && (
-        <ResultPlaceholder
-          ready
-          icon="📁"
-          title={t('readyToCreate')}
-          message={t('readyMessage')}
-          info={preparedInfo}
-        />
-      )}
-      {result && (
-        <div className="result">
-          <h2>{t('preview')}</h2>
-          {resultUrl && <PreviewImage url={resultUrl} />}
-          <div className="resultInfo">
-            <p>{t('fileSize')} {(result.size / 1024 / 1024).toFixed(2)} MB</p>
-          </div>
-          {/* <button
-            type="button"
-            onClick={() => resultUrl && window.open(resultUrl, '_blank')}
-            className="open-btn"
-          >
-            새 탭에서 열기
-          </button> */}
-          <button type="button" onClick={download} className="download-btn">
-            {t('downloadGif')}
-          </button>
-        </div>
-      )}
-      {(error || ffmpegError) && <ErrorMessage message={error || ffmpegError || ''} />}
-    </div>
+      </ConverterForm>
+    </ConverterLayout>
   );
 }
