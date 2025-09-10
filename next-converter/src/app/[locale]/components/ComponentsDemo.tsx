@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Button, 
-  Card, 
-  Input, 
+import {
+  Button,
+  Card,
+  Input,
   Typography,
   PlaybackSpeedControl,
   VideoSettings,
@@ -25,7 +25,7 @@ export default function ComponentsDemo() {
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState(false);
   const [customFiles, setCustomFiles] = useState<FileList | null>(null);
-  
+
   // Converter component states
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [selectedMode, setSelectedMode] = useState('media');
@@ -96,7 +96,7 @@ export default function ComponentsDemo() {
           QuokkaConverter UI 컴포넌트
         </Typography>
         <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing['4xl'] }}>
-          QuokkaConverter에서 실제 사용되는 UI 컴포넌트들입니다. 
+          QuokkaConverter에서 실제 사용되는 UI 컴포넌트들입니다.
           모든 컴포넌트는 변환 기능에 최적화되어 있습니다.
         </Typography>
 
@@ -121,7 +121,7 @@ export default function ComponentsDemo() {
             </Typography>
           </Card>
           <pre style={codeBlockStyle}>
-{`<Typography variant="h1">Heading 1</Typography>
+            {`<Typography variant="h1">Heading 1</Typography>
 <Typography variant="body" color="secondary">Body text</Typography>
 <Typography variant="caption" color="tertiary">Caption</Typography>`}
           </pre>
@@ -162,7 +162,7 @@ export default function ComponentsDemo() {
             </Card>
           </div>
           <pre style={codeBlockStyle}>
-{`<Button variant="primary" size="md">Primary Button</Button>
+            {`<Button variant="primary" size="md">Primary Button</Button>
 <Button variant="ghost" size="md">Ghost Button</Button>
 <Button variant="primary" disabled>Disabled Button</Button>`}
           </pre>
@@ -214,7 +214,7 @@ export default function ComponentsDemo() {
             </Card>
           </div>
           <pre style={codeBlockStyle}>
-{`<Input 
+            {`<Input 
   label="라벨" 
   placeholder="플레이스홀더"
   helperText="도움말 텍스트" 
@@ -249,7 +249,7 @@ export default function ComponentsDemo() {
             </Card>
           </div>
           <pre style={codeBlockStyle}>
-{`<Card>기본 카드</Card>
+            {`<Card>기본 카드</Card>
 <Card glass>글래스 카드</Card>`}
           </pre>
         </div>
@@ -280,9 +280,9 @@ export default function ComponentsDemo() {
               선택된 모드: {selectedMode}
             </Typography>
           </Card>
-          
+
           <pre style={codeBlockStyle}>
-{`<ModeSelector
+            {`<ModeSelector
   options={[
     { value: 'media', label: '미디어 변환', icon: '🎬' },
     { value: 'pdf', label: 'PDF 변환', icon: '📄' }
@@ -331,9 +331,9 @@ export default function ComponentsDemo() {
               />
             </Card>
           </div>
-          
+
           <pre style={codeBlockStyle}>
-{`<CustomFileInput
+            {`<CustomFileInput
   id="fileInput"
   accept=".jpg,.jpeg,.png,.gif"
   multiple={true}
@@ -365,9 +365,9 @@ export default function ComponentsDemo() {
               fastLabel="빠름"
             />
           </Card>
-          
+
           <pre style={codeBlockStyle}>
-{`<PlaybackSpeedControl
+            {`<PlaybackSpeedControl
   speed={playbackSpeed}
   onSpeedChange={setPlaybackSpeed}
   title="재생 속도 조절"
@@ -393,19 +393,19 @@ export default function ComponentsDemo() {
               </Typography>
               <VideoSettings
                 resolution={videoSettings.resolution}
-                onResolutionChange={(resolution) => 
+                onResolutionChange={(resolution) =>
                   setVideoSettings(prev => ({ ...prev, resolution }))
                 }
                 fps={videoSettings.fps}
-                onFpsChange={(fps) => 
+                onFpsChange={(fps) =>
                   setVideoSettings(prev => ({ ...prev, fps }))
                 }
                 bitrate={videoSettings.bitrate}
-                onBitrateChange={(bitrate) => 
+                onBitrateChange={(bitrate) =>
                   setVideoSettings(prev => ({ ...prev, bitrate }))
                 }
                 quality={videoSettings.quality}
-                onQualityChange={(quality) => 
+                onQualityChange={(quality) =>
                   setVideoSettings(prev => ({ ...prev, quality }))
                 }
                 showGifNote={true}
@@ -418,15 +418,15 @@ export default function ComponentsDemo() {
               </Typography>
               <AudioSettings
                 sampleRate={audioSettings.sampleRate}
-                onSampleRateChange={(sampleRate) => 
+                onSampleRateChange={(sampleRate) =>
                   setAudioSettings(prev => ({ ...prev, sampleRate }))
                 }
                 channels={audioSettings.channels}
-                onChannelsChange={(channels) => 
+                onChannelsChange={(channels) =>
                   setAudioSettings(prev => ({ ...prev, channels }))
                 }
                 quality={audioSettings.quality}
-                onQualityChange={(quality) => 
+                onQualityChange={(quality) =>
                   setAudioSettings(prev => ({ ...prev, quality }))
                 }
               />
@@ -438,19 +438,19 @@ export default function ComponentsDemo() {
               </Typography>
               <ImageSettings
                 resolution={imageSettings.resolution}
-                onResolutionChange={(resolution) => 
+                onResolutionChange={(resolution) =>
                   setImageSettings(prev => ({ ...prev, resolution }))
                 }
                 quality={imageSettings.quality}
-                onQualityChange={(quality) => 
+                onQualityChange={(quality) =>
                   setImageSettings(prev => ({ ...prev, quality }))
                 }
               />
             </Card>
           </div>
-          
+
           <pre style={codeBlockStyle}>
-{`<VideoSettings
+            {`<VideoSettings
   resolution={resolution}
   onResolutionChange={setResolution}
   fps={fps}
@@ -485,7 +485,7 @@ export default function ComponentsDemo() {
           <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.xl }}>
             헤더에서 사용되는 언어 선택기와 인증 버튼 컴포넌트들입니다.
           </Typography>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing.xl }}>
             <Card style={demoCardStyle}>
               <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
@@ -550,22 +550,10 @@ export default function ComponentsDemo() {
               </Typography>
               <UserAuth />
             </Card>
-
-            <Card style={demoCardStyle}>
-              <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
-                AuthButton 다양한 크기
-              </Typography>
-              <div style={{ display: 'flex', gap: theme.spacing.md, alignItems: 'center', flexWrap: 'wrap' }}>
-                <AuthButton variant="compact" size="sm" />
-                <AuthButton variant="compact" size="md" />
-                <AuthButton variant="compact" size="lg" />
-                <AuthButton variant="icon-only" size="md" />
-              </div>
-            </Card>
           </div>
-          
+
           <pre style={codeBlockStyle}>
-{`<LanguageSelector variant="segment" />
+            {`<LanguageSelector variant="segment" />
 <LanguageSelector variant="dropdown" size="md" />
 <LanguageSelector variant="toggle" showFlags={true} showNames={true} />
 
@@ -583,7 +571,7 @@ export default function ComponentsDemo() {
           <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.xl }}>
             변환기에서 공통으로 사용하는 레이아웃과 폼, 결과 표시 컴포넌트들입니다.
           </Typography>
-          
+
           <div style={gridStyle}>
             <Card style={demoCardStyle}>
               <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
@@ -626,9 +614,9 @@ export default function ComponentsDemo() {
               />
             </Card>
           </div>
-          
+
           <pre style={codeBlockStyle}>
-{`<ConverterForm
+            {`<ConverterForm
   onSubmit={handleSubmit}
   submitLabel="변환 시작"
   loading={loading}
@@ -655,7 +643,7 @@ export default function ComponentsDemo() {
           <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.xl }}>
             ConverterLayout을 사용한 완전한 변환기 인터페이스 예시입니다.
           </Typography>
-          
+
           <div style={{ border: `2px solid ${theme.colors.border.primary}`, borderRadius: theme.borderRadius.base, overflow: 'hidden' }}>
             <ConverterLayout
               subtitle="데모 변환기"
@@ -702,13 +690,13 @@ export default function ComponentsDemo() {
                     </Typography>
                     <CustomFileInput
                       id="demoFile"
-                      accept={selectedMode === 'media' ? '.mp4,.mov,.avi,.mp3,.wav,.jpg,.png' : 
-                               selectedMode === 'gif' ? 'image/*' : '.pdf,image/*'}
+                      accept={selectedMode === 'media' ? '.mp4,.mov,.avi,.mp3,.wav,.jpg,.png' :
+                        selectedMode === 'gif' ? 'image/*' : '.pdf,image/*'}
                       multiple={selectedMode === 'gif'}
                       onChange={handleCustomFileChange}
                       selectedFiles={customFiles}
-                      placeholder={selectedMode === 'media' ? '미디어 파일 선택' : 
-                                  selectedMode === 'gif' ? '이미지들 선택' : 'PDF 또는 이미지 선택'}
+                      placeholder={selectedMode === 'media' ? '미디어 파일 선택' :
+                        selectedMode === 'gif' ? '이미지들 선택' : 'PDF 또는 이미지 선택'}
                     />
                   </div>
 
@@ -731,16 +719,16 @@ export default function ComponentsDemo() {
               </ConverterForm>
             </ConverterLayout>
           </div>
-          
+
           <div style={{ marginTop: theme.spacing.xl, padding: theme.spacing.lg, backgroundColor: theme.colors.background.tertiary, borderRadius: theme.borderRadius.base }}>
             <Typography variant="caption" color="secondary" style={{ fontStyle: 'italic' }}>
-              💡 ConverterLayout은 모든 변환기 페이지에서 공통으로 사용하는 레이아웃 컴포넌트입니다. 
+              💡 ConverterLayout은 모든 변환기 페이지에서 공통으로 사용하는 레이아웃 컴포넌트입니다.
               Header, ErrorMessage, ResultPlaceholder 등을 통합 관리하여 일관된 사용자 경험을 제공합니다.
             </Typography>
           </div>
-          
+
           <pre style={codeBlockStyle}>
-{`<ConverterLayout
+            {`<ConverterLayout
   subtitle="변환기 제목"
   error={error}
   loading={loading}
