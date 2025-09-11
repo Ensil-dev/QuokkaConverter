@@ -206,7 +206,7 @@ export default function Converter({ showModeSelector = true }: ConverterProps) {
       const buffer = await file.arrayBuffer();
       const { data } = await convertFileWithWasm(buffer, inputExt, outputFormat, options);
 
-      const convertBlob = new Blob([data], { type: 'application/octet-stream' });
+      const convertBlob = new Blob([new Uint8Array(data)], { type: 'application/octet-stream' });
       setProgress(100);
       setConvertedFile(convertBlob);
 
