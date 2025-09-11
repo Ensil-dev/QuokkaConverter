@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
     logUsage(file.size);
 
     // 변환된 파일 반환
-    return new NextResponse(result.data, {
+    return new NextResponse(Buffer.from(result.data), {
       headers: {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': `attachment; filename="converted.${targetFormat}"`,

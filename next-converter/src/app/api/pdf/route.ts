@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       }
       const buffers = await Promise.all(files.map(async (f) => new Uint8Array(await f.arrayBuffer())));
       const pdf = await imagesToPdf(buffers);
-      return new NextResponse(pdf, {
+      return new NextResponse(Buffer.from(pdf), {
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': 'attachment; filename="converted.pdf"'
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       }
       const buffers = await Promise.all(files.map(async (f) => new Uint8Array(await f.arrayBuffer())));
       const merged = await mergePdfs(buffers);
-      return new NextResponse(merged, {
+      return new NextResponse(Buffer.from(merged), {
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': 'attachment; filename="merged.pdf"'
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       }
       const buffer = new Uint8Array(await file.arrayBuffer());
       const result = await splitPdf(buffer, page);
-      return new NextResponse(result, {
+      return new NextResponse(Buffer.from(result), {
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename="page-${page}.pdf"`

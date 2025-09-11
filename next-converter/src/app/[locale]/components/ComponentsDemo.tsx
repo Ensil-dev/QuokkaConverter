@@ -16,7 +16,6 @@ import {
   ConverterForm,
   ConverterResult,
   LanguageSelector,
-  AuthButton,
   UserAuth
 } from '@/components/ui';
 import { theme } from '@/lib/theme';
@@ -138,11 +137,11 @@ export default function ComponentsDemo() {
                 Primary Buttons
               </Typography>
               <div style={{ display: 'flex', gap: theme.spacing.md, marginBottom: theme.spacing.lg, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="sm">Small</Button>
-                <Button variant="primary" size="md">Medium</Button>
-                <Button variant="primary" size="lg">Large</Button>
+                <Button variant="default" size="sm">Small</Button>
+                <Button variant="default" size="default">Medium</Button>
+                <Button variant="default" size="lg">Large</Button>
               </div>
-              <Button variant="primary" disabled style={{ opacity: 0.5 }}>
+              <Button variant="default" disabled style={{ opacity: 0.5 }}>
                 Disabled
               </Button>
             </Card>
@@ -153,7 +152,7 @@ export default function ComponentsDemo() {
               </Typography>
               <div style={{ display: 'flex', gap: theme.spacing.md, marginBottom: theme.spacing.lg, flexWrap: 'wrap' }}>
                 <Button variant="ghost" size="sm">Small</Button>
-                <Button variant="ghost" size="md">Medium</Button>
+                <Button variant="ghost" size="default">Medium</Button>
                 <Button variant="ghost" size="lg">Large</Button>
               </div>
               <Button variant="ghost" disabled style={{ opacity: 0.5 }}>
@@ -162,9 +161,9 @@ export default function ComponentsDemo() {
             </Card>
           </div>
           <pre style={codeBlockStyle}>
-            {`<Button variant="primary" size="md">Primary Button</Button>
-<Button variant="ghost" size="md">Ghost Button</Button>
-<Button variant="primary" disabled>Disabled Button</Button>`}
+            {`<Button variant="default" size="default">Primary Button</Button>
+<Button variant="ghost" size="default">Ghost Button</Button>
+<Button variant="default" disabled>Disabled Button</Button>`}
           </pre>
         </div>
 
@@ -239,7 +238,7 @@ export default function ComponentsDemo() {
               </Typography>
             </Card>
 
-            <Card glass style={demoCardStyle}>
+            <Card style={demoCardStyle}>
               <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.md }}>
                 글래스 카드
               </Typography>
@@ -250,7 +249,7 @@ export default function ComponentsDemo() {
           </div>
           <pre style={codeBlockStyle}>
             {`<Card>기본 카드</Card>
-<Card glass>글래스 카드</Card>`}
+<Card>카드</Card>`}
           </pre>
         </div>
 
@@ -496,50 +495,6 @@ export default function ComponentsDemo() {
               </Typography>
               <LanguageSelector variant="segment" />
             </Card>
-
-            <div style={gridStyle}>
-              <Card style={demoCardStyle}>
-                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
-                  LanguageSelector - Dropdown
-                </Typography>
-                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
-                  드롭다운 스타일의 언어 선택기입니다.
-                </Typography>
-                <LanguageSelector variant="dropdown" size="md" />
-              </Card>
-
-              <Card style={demoCardStyle}>
-                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
-                  LanguageSelector - Toggle
-                </Typography>
-                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
-                  토글 버튼 스타일의 언어 선택기입니다.
-                </Typography>
-                <LanguageSelector variant="toggle" size="md" />
-              </Card>
-            </div>
-
-            <div style={gridStyle}>
-              <Card style={demoCardStyle}>
-                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
-                  AuthButton - Default
-                </Typography>
-                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
-                  기본 인증 버튼입니다. 로그인 상태에 따라 다른 UI를 보여줍니다.
-                </Typography>
-                <AuthButton variant="default" showEmail={true} />
-              </Card>
-
-              <Card style={demoCardStyle}>
-                <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
-                  AuthButton - Compact
-                </Typography>
-                <Typography variant="body" color="secondary" style={{ marginBottom: theme.spacing.lg }}>
-                  컴팩트한 인증 버튼입니다.
-                </Typography>
-                <AuthButton variant="compact" size="sm" />
-              </Card>
-            </div>
 
             <Card style={demoCardStyle}>
               <Typography variant="h4" color="primary" style={{ marginBottom: theme.spacing.lg }}>
