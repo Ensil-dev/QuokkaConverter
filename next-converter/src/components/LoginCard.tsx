@@ -13,7 +13,7 @@ const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
 
   return (
     <div className="flex justify-center">
-      <div className="flex min-h-screen min-w-[340px] max-w-[400px] flex-col items-center justify-center bg-gray-100 font-sans">
+      <div className="flex min-h-screen min-w-[340px] max-w-[400px] flex-col items-center justify-center bg-black font-sans">
         <div
           onClick={onLogin}
           className="flex cursor-pointer items-center gap-3"
@@ -33,7 +33,7 @@ const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
         </div>
         
         <div
-          className="flex w-full min-w-[340px] max-w-[400px] flex-col items-center gap-4 rounded-2xl bg-white shadow-lg"
+          className="flex w-full min-w-[340px] max-w-[400px] flex-col items-center gap-4 rounded-2xl bg-gray-900 border border-gray-700 shadow-lg"
           style={{
             padding: '10px',
             marginTop: 0,
@@ -44,7 +44,7 @@ const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
           <button
             type="button"
             onClick={onLogin}
-            className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white p-4 py-3 text-lg font-semibold text-gray-800 shadow transition hover:shadow-md"
+            className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-gray-600 bg-gray-800 p-4 py-3 text-lg font-semibold text-white shadow transition hover:shadow-md hover:bg-gray-700"
           >
             <FcGoogle size={48} />
             <span className="select-none text-2xl">{t('googleLogin')}</span>
