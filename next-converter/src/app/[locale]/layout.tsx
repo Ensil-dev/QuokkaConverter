@@ -141,6 +141,15 @@ export default async function LocaleLayout({ children, params }: Props) {
         {ffmpegOrigin && (
           <link rel="preconnect" href={ffmpegOrigin} crossOrigin="anonymous" />
         )}
+        {/* EdgePlus SDK - dogfooding (로컬 개발용) */}
+        {process.env.NODE_ENV === 'development' && (
+          <script
+            src="http://localhost:4000/sdk/v1.js"
+            data-site-key="ep_site_quokka"
+            data-endpoint="http://localhost:4000/api/collect"
+            defer
+          />
+        )}
       </head>
       <body suppressHydrationWarning={true}>
         <OrganizationSchema />
