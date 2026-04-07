@@ -11,7 +11,7 @@ export default async function AdminPage() {
     <div className="container rounded-[15px]">
       <Header subtitle={t('title')} />
 
-      <div className="rounded-lg shadow-sm border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border-gray-200 dark:border-gray-700 p-6">
         <MaxUploadSizeSetting />
       </div>
     </div>

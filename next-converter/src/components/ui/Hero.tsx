@@ -3,13 +3,13 @@
 import React from 'react';
 import { theme } from '@/lib/theme';
 import Typography from './Typography';
-import { Button } from './Button';
+import Button from './Button';
 
 export interface HeroAction {
   id: string;
   label: string;
-  variant?: 'default' | 'ghost';
-  size?: 'sm' | 'default' | 'lg';
+  variant?: 'primary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
   onClick?: () => void;
   href?: string;
 }
@@ -215,7 +215,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               {actions.map((action) => (
                 <Button
                   key={action.id}
-                  variant={action.variant || 'default'}
+                  variant={action.variant || 'primary'}
                   size={action.size || 'lg'}
                   onClick={() => handleActionClick(action)}
                 >

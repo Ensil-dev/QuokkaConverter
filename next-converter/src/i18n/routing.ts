@@ -17,10 +17,6 @@ export const routing = defineRouting({
       ko: '/convert',
       en: '/convert'
     },
-    '/login': {
-      ko: '/login',
-      en: '/login'
-    },
     '/convert/pdf': {
       ko: '/convert/pdf',
       en: '/convert/pdf'

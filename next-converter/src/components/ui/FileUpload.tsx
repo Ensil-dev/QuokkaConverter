@@ -3,7 +3,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { theme } from '@/lib/theme';
 import Typography from './Typography';
-import { Button } from './Button';
+import Button from './Button';
 
 export interface FileUploadProps {
   accept?: string;
@@ -178,7 +178,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             disabled={disabled}
           />
           <Button
-            variant="default"
+            variant="primary"
             onClick={openFileDialog}
             disabled={disabled}
           >
