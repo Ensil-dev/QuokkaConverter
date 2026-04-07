@@ -1,28 +1,16 @@
-'use client';
-import { useEffect } from 'react';
-import { useAuth } from '@/lib/auth';
-import { useRouter } from '@/i18n/navigation';
-import Loading from '@/components/Loading';
-import LoginCard from '@/components/LoginCard';
-import { loginWithGoogle } from '@/lib/utils';
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
+import LoginCardClient from './LoginCardClient';
 import Script from 'next/script';
 
-export default function Home() {
-  const { session, status } = useAuth();
-  const router = useRouter();
+export default async function Home() {
+  const session = await auth();
 
-  useEffect(() => {
-    if (session) {
-      router.replace('/convert');
-    }
-  }, [session, router]);
-
-  if (status === 'loading') {
-    return <Loading />;
+  if (session) {
+    redirect('/convert');
   }
 
   const structuredData = [
-    // WebApplication 스키마
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
@@ -33,18 +21,14 @@ export default function Home() {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Any",
       "browserRequirements": "Requires JavaScript. Modern browsers supported.",
-      "device": "Desktop, Mobile, Tablet",
       "logo": "https://quokkaconverter.vercel.app/apple-touch-icon.png",
       "image": "https://quokkaconverter.vercel.app/og-image.png",
       "featureList": [
         "비디오 파일 변환 (MP4, WebM, AVI 등)",
-        "오디오 파일 변환 (MP3, WAV, AAC 등)", 
+        "오디오 파일 변환 (MP3, WAV, AAC 등)",
         "이미지 파일 변환 (JPG, PNG, WebP 등)",
         "GIF 생성 및 편집",
         "PDF 파일 관리 (병합, 분할, 변환)"
-      ],
-      "sameAs": [
-        "https://quokkaconverter.vercel.app"
       ],
       "potentialAction": [
         {
@@ -53,13 +37,13 @@ export default function Home() {
           "name": "파일 확장자 변환"
         },
         {
-          "@type": "UseAction", 
+          "@type": "UseAction",
           "target": "https://quokkaconverter.vercel.app/ko/convert/gif",
           "name": "GIF 생성"
         },
         {
           "@type": "UseAction",
-          "target": "https://quokkaconverter.vercel.app/ko/convert/pdf", 
+          "target": "https://quokkaconverter.vercel.app/ko/convert/pdf",
           "name": "PDF 관리"
         }
       ]
@@ -78,7 +62,7 @@ export default function Home() {
           }}
         />
       ))}
-      <LoginCard onLogin={loginWithGoogle} />
+      <LoginCardClient />
     </>
   );
 }
