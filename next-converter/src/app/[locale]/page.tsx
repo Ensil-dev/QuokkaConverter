@@ -66,6 +66,8 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
+      {/* SEO: 검색 엔진이 읽을 수 있는 h1 (시각적으로 LoginCard의 제목과 동일) */}
+      <h1 className="sr-only">QuokkaConverter - 무료 온라인 파일 변환기</h1>
       <LoginCardClient />
     </>
   );

@@ -1,9 +1,16 @@
 {
   "HomePage": {
     "title": "QuokkaConverter",
+    "subtitle": "Free Online File Converter",
     "description": "Convert video, audio, and image files to various formats",
     "startConvert": "Start Converting",
-    "googleLogin": "Sign in with Google"
+    "googleLogin": "Sign in with Google",
+    "featureMedia": "File Conversion",
+    "featureMediaDesc": "MP4, WebM, MP3, WAV, JPG, PNG, WebP and more",
+    "featureGif": "GIF Maker",
+    "featureGifDesc": "Combine multiple images into animated GIF",
+    "featurePdf": "PDF Tools",
+    "featurePdfDesc": "Merge, split, and convert images to PDF"
   },
   "Navigation": {
     "home": "Home",
