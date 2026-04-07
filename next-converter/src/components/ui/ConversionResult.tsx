@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { theme } from '@/lib/theme';
-import { Button } from './Button';
+import Button from './Button';
 
 export interface ConversionResultProps {
   title?: string;
@@ -204,7 +204,7 @@ const ConversionResult = React.forwardRef<HTMLDivElement, ConversionResultProps>
         
         <div style={actionsStyle}>
           <Button
-            variant="default"
+            variant="primary"
             size="lg"
             onClick={onDownload}
             style={{ flex: '1 1 auto', minWidth: '150px' }}

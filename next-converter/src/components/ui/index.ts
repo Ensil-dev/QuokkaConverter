@@ -1,5 +1,5 @@
-export { Button } from './Button';
-export { Card } from './Card';
+export { default as Button } from './Button';
+export { default as Card } from './Card';
 export { default as Input } from './Input';
 export { default as Typography } from './Typography';
 export { default as Carousel } from './Carousel';
@@ -25,7 +25,8 @@ export { default as LanguageSelector } from './LanguageSelector';
 export { default as AuthButton } from './AuthButton';
 export { default as UserAuth } from './UserAuth';
 
-// ButtonProps and CardProps not available in new components
+export type { ButtonProps } from './Button';
+export type { CardProps } from './Card';
 export type { InputProps } from './Input';
 export type { TypographyProps } from './Typography';
 export type { CarouselProps, CarouselItem } from './Carousel';

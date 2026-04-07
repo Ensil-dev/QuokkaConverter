@@ -1,59 +1,122 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+'use client';
 
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { theme } from '@/lib/theme';
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-  {
-    variants: {
-      variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot : "button"
-
-  return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  children: React.ReactNode;
+  className?: string;
 }
 
-export { Button, buttonVariants }
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = 'primary', size = 'md', children, className = '', ...props }, ref) => {
+    const baseStyles = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: theme.typography.fontFamily.primary,
+      fontWeight: theme.typography.fontWeight.linear,
+      cursor: 'pointer',
+      border: 'none',
+      outline: 'none',
+      textDecoration: 'none',
+      userSelect: 'none' as const,
+      transition: theme.transitions.fast,
+      borderRadius: theme.borderRadius.md,
+    };
+
+    const sizeStyles = {
+      sm: {
+        fontSize: theme.typography.fontSize.sm,
+        lineHeight: theme.typography.lineHeight.button,
+        minHeight: '32px',
+        padding: '0 12px',
+      },
+      md: {
+        fontSize: theme.typography.fontSize.md,
+        lineHeight: theme.typography.lineHeight.buttonLarge,
+        minHeight: '40px',
+        padding: '0 16px',
+      },
+      lg: {
+        fontSize: theme.typography.fontSize.lg,
+        lineHeight: theme.typography.lineHeight.buttonLarge,
+        minHeight: '48px',
+        padding: '0 24px',
+      }
+    };
+
+    const variantStyles = {
+      primary: {
+        backgroundColor: theme.colors.button.primaryBg,
+        color: theme.colors.button.primaryText,
+        border: `0.75px solid ${theme.colors.button.primaryBg}`,
+      },
+      ghost: {
+        backgroundColor: theme.colors.button.ghostBg,
+        color: theme.colors.button.ghostText,
+        border: '0px none',
+        borderRadius: theme.borderRadius.lg,
+      }
+    };
+
+    const hoverStyles = {
+      primary: {
+        backgroundColor: 'rgb(220, 220, 220)',
+        transform: 'translateY(-1px)',
+      },
+      ghost: {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        color: 'rgb(200, 200, 200)',
+      }
+    };
+
+    const activeStyles = {
+      primary: {
+        transform: 'translateY(0px)',
+        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      ghost: {
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+      }
+    };
+
+    const combinedStyles = {
+      ...baseStyles,
+      ...sizeStyles[size],
+      ...variantStyles[variant],
+    };
+
+    return (
+      <button
+        ref={ref}
+        className={className}
+        style={combinedStyles}
+        onMouseEnter={(e) => {
+          Object.assign(e.currentTarget.style, hoverStyles[variant]);
+        }}
+        onMouseLeave={(e) => {
+          Object.assign(e.currentTarget.style, variantStyles[variant]);
+        }}
+        onMouseDown={(e) => {
+          Object.assign(e.currentTarget.style, {
+            ...variantStyles[variant],
+            ...activeStyles[variant],
+          });
+        }}
+        onMouseUp={(e) => {
+          Object.assign(e.currentTarget.style, hoverStyles[variant]);
+        }}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
+
+Button.displayName = 'Button';
+
+export default Button;

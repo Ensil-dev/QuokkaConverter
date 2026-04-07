@@ -77,7 +77,7 @@ export default function GifMaker() {
         imgSize?.height
       );
       
-      const blob = new Blob([new Uint8Array(data)], { type: 'image/gif' });
+      const blob = new Blob([data], { type: 'image/gif' });
       const gifResult = { blob, size };
       setResult(gifResult);
       setResultUrl(URL.createObjectURL(blob));

@@ -142,7 +142,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <link rel="preconnect" href={ffmpegOrigin} crossOrigin="anonymous" />
         )}
       </head>
-      <body className="dark bg-black text-white" suppressHydrationWarning={true}>
+      <body suppressHydrationWarning={true}>
         <OrganizationSchema />
         <FAQSchema />
         <BreadcrumbSchema />
