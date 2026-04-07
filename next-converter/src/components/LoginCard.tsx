@@ -12,44 +12,44 @@ const LoginCard = React.memo(function LoginCard({ onLogin }: LoginCardProps) {
   const t = useTranslations('HomePage');
 
   return (
-    <div className="flex justify-center">
-      <div className="flex min-h-screen min-w-[340px] max-w-[400px] flex-col items-center justify-center bg-gray-100 font-sans">
-        <div
-          onClick={onLogin}
-          className="flex cursor-pointer items-center gap-3"
-          style={{ marginBottom: '10px' }}
-        >
-          <Image
-            src="/apple-touch-icon.png"
-            alt={t('title')}
-            priority
-            width={64}
-            height={64}
-            className="mr-[8px] select-none"
-          />
-          <span className="select-none text-2xl font-bold text-black dark:text-white z-50">
-            {t('title')}
-          </span>
-        </div>
-        
-        <div
-          className="flex w-full min-w-[340px] max-w-[400px] flex-col items-center gap-4 rounded-2xl bg-white shadow-lg"
-          style={{
-            padding: '10px',
-            marginTop: 0,
-            maxWidth: '400px',
-            minWidth: '320px',
-          }}
-        >
-          <button
-            type="button"
-            onClick={onLogin}
-            className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white p-4 py-3 text-lg font-semibold text-gray-800 shadow transition hover:shadow-md"
-          >
-            <FcGoogle size={48} />
-            <span className="select-none text-2xl">{t('googleLogin')}</span>
-          </button>
-        </div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] px-5">
+      <div className="flex items-center gap-4 mb-5">
+        <Image
+          src="/apple-touch-icon.png"
+          alt={t('title')}
+          priority
+          width={52}
+          height={52}
+          className="rounded-full select-none"
+        />
+        <span className="text-3xl font-bold text-white tracking-tight select-none">
+          {t('title')}
+        </span>
+      </div>
+      <p className="text-base text-[#888] mb-10">
+        {t('subtitle')}
+      </p>
+      <button
+        type="button"
+        onClick={onLogin}
+        className="flex items-center gap-4 rounded-xl bg-white px-12 py-4 text-base font-semibold text-[#111] shadow-lg transition hover:opacity-90 cursor-pointer select-none"
+      >
+        <FcGoogle size={24} />
+        <span>{t('googleLogin')}</span>
+      </button>
+      <div className="flex gap-10 mt-14 text-sm text-[#555]">
+        <span className="flex items-center gap-2">
+          <span className="w-1 h-1 rounded-full bg-[#444]" />
+          {t('featureMedia')}
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="w-1 h-1 rounded-full bg-[#444]" />
+          {t('featureGif')}
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="w-1 h-1 rounded-full bg-[#444]" />
+          {t('featurePdf')}
+        </span>
       </div>
     </div>
   );
