@@ -1,4 +1,4 @@
-@tailwind utilities;
+@import 'tailwindcss';
 
 /* Mobile performance optimizations */
 * {
@@ -170,11 +170,8 @@ body {
   overscroll-behavior-y: contain;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+/* box-sizing은 Tailwind v4 preflight가 처리.
+   padding: 0 / margin: 0 전역 리셋은 Tailwind 유틸리티와 충돌하므로 제거 */
 
 a {
   color: inherit;
