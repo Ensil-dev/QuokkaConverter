@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { getMessages } from 'next-intl/server';
+import EdgePlusProvider from '@/components/EdgePlusProvider';
 import OrganizationSchema from './organization-schema';
 import FAQSchema from './faq-schema';
 import BreadcrumbSchema from './breadcrumb-schema';
@@ -141,15 +142,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         {ffmpegOrigin && (
           <link rel="preconnect" href={ffmpegOrigin} crossOrigin="anonymous" />
         )}
-        {/* EdgePlus SDK - dogfooding (로컬 개발용) */}
-        {process.env.NODE_ENV === 'development' && (
-          <script
-            src="http://localhost:4000/sdk/v1.js"
-            data-site-key="ep_site_quokka"
-            data-endpoint="http://localhost:4000/api/collect"
-            defer
-          />
-        )}
+        {/* EdgePlus SDK - npm 방식으로 초기화 */}
       </head>
       <body suppressHydrationWarning={true}>
         <OrganizationSchema />
@@ -160,6 +153,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <InAppRedirectGuard />
           <ToastProvider />
           <AuthProvider>{children}</AuthProvider>
+          <EdgePlusProvider />
           <Analytics />
         </NextIntlClientProvider>
       </body>
