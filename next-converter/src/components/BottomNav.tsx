@@ -12,11 +12,15 @@ const BottomNav = React.memo(function BottomNav() {
   const t = useTranslations('Navigation');
 
   const availableTabs = React.useMemo(() => {
+    // data-ep-id: EdgePlus SDK가 click event 그룹핑 anchor로 사용한다.
+    // dynamic class name(Tailwind arbitrary, build hash) 때문에 selector 그룹핑이
+    // 깨지는 것을 막기 위한 stable identifier. label은 i18n 번역어라 빌드/locale마다
+    // 변할 수 있으므로 path 기반 stable id를 부여한다.
     const tabs = [
-      { href: '/convert/media', icon: <FaImage size={20} />, label: t('media') },
-      { href: '/convert/gif', icon: <FaImages size={20} />, label: t('gif') },
-      { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: t('pdf') },
-      { href: '/admin', icon: <FaUserShield size={20} />, label: t('admin'), adminOnly: true },
+      { href: '/convert/media', icon: <FaImage size={20} />, label: t('media'), epId: 'nav-media' },
+      { href: '/convert/gif', icon: <FaImages size={20} />, label: t('gif'), epId: 'nav-gif' },
+      { href: '/convert/pdf', icon: <FaFilePdf size={20} />, label: t('pdf'), epId: 'nav-pdf' },
+      { href: '/admin', icon: <FaUserShield size={20} />, label: t('admin'), adminOnly: true, epId: 'nav-admin' },
     ];
     return tabs.filter(tab => !tab.adminOnly || isAdmin(user?.email));
   }, [t, user]);
@@ -30,12 +34,13 @@ const BottomNav = React.memo(function BottomNav() {
   return (
     <nav className="bottom-nav z-10 h-[80px] w-full border-t bg-[var(--background)] shadow-md">
       <ul className={`m-0 grid w-full list-none ${colsClass} p-0`}>
-        {availableTabs.map(({ href, icon, label }) => {
+        {availableTabs.map(({ href, icon, label, epId }) => {
           const active = pathname === href || (href !== '/convert' && pathname.startsWith(href));
           return (
             <li key={href} className="m-0 p-0">
               <Link
                 href={href as '/convert/media' | '/convert/gif' | '/convert/pdf' | '/admin'}
+                data-ep-id={epId}
                 className={`flex h-[80px] w-full flex-col items-center justify-center gap-y-1 text-sm transition-all duration-300 ease-in-out ${
                   active
                     ? 'scale-95 bg-zinc-800 text-[skyblue] ring-2 ring-purple-500 ring-offset-2'

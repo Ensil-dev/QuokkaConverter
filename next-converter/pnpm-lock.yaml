@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@edgeplus/sdk':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.7
+        version: 0.0.7
       '@ffmpeg/ffmpeg':
         specifier: ^0.12.15
         version: 0.12.15
@@ -348,8 +348,8 @@ packages:
     resolution: {integrity: sha512-F9rL9k9Xjf5blCz8HsJRO4diy111cayL2vkY2XE4r4t3n0yPXVYy3KD3nJ1qbrSn9743UWSXH4IwuCa/HWlGFw==}
     engines: {node: '>=6.0.0'}
 
-  '@edgeplus/sdk@0.0.6':
-    resolution: {integrity: sha512-VglOwIhuTZHB7OxUeDQ0GQNEhfmdBAcUa/wanjUXJOeZ7Z5StQMyd+0Ww+bpUGPt6YfuqAyLgBocUlvWgAFaMw==}
+  '@edgeplus/sdk@0.0.7':
+    resolution: {integrity: sha512-WyfqchaH7OiG8CFDnolr72SQbzjegF1pwk4dJtHogk0qJe6TazZ5D3DkpiC4KErwwD1YS7H5CfjXlE5HZKuq3g==}
 
   '@emnapi/core@1.4.3':
     resolution: {integrity: sha512-4m62DuCE07lw01soJwPiBGC0nAww0Q+RY70VZ+n49yDIO13yyinhbWCeNnaob0lakDtWQzSdtNWzJeOJt2ma+g==}
@@ -3946,7 +3946,7 @@ snapshots:
       http-response-object: 3.0.2
       parse-cache-control: 1.0.1
 
-  '@edgeplus/sdk@0.0.6':
+  '@edgeplus/sdk@0.0.7':
     dependencies:
       web-vitals: 4.2.4
 
