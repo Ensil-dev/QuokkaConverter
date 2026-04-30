@@ -265,7 +265,6 @@ NEXTAUTH_SECRET=your-nextauth-secret
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 ALLOWED_EMAILS=admin@example.com,user@example.com
-NEXT_PUBLIC_FFMPEG_BASE_URL=https://your-cdn.com
 ```
 
 ### 배포 (Vercel)
