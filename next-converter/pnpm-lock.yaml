@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@edgeplus/sdk':
-        specifier: ^0.0.14
-        version: 0.0.14
+        specifier: ^0.0.18
+        version: 0.0.18
       '@ffmpeg/ffmpeg':
         specifier: ^0.12.15
         version: 0.12.15
@@ -348,8 +348,13 @@ packages:
     resolution: {integrity: sha512-F9rL9k9Xjf5blCz8HsJRO4diy111cayL2vkY2XE4r4t3n0yPXVYy3KD3nJ1qbrSn9743UWSXH4IwuCa/HWlGFw==}
     engines: {node: '>=6.0.0'}
 
-  '@edgeplus/sdk@0.0.14':
-    resolution: {integrity: sha512-QBJluOqfAs4GF0tcDW71Wq3dWatrngNVkB++NXtkMAS+hLdwxmEHnnri9yH+qAgoBCheNM7k9gDATXmearLZSw==}
+  '@edgeplus/sdk@0.0.18':
+    resolution: {integrity: sha512-GP5mlVzuCxZNORkiamw1iRids2r8N+q+JCseOv858cE6kbz1BrUsu6AqKE+48bJzbJ+UjEMSa/ViQaBmDgQQOA==}
+    peerDependencies:
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+    peerDependenciesMeta:
+      vite:
+        optional: true
 
   '@emnapi/core@1.4.3':
     resolution: {integrity: sha512-4m62DuCE07lw01soJwPiBGC0nAww0Q+RY70VZ+n49yDIO13yyinhbWCeNnaob0lakDtWQzSdtNWzJeOJt2ma+g==}
@@ -3606,8 +3611,8 @@ packages:
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
 
-  web-vitals@4.2.4:
-    resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
+  web-vitals@5.2.0:
+    resolution: {integrity: sha512-i2z98bEmaCqSDiHEDu+gHl/dmR4Q+TxFmG3/13KkMO+o8UxQzCqWaDRCiLgEa41nlO4VpXSI0ASa1xWmO9sBlA==}
 
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
@@ -3946,9 +3951,9 @@ snapshots:
       http-response-object: 3.0.2
       parse-cache-control: 1.0.1
 
-  '@edgeplus/sdk@0.0.14':
+  '@edgeplus/sdk@0.0.18':
     dependencies:
-      web-vitals: 4.2.4
+      web-vitals: 5.2.0
 
   '@emnapi/core@1.4.3':
     dependencies:
@@ -7621,7 +7626,7 @@ snapshots:
     dependencies:
       makeerror: 1.0.12
 
-  web-vitals@4.2.4: {}
+  web-vitals@5.2.0: {}
 
   webidl-conversions@7.0.0: {}
 
