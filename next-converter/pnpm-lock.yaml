@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@edgeplus/sdk':
-        specifier: ^0.0.18
-        version: 0.0.18
+        specifier: ^0.0.19
+        version: 0.0.19
       '@ffmpeg/ffmpeg':
         specifier: ^0.12.15
         version: 0.12.15
@@ -348,8 +348,8 @@ packages:
     resolution: {integrity: sha512-F9rL9k9Xjf5blCz8HsJRO4diy111cayL2vkY2XE4r4t3n0yPXVYy3KD3nJ1qbrSn9743UWSXH4IwuCa/HWlGFw==}
     engines: {node: '>=6.0.0'}
 
-  '@edgeplus/sdk@0.0.18':
-    resolution: {integrity: sha512-GP5mlVzuCxZNORkiamw1iRids2r8N+q+JCseOv858cE6kbz1BrUsu6AqKE+48bJzbJ+UjEMSa/ViQaBmDgQQOA==}
+  '@edgeplus/sdk@0.0.19':
+    resolution: {integrity: sha512-RUFdcZOESfRCjgVAWd9vJuD54VL4qpJzruw3S7R5M1lhX+nb53tCHFY4YoiAeU73KwS4hNLMdOMeTycC/ydv3A==}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
@@ -3951,7 +3951,7 @@ snapshots:
       http-response-object: 3.0.2
       parse-cache-control: 1.0.1
 
-  '@edgeplus/sdk@0.0.18':
+  '@edgeplus/sdk@0.0.19':
     dependencies:
       web-vitals: 5.2.0
 
